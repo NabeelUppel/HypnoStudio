@@ -274,7 +274,7 @@ function MenubarFile( editor ) {
 
 		exporter.parse( scene, function ( result ) {
 
-			saveString( JSON.stringify( result, null, 2 ), 'scene.gltf' );
+			saveString( JSON.stringify( result, null, 2 ), 'houseObjectImported.gltf' );
 
 		}, { animations: animations } );
 

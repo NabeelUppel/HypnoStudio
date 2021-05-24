@@ -1,6 +1,7 @@
 import * as THREE from './resources/threejs/r128/build/three.module.js';
 import {OrbitControls} from './resources/threejs/r128/examples/jsm/controls/OrbitControls.js';
 import {FBXLoader} from './resources/threejs/r128/examples/jsm/loaders/FBXLoader.js';
+import { GLTFLoader } from './resources/threejs/r128/examples/jsm/loaders/GLTFLoader.js';
 
 
 let pressed = {};
@@ -23,7 +24,15 @@ function main() {
     initCannon();
     initThree();
     //BOX POSITIONS NOT SIZE
-    Box(0,1,0);
+    simpleHouseBase(0,5,0);
+    simpleHouseBase(10,5,0);
+    simpleHouseBase(-10,5,0);
+    simpleHouseBase(10,5,10);
+    simpleHouseBase(0,5,10);
+    simpleHouseBase(-10,5,10);
+    //Ball(0,0,0);
+
+    //HouseMod(0,0,0)
     animate();
 }
 
@@ -42,10 +51,10 @@ function initCannon() {
 
 function initThree() {
     canvas = document.querySelector('#c');
-    renderer = new THREE.WebGLRenderer({canvas});
+    renderer = new THREE.WebGLRenderer({canvas, antialias: true});
     scene = new THREE.Scene();
 
-    const fov = 45;
+    const fov = 90;
     const aspect = 2;  // the canvas default
     const near = 0.1;
     const far = 100;
@@ -66,7 +75,6 @@ function initThree() {
 
     AddGround();
 }
-
 
 function LightEnable(light) {
     light.position.set(20, 100, 10);
@@ -93,29 +101,42 @@ function orbitalControls() {
     controls.enableKeys = false;
 }
 
-
-function Box(x, y, z) {
+function simpleHouseBase(x, y, z) {
     const shape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5));
-    boxBody = new CANNON.Body({mass: 2});
+    boxBody = new CANNON.Body({mass: 0});
     boxBody.addShape(shape);
     boxBody.position.set(x, y, z);
-    boxBody.userData = {name: "CUBE"}
+    boxBody.userData = {name: "HOUSE"}
     world.addBody(boxBody);
     bodies.push(boxBody);
 
-    const cubeGeo = new THREE.BoxGeometry(1, 1, 1, 10, 10);
-    const material = new THREE.MeshLambertMaterial({color: "#8e8d8d"});
-    CubeShape = new THREE.Mesh(cubeGeo, material);
+    const cubeGeo = new THREE.BoxGeometry(10, 10, 10, 10, 10);
+
+    const houseMaterials = [];
+    const texture = new THREE.TextureLoader().load('resources/objects/pokemon_style_house/textures/Brick_baseColor.png');
+    houseMaterials.push( new THREE.MeshBasicMaterial( { map: texture} ) );
+    houseMaterials.push( new THREE.MeshBasicMaterial( { map: texture} ) );
+    const roofTexture = new THREE.TextureLoader().load('resources/objects/pokemon_style_house/textures/Blue Roof.png');
+    houseMaterials.push( new THREE.MeshBasicMaterial( { map: roofTexture} ) );
+    houseMaterials.push( new THREE.MeshBasicMaterial( { map: texture} ) );
+    houseMaterials.push( new THREE.MeshBasicMaterial( { map: texture} ) );
+    houseMaterials.push( new THREE.MeshBasicMaterial( { map: texture} ) );
+
+    CubeShape = new THREE.Mesh(cubeGeo, houseMaterials);
     CubeShape.castShadow = true;
+
     camera.lookAt(CubeShape.position)
     meshes.push(CubeShape);
     scene.add(CubeShape);
+
 }
+
+
 
 function Ball(x, y, z) {
     const radius = 1;
     let shape = new CANNON.Sphere(radius);
-    sphereBody = new CANNON.Body({mass: 5});
+    sphereBody = new CANNON.Body({mass: 0});
     sphereBody.addShape(shape);
     sphereBody.position.set(x, y, z);
     world.addBody(sphereBody);
@@ -126,14 +147,15 @@ function Ball(x, y, z) {
     const material = new THREE.MeshPhongMaterial({color: "#711a1a"});
     SphereShape = new THREE.Mesh(sphereGeometry, material);
     SphereShape.castShadow = true;
+    camera.lookAt(SphereShape.position)
     scene.add(SphereShape);
     meshes.push(SphereShape);
 }
 
 function AddGround() {
-    const planeSize = 800;
+    const planeSize = 10000;
     const loader = new THREE.TextureLoader();
-    const texture = loader.load('./resources/images/ground.png');
+    const texture = loader.load('resources/objects/pokemon_style_house/textures/pavement.png');
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.magFilter = THREE.NearestFilter;
@@ -207,8 +229,6 @@ function updateMeshPositions() {
     }
 }
 
-
-
 function animate() {
 
     requestAnimationFrame(animate);
@@ -216,6 +236,100 @@ function animate() {
     render();
 }
 
+//House
+
+function HouseMod(x,y,z){
+
+    // default materials
+    const materials_default = {
+        base: new THREE.MeshStandardMaterial({
+            color: 0xff0000,
+            side: THREE.DoubleSide
+        }),
+        tri: new THREE.MeshStandardMaterial({
+            color: 0xaf0000,
+            side: THREE.DoubleSide
+        }),
+        roof: new THREE.MeshStandardMaterial({
+            color: 0x202020,
+            side: THREE.DoubleSide
+        })
+    };
+
+    // create a triangle part of the house
+    const HouseTriangle = function(materials){
+        materials = materials || materials_default;
+        const geometry = new THREE.BufferGeometry();
+        const vertices = new Float32Array([
+            -1, 0, 0,
+            0.5, 1.5, 0,
+            2, 0, 0
+        ]);
+        geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+        geometry.computeVertexNormals(); // compute vertex normals
+        geometry.addGroup(0, 3, 0); // just one group
+        return new THREE.Mesh(
+            geometry,
+            materials.tri);
+    };
+
+    // create and return a house
+    HouseMod.create = function(materials){
+        materials = materials || materials_default;
+        // main house group
+        const house = new THREE.Group();
+
+        // base of house is just a BOX
+        const base = new THREE.Mesh(new THREE.BoxGeometry(3, 2, 4), materials.base);
+        house.add(base);
+
+        // house triangle parts
+        const tri1 = HouseTriangle(materials);
+        tri1.position.set(-0.5, 1 , 2);
+        house.add(tri1);
+        const tri2 = HouseTriangle(materials);
+        tri2.position.set(-0.5, 1 , -2);
+        house.add(tri2);
+
+        // roof
+        const roof1 = new THREE.Mesh(
+            new THREE.PlaneGeometry(2.84, 4.5),
+            materials.roof);
+        roof1.position.set(-1, 1.51, 0);
+        roof1.rotation.set(Math.PI * 0.5, Math.PI * 0.25, 0);
+        house.add(roof1);
+        const roof2 = new THREE.Mesh(
+            new THREE.PlaneGeometry(2.84, 4.5),
+            materials.roof);
+        roof2.position.set(1, 1.51, 0);
+        roof2.rotation.set(Math.PI * 0.5, Math.PI * -0.25, 0);
+        house.add(roof2);
+
+        // house should cast a shadow
+        house.castShadow = true;
+        house.receiveShadow = false;
+        return house;
+    };
+
+}
+
+
+
+
+
+const loader = new GLTFLoader();
+
+/*loader.load( 'resources/objects/pokemon_style_house/houseObjectImported.gltf', function ( gltf ) {
+
+    camera.lookAt( gltf.scene )
+
+    scene.add( gltf.scene );
+    mesh.push( gltf.scene );
+    }, undefined, function ( error ) {
+
+    console.error( error );
+
+} );*/
 
 
 main();
