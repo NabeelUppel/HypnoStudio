@@ -25,12 +25,6 @@ function main() {
     initThree();
     //BOX POSITIONS NOT SIZE
     simpleHouseBase(0,5,0);
-    simpleHouseBase(10,5,0);
-    simpleHouseBase(-10,5,0);
-    simpleHouseBase(10,5,10);
-    simpleHouseBase(0,5,10);
-    simpleHouseBase(-10,5,10);
-    //Ball(0,0,0);
 
     //HouseMod(0,0,0)
     animate();
@@ -109,7 +103,7 @@ function simpleHouseBase(x, y, z) {
     boxBody.userData = {name: "HOUSE"}
     world.addBody(boxBody);
     bodies.push(boxBody);
-
+/*
     const cubeGeo = new THREE.BoxGeometry(10, 10, 10, 10, 10);
 
     const houseMaterials = [];
@@ -128,10 +122,118 @@ function simpleHouseBase(x, y, z) {
     camera.lookAt(CubeShape.position)
     meshes.push(CubeShape);
     scene.add(CubeShape);
+*/
+    var house_obj = house();
+    scene.add(house_obj);
+
+
+    //var geometry = new THREE.CylinderGeometry(2, radius, height, 4, 1)
+    //var material = new THREE.MeshNormalMaterial();
+    //var pyramid = new THREE.Mesh(geometry, material);
+    //scene.add(pyramid);
+
 
 }
 
+function house(){
 
+    const h = new THREE.Group();
+
+    const texture2 = new THREE.TextureLoader().load( "./resources/images/house.jpg" );
+    texture2.wrapS = THREE.RepeatWrapping;
+    texture2.wrapT = THREE.RepeatWrapping;
+    texture2.repeat.set( 1,3 );
+
+    const cubeGeo = new THREE.BoxGeometry(2, 15, 0.5, 10, 10);
+    const material = new THREE.MeshBasicMaterial({map: texture2});
+    CubeShape = new THREE.Mesh(cubeGeo, material);
+    CubeShape.rotateY(10);
+    CubeShape.position.setX(0.35);
+    CubeShape.position.setZ(-0.35);
+    h.add(CubeShape);
+
+    const texture = new THREE.TextureLoader().load( "./resources/images/house2.PNG" );
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set( 1, 1 );
+
+    const geo = new THREE.BoxGeometry(15, 15, 0.5, 10, 10);
+    const mat = new THREE.MeshBasicMaterial({map: texture});
+    const CubeShape1 = new THREE.Mesh(geo, mat);
+    CubeShape1.rotateY(29.85);
+    CubeShape1.position.setX(1);
+    CubeShape1.position.setZ(-8.3);
+    h.add(CubeShape1);
+
+    const g = new THREE.BoxGeometry(2, 15, 0.5, 10, 10);
+    const m = new THREE.MeshLambertMaterial({color: "#8e8d8d"});
+    CubeShape = new THREE.Mesh(g, m);
+    CubeShape.rotateY(-10);
+    CubeShape.position.setX(0.25);
+    CubeShape.position.setZ(-16.15);
+    h.add(CubeShape);
+
+
+    const CubeShape2 = new THREE.Mesh(geo, mat);
+    CubeShape2.position.setX(-7.8);
+    CubeShape2.position.setZ(0.2);
+    h.add(CubeShape2);
+
+    const CubeShape3 = new THREE.Mesh(geo, mat);
+    CubeShape3.position.setX(-7.8);
+    CubeShape3.position.setZ(-16.61);
+    h.add(CubeShape3);
+
+
+    CubeShape = new THREE.Mesh(cubeGeo, material);
+    CubeShape.rotateY(-10);
+    CubeShape.position.setX(-16);
+    CubeShape.position.setZ(-0.35);
+
+    h.add(CubeShape);
+
+    CubeShape = new THREE.Mesh(cubeGeo, material);
+    CubeShape.rotateY(10);
+    CubeShape.position.setX(-16);
+    CubeShape.position.setZ(-16.1);
+    h.add(CubeShape);
+
+    const CubeShape4 = new THREE.Mesh(geo, mat);
+    CubeShape4.rotateY(29.85);
+    CubeShape4.position.setX(-16.75);
+    CubeShape4.position.setZ(-8.2);
+    h.add(CubeShape4);
+
+    const ge = new THREE.BoxGeometry(19, 0.5, 18, 10, 10);
+    const ma = new THREE.MeshLambertMaterial({color: "#8e8d8d"});
+    CubeShape = new THREE.Mesh(ge, ma);
+    CubeShape.position.set(-7.75,7.5,-8);
+
+    h.add(CubeShape);
+
+    const gee = new THREE.BoxGeometry(19, 0.75, 18, 10, 10);
+    const maa = new THREE.MeshLambertMaterial({color: "#8e8d8d"});
+    CubeShape = new THREE.Mesh(gee, maa);
+    CubeShape.position.set(-7.75,7.95,-8);
+    CubeShape.scale.set(0.9,0.9,0.9);
+    h.add(CubeShape);
+
+    const geee = new THREE.BoxGeometry(19, 0.75, 18, 10, 10);
+    const maaa = new THREE.MeshLambertMaterial({color: "#8e8d8d"});
+    CubeShape = new THREE.Mesh(geee, maaa);
+    CubeShape.position.set(-7.75,8.3,-8);
+    CubeShape.scale.set(0.8,0.8,0.8);
+    h.add(CubeShape);
+
+    const geeee = new THREE.BoxGeometry(19, 0.75, 18, 10, 10);
+    const maaaa = new THREE.MeshLambertMaterial({color: "#8e8d8d"});
+    CubeShape = new THREE.Mesh(geeee, maaaa);
+    CubeShape.position.set(-7.75,8.65,-8);
+    CubeShape.scale.set(0.7,0.7,0.7);
+    h.add(CubeShape);
+
+    return h;
+}
 
 function Ball(x, y, z) {
     const radius = 1;
@@ -236,90 +338,10 @@ function animate() {
     render();
 }
 
-//House
-
-function HouseMod(x,y,z){
-
-    // default materials
-    const materials_default = {
-        base: new THREE.MeshStandardMaterial({
-            color: 0xff0000,
-            side: THREE.DoubleSide
-        }),
-        tri: new THREE.MeshStandardMaterial({
-            color: 0xaf0000,
-            side: THREE.DoubleSide
-        }),
-        roof: new THREE.MeshStandardMaterial({
-            color: 0x202020,
-            side: THREE.DoubleSide
-        })
-    };
-
-    // create a triangle part of the house
-    const HouseTriangle = function(materials){
-        materials = materials || materials_default;
-        const geometry = new THREE.BufferGeometry();
-        const vertices = new Float32Array([
-            -1, 0, 0,
-            0.5, 1.5, 0,
-            2, 0, 0
-        ]);
-        geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-        geometry.computeVertexNormals(); // compute vertex normals
-        geometry.addGroup(0, 3, 0); // just one group
-        return new THREE.Mesh(
-            geometry,
-            materials.tri);
-    };
-
-    // create and return a house
-    HouseMod.create = function(materials){
-        materials = materials || materials_default;
-        // main house group
-        const house = new THREE.Group();
-
-        // base of house is just a BOX
-        const base = new THREE.Mesh(new THREE.BoxGeometry(3, 2, 4), materials.base);
-        house.add(base);
-
-        // house triangle parts
-        const tri1 = HouseTriangle(materials);
-        tri1.position.set(-0.5, 1 , 2);
-        house.add(tri1);
-        const tri2 = HouseTriangle(materials);
-        tri2.position.set(-0.5, 1 , -2);
-        house.add(tri2);
-
-        // roof
-        const roof1 = new THREE.Mesh(
-            new THREE.PlaneGeometry(2.84, 4.5),
-            materials.roof);
-        roof1.position.set(-1, 1.51, 0);
-        roof1.rotation.set(Math.PI * 0.5, Math.PI * 0.25, 0);
-        house.add(roof1);
-        const roof2 = new THREE.Mesh(
-            new THREE.PlaneGeometry(2.84, 4.5),
-            materials.roof);
-        roof2.position.set(1, 1.51, 0);
-        roof2.rotation.set(Math.PI * 0.5, Math.PI * -0.25, 0);
-        house.add(roof2);
-
-        // house should cast a shadow
-        house.castShadow = true;
-        house.receiveShadow = false;
-        return house;
-    };
-
-}
-
-
-
-
 
 const loader = new GLTFLoader();
 
-/*loader.load( 'resources/objects/pokemon_style_house/houseObjectImported.gltf', function ( gltf ) {
+loader.load( 'resources/objects/pokemon_style_house/houseObjectImported.gltf', function ( gltf ) {
 
     camera.lookAt( gltf.scene )
 
@@ -329,7 +351,7 @@ const loader = new GLTFLoader();
 
     console.error( error );
 
-} );*/
+} );
 
 
 main();
