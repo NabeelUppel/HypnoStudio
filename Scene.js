@@ -2,7 +2,7 @@ import * as THREE from './resources/threejs/r128/build/three.module.js';
 import {OrbitControls} from './resources/threejs/r128/examples/jsm/controls/OrbitControls.js';
 import {FBXLoader} from './resources/threejs/r128/examples/jsm/loaders/FBXLoader.js';
 import { GLTFLoader } from './resources/threejs/r128/examples/jsm/loaders/GLTFLoader.js';
-
+import {Objects} from "./Objects";
 
 let pressed = {};
 let clock = new THREE.Clock();
@@ -24,7 +24,7 @@ function main() {
     initCannon();
     initThree();
     //BOX POSITIONS NOT SIZE
-    simpleHouseBase(0,5,0);
+    //simpleHouseBase(0,5,0);
 
     //HouseMod(0,0,0)
     animate();
@@ -126,13 +126,10 @@ function simpleHouseBase(x, y, z) {
     var house_obj = house();
     scene.add(house_obj);
 
-
     //var geometry = new THREE.CylinderGeometry(2, radius, height, 4, 1)
     //var material = new THREE.MeshNormalMaterial();
     //var pyramid = new THREE.Mesh(geometry, material);
     //scene.add(pyramid);
-
-
 }
 
 function house(){

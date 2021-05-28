@@ -24,7 +24,8 @@ function main() {
     initCannon();
     initThree();
     //BOX POSITIONS NOT SIZE
-    SmallHouse(0,0,0);
+    //SmallHouse(0,0,0);
+    biggerHouse(0,0,0)
 
     //HouseMod(0,0,0)
     animate();
@@ -65,7 +66,7 @@ function initThree() {
 
     addHemisphereLight(0xB1E1FF, 0xB97A20)
 
-    AddGround();
+    //AddGround();
 }
 
 function LightEnable(light) {
@@ -142,29 +143,29 @@ function SmallHouse(x, y, z){
     wallTexture.wrapT = THREE.RepeatWrapping;
     wallTexture.repeat.set( 1, 1 );
 
-    const geo = new THREE.BoxGeometry(15, 15, 0.5, 10, 10);
-    const mat = new THREE.MeshBasicMaterial({map: windows});
-    const CubeShape1 = new THREE.Mesh(geo, mat);
+    const wallGeo = new THREE.BoxGeometry(15, 15, 0.5, 10, 10);
+    const wallMat = new THREE.MeshBasicMaterial({map: windows});
+    const CubeShape1 = new THREE.Mesh(wallGeo, wallMat);
     CubeShape1.rotateY(29.85);
     CubeShape1.position.setX(1);
     CubeShape1.position.setZ(-8.3);
     h.add(CubeShape1);
 
-    //one corner piece
-    const g = new THREE.BoxGeometry(2, 15, 0.5, 10, 10);
-    const m = new THREE.MeshBasicMaterial({map: animatedWall});
-    CubeShape = new THREE.Mesh(g, m);
+    //corner piece
+    const cornerGeo = new THREE.BoxGeometry(2, 15, 0.5, 10, 10);
+    const cornerMat = new THREE.MeshBasicMaterial({map: animatedWall});
+    CubeShape = new THREE.Mesh(cornerGeo, cornerMat);
     CubeShape.rotateY(-10);
     CubeShape.position.setX(0.25);
     CubeShape.position.setZ(-16.15);
     h.add(CubeShape);
 
-    const CubeShape2 = new THREE.Mesh(geo, mat);
+    const CubeShape2 = new THREE.Mesh(wallGeo, wallMat);
     CubeShape2.position.setX(-7.8);
     CubeShape2.position.setZ(0.2);
     h.add(CubeShape2);
 
-    const CubeShape3 = new THREE.Mesh(geo, mat);
+    const CubeShape3 = new THREE.Mesh(wallGeo, wallMat);
     CubeShape3.position.setX(-7.8);
     CubeShape3.position.setZ(-16.61);
     h.add(CubeShape3);
@@ -181,49 +182,225 @@ function SmallHouse(x, y, z){
     CubeShape.position.setZ(-16.1);
     h.add(CubeShape);
 
-    const CubeShape4 = new THREE.Mesh(geo, mat);
+    const CubeShape4 = new THREE.Mesh(wallGeo, wallMat);
     CubeShape4.rotateY(29.85);
     CubeShape4.position.setX(-16.75);
     CubeShape4.position.setZ(-8.2);
     h.add(CubeShape4);
 
-    const ge = new THREE.BoxGeometry(19, 0.5, 18, 10, 10);
-    const ma = new THREE.MeshLambertMaterial({map: roofTexture1 });
-    CubeShape = new THREE.Mesh(ge, ma);
+    //roof layer 1
+    const roofGeo1 = new THREE.BoxGeometry(19, 0.5, 18, 10, 10);
+    const roofMat1 = new THREE.MeshLambertMaterial({map: roofTexture1 });
+    CubeShape = new THREE.Mesh(roofGeo1, roofMat1);
     CubeShape.position.set(-7.75,7.5,-8);
     h.add(CubeShape);
 
-    const gee = new THREE.BoxGeometry(19, 0.75, 18, 10, 10);
-    const maa = new THREE.MeshLambertMaterial({map: roofTexture1});
-    CubeShape = new THREE.Mesh(gee, maa);
+    //roof layer 2
+    const roofGeo2 = new THREE.BoxGeometry(19, 0.75, 18, 10, 10);
+    const roofMat2 = new THREE.MeshLambertMaterial({map: roofTexture1});
+    CubeShape = new THREE.Mesh(roofGeo2, roofMat2);
     CubeShape.position.set(-7.75,7.95,-8);
     CubeShape.scale.set(0.9,0.9,0.9);
     h.add(CubeShape);
 
-    const geee = new THREE.BoxGeometry(19, 0.75, 18, 10, 10);
-    const maaa = new THREE.MeshLambertMaterial({map: roofTexture1});
-    CubeShape = new THREE.Mesh(geee, maaa);
+    //roof layer 3
+    const roofGeo3 = new THREE.BoxGeometry(19, 0.75, 18, 10, 10);
+    const roofMat3 = new THREE.MeshLambertMaterial({map: roofTexture1});
+    CubeShape = new THREE.Mesh(roofGeo3, roofMat3);
     CubeShape.position.set(-7.75,8.3,-8);
     CubeShape.scale.set(0.8,0.8,0.8);
     h.add(CubeShape);
 
-    const geeee = new THREE.BoxGeometry(19, 0.75, 18, 10, 10);
-    const maaaa = new THREE.MeshLambertMaterial({map: roofTexture1});
-    CubeShape = new THREE.Mesh(geeee, maaaa);
+    //roof layer 4
+    const roofGeo4 = new THREE.BoxGeometry(19, 0.75, 18, 10, 10);
+    const roofMat4 = new THREE.MeshLambertMaterial({map: roofTexture1});
+    CubeShape = new THREE.Mesh(roofGeo4, roofMat4);
     CubeShape.position.set(-7.75,8.65,-8);
     CubeShape.scale.set(0.7,0.7,0.7);
     h.add(CubeShape);
 
-    const geeeee = new THREE.CylinderGeometry(0, 8, 4, 4, 10)
+    //roof Pyramid
+    const roofGeo5 = new THREE.CylinderGeometry(0, 8, 4, 4, 10)
     const roofMaterials = [];
     roofMaterials.push( new THREE.MeshLambertMaterial( { map: roofTexture1} ) );
     roofMaterials.push( new THREE.MeshLambertMaterial( { map: roofTexture1} ) );
     roofMaterials.push( new THREE.MeshLambertMaterial( { map: roofTexture1} ) );
     roofMaterials.push( new THREE.MeshLambertMaterial( { map: roofTexture1} ) );
-
-    CubeShape = new THREE.Mesh(geeeee, roofMaterials);
+    CubeShape = new THREE.Mesh(roofGeo5, roofMaterials);
     CubeShape.rotateY(Math.PI/4);
     CubeShape.position.set(-7.75,11,-8);
+    CubeShape.scale.set(1,1,1);
+    h.add(CubeShape);
+
+    scene.add(h);
+}
+
+function biggerHouse(x,y,z){
+    const shape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5));
+    boxBody = new CANNON.Body({mass: 2});
+    boxBody.addShape(shape);
+    boxBody.position.set(x, y, z);
+    boxBody.userData = {name: "HOUSE"}
+    world.addBody(boxBody);
+    bodies.push(boxBody);
+
+    const h = new THREE.Group();
+
+    //Texture Loading
+    const cornerTexture = new THREE.TextureLoader().load( "resources/objects/pokemon_style_house/textures/Brick_baseColor.png" );
+    const wallTexture = new THREE.TextureLoader().load( "resources/objects/pokemon_style_house/textures/Brick_baseColor.png" );
+    const roofTexture1  = new THREE.TextureLoader().load("resources/objects/pokemon_style_house/textures/Blue Roof.png");
+    const animatedWall = new THREE.TextureLoader().load("resources/objects/pokemon_style_house/textures/Main_baseColor.png");
+    const windowsAndDoor = new THREE.TextureLoader().load("resources/objects/pokemon_style_house/textures/house2.PNG");
+    const windows = new THREE.TextureLoader().load('resources/objects/pokemon_style_house/textures/windows only.png')
+
+    //corner piece1
+
+    const cubeGeo = new THREE.BoxGeometry(2, 15, 0.5, 10, 10);
+    const material = new THREE.MeshBasicMaterial({map: animatedWall});
+    CubeShape = new THREE.Mesh(cubeGeo, material);
+    CubeShape.rotateY(10);
+    CubeShape.position.setX(0.35);
+    CubeShape.position.setZ(-0.35);
+    h.add(CubeShape);
+
+    //corner piece2
+    CubeShape = new THREE.Mesh(cubeGeo, material);
+    CubeShape.rotateY(-10);
+    CubeShape.position.setX(-16);
+    CubeShape.position.setZ(-0.35);
+    h.add(CubeShape);
+
+    //corner piece3
+    CubeShape = new THREE.Mesh(cubeGeo, material);
+    CubeShape.rotateY(-10);
+    CubeShape.position.setX(0.25);
+    CubeShape.position.setZ(-16.15);
+    h.add(CubeShape);
+
+    //corner piece4
+    CubeShape = new THREE.Mesh(cubeGeo, material);
+    CubeShape.rotateY(10);
+    CubeShape.position.setX(-16);
+    CubeShape.position.setZ(-16.1);
+    h.add(CubeShape);
+
+    const cubeGeo2 = new THREE.BoxGeometry(2, 6, 0.5, 10, 10);
+    //corner piece1 top
+    CubeShape = new THREE.Mesh(cubeGeo2, material);
+    CubeShape.rotateY(10);
+    CubeShape.position.set(0.35,11,-0.35);
+    h.add(CubeShape);
+
+    //corner piece2 top
+    CubeShape = new THREE.Mesh(cubeGeo2, material);
+    CubeShape.rotateY(-10);
+    CubeShape.position.set(-16,11,-0.35);
+    h.add(CubeShape);
+
+    //corner piece3 top
+    CubeShape = new THREE.Mesh(cubeGeo2, material);
+    CubeShape.rotateY(-10);
+    CubeShape.position.set(0.25,11,-16.15);
+    h.add(CubeShape);
+
+    //corner piece4 top
+    CubeShape = new THREE.Mesh(cubeGeo2, material);
+    CubeShape.rotateY(10);
+    CubeShape.position.set(-16,11,-16.1);
+    h.add(CubeShape);
+
+    //walls First Level
+    const wallGeo = new THREE.BoxGeometry(15, 15, 0.5, 10, 10);
+    const wallMat = new THREE.MeshBasicMaterial({map: windowsAndDoor});
+
+    CubeShape= new THREE.Mesh(wallGeo, wallMat);
+    CubeShape.rotateY(29.85);
+    CubeShape.position.setX(1);
+    CubeShape.position.setZ(-8.3);
+    h.add(CubeShape);
+
+    CubeShape= new THREE.Mesh(wallGeo, wallMat);
+    CubeShape.position.setX(-7.8);
+    CubeShape.position.setZ(0.2);
+    h.add(CubeShape);
+
+    CubeShape= new THREE.Mesh(wallGeo, wallMat);
+    CubeShape.position.setX(-7.8);
+    CubeShape.position.setZ(-16.61);
+    h.add(CubeShape);
+
+    CubeShape= new THREE.Mesh(wallGeo, wallMat);
+    CubeShape.rotateY(29.85);
+    CubeShape.position.setX(-16.75);
+    CubeShape.position.setZ(-8.2);
+    h.add(CubeShape);
+
+    //walls Second Level
+    const wallGeo2 = new THREE.BoxGeometry(15, 6, 0.5, 10, 10);
+    const wallMat2 = new THREE.MeshBasicMaterial({map: windows});
+
+    CubeShape= new THREE.Mesh(wallGeo2, wallMat2);
+    CubeShape.rotateY(29.85);
+    CubeShape.position.set(1,11,-8.3);
+    h.add(CubeShape);
+
+    CubeShape= new THREE.Mesh(wallGeo2, wallMat2);
+    CubeShape.position.set(-7.8,11,0.2);
+    //CubeShape.position.setZ(0.2);
+    h.add(CubeShape);
+
+    CubeShape= new THREE.Mesh(wallGeo2, wallMat2);
+    CubeShape.position.set(-7.8,11,-16.61);
+    //CubeShape.position.setZ(-16.61);
+    h.add(CubeShape);
+
+    CubeShape= new THREE.Mesh(wallGeo2, wallMat2);
+    CubeShape.rotateY(29.85);
+    CubeShape.position.set(-16.75,11,-8.2);
+    //CubeShape.position.setZ(-8.2);
+    h.add(CubeShape);
+
+    //middle layer
+    const middleGeo1 = new THREE.BoxGeometry(18, 0.5, 18, 10, 10);
+    const middleMat1 = new THREE.MeshLambertMaterial({map: roofTexture1 });
+    CubeShape = new THREE.Mesh(middleGeo1, middleMat1);
+    CubeShape.position.set(-7.75,7.75,-8);
+    h.add(CubeShape);
+
+    //roof layer 1
+    const roofGeo1 = new THREE.BoxGeometry(19, 0.75, 18, 10, 10);
+    const roofMat1 = new THREE.MeshLambertMaterial({map: roofTexture1 });
+    CubeShape = new THREE.Mesh(roofGeo1, roofMat1);
+    CubeShape.position.set(-7.75,14,-8);
+    h.add(CubeShape);
+
+    //roof layer 2
+    const roofGeo2 = new THREE.BoxGeometry(19, 0.75, 18, 10, 10);
+    const roofMat2 = new THREE.MeshLambertMaterial({map: roofTexture1});
+    CubeShape = new THREE.Mesh(roofGeo2, roofMat2);
+    CubeShape.position.set(-7.75,14.5,-8);
+    CubeShape.scale.set(0.9,0.9,0.9);
+    h.add(CubeShape);
+
+    //roof layer 3
+    const roofGeo3 = new THREE.BoxGeometry(19, 0.75, 18, 10, 10);
+    const roofMat3 = new THREE.MeshLambertMaterial({map: roofTexture1});
+    CubeShape = new THREE.Mesh(roofGeo3, roofMat3);
+    CubeShape.position.set(-7.75,15,-8);
+    CubeShape.scale.set(0.8,0.8,0.8);
+    h.add(CubeShape);
+
+    //roof Pyramid
+    const roofGeo5 = new THREE.CylinderGeometry(0, 9, 4, 4, 10)
+    const roofMaterials = [];
+    roofMaterials.push( new THREE.MeshLambertMaterial( { map: roofTexture1} ) );
+    roofMaterials.push( new THREE.MeshLambertMaterial( { map: roofTexture1} ) );
+    roofMaterials.push( new THREE.MeshLambertMaterial( { map: roofTexture1} ) );
+    roofMaterials.push( new THREE.MeshLambertMaterial( { map: roofTexture1} ) );
+    CubeShape = new THREE.Mesh(roofGeo5, roofMaterials);
+    CubeShape.rotateY(Math.PI/4);
+    CubeShape.position.set(-7.75,17,-8);
     CubeShape.scale.set(1,1,1);
     h.add(CubeShape);
 
