@@ -4,6 +4,8 @@ import * as CANNON from './resources/cannon-es/dist/cannon-es.js'
 import cannonDebugger from "./resources/cannon-es-debugger/dist/cannon-es-debugger.js"
 import * as CHARACTER from "./Character.js"
 import * as CAMERA from "./ThirdPersonCamera.js";
+import * as POKEMON from "./Pokemon.js"
+
 
 class World {
     constructor() {
@@ -156,12 +158,19 @@ class World {
             bodies: this.bodies,
             meshes: this.meshes,
         }
-        this.Character = new CHARACTER.Character(CharParams);
-        const CamParams = {
-            camera: this.camera,
-            character: this.Character
+        this.Character=null;
+        //this.Character = new CHARACTER.Character(CharParams);
+         this.Pokemon = new POKEMON.Pokemon(CharParams)
+
+
+        if(this.Character){
+            const CamParams = {
+                camera: this.camera,
+                character: this.Character
+            }
+            this.CAM = new CAMERA.ThirdPersonCamera(CamParams);
         }
-        this.CAM = new CAMERA.ThirdPersonCamera(CamParams);
+
     }
 
     resizeRendererToDisplaySize(renderer) {
@@ -221,6 +230,7 @@ class World {
         document.addEventListener('keydown', (e) => {
             switch (e.code) {
                 case "KeyC": // c
+                    //this.OrbitalControls.target.set(this.Character.Position)
                     this.OrbitalControls.enabled = true;
             }
         })
@@ -231,10 +241,14 @@ class World {
             }
         })
 
-
-        if (!this.OrbitalControls.enabled) {
-            this.CAM.Update(timeElapsedS)
+        if (this.Character){
+            if (!this.OrbitalControls.enabled) {
+                this.CAM.Update(timeElapsedS)
+            }
+        }else{
+            this.OrbitalControls.enabled = true;
         }
+
 
     }
 
