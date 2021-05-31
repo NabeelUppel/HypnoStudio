@@ -80,7 +80,7 @@ class World {
         const fov = 60;
         const aspect = 1920 / 1080;
         const near = 1;
-        const far = 2000;
+        const far = 7000;
         this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
         this.camera.position.set(25, 30, 25);
 

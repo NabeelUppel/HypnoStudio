@@ -27,6 +27,7 @@ export class Shrub{
         this.r = params.r;
     }
 
+    //Function to build the geometry of a shrub which can be seen around the world as a means of blocking the player off from the outside world.
     shrubBody;
     shrub(x,y,z) {
 
@@ -85,7 +86,6 @@ export class Shrub{
 
         return final;
     }
-
     function
     squareBody;
     createShrub() {

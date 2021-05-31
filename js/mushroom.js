@@ -29,6 +29,9 @@ export class Mushroom{
     }
 
 
+
+    /*This class creates mushrooms which are spread across the world as visually appealing objects in the scene.
+    * Still given a physics body for larger mushrooms so you can't just walk through them.*/
     function
     squareBody;
     createMushroom() {

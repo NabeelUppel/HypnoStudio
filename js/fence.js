@@ -31,6 +31,9 @@ export class Fence {
 
     function
     createFence() {
+
+        /*This class creates fences which are used to block the player off from out of bounds areas.
+        There are three if statements which are used to determine which way the fence should face in the world.*/
         const shape = new CANNON.Box(new CANNON.Vec3(130, 60, 20));
         this.fenceBody = new CANNON.Body();
         this.fenceBody.type = Body.STATIC;

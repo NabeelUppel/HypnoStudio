@@ -32,8 +32,13 @@ export class Path{
         this.pathType = params.pathType;
     }
 
+
+    /*This class creates paths which are used to direct the player to the their destinations.
+    This is done by making a thin box geometry which acts as a path.*/
     function
     createPath() {
+
+        //If statements to determine the texture of the paths. The path underground uses a different texture.
         let textureDiffuseUrl = 0;
         if(this.pathType ===0){
             textureDiffuseUrl	= 'resources/images/dirtpath.jpg';
@@ -62,6 +67,7 @@ export class Path{
         this.world.addBody(this.groundBody);
         this.bodies.push(this.groundBody);
         let planeGeo = 0;
+        //Determines which way the path will be facing.
         switch(this.pathRotate) {
             case 0:
                 planeGeo = new THREE.BoxGeometry(this.pathSizeLength, this.pathSizeWidth, 1, 1,1,1);

@@ -22,6 +22,8 @@ export class Skybox{
         this.world = params.world;
     }
 
+    //Creates skybox using meshbasic material as it is not impacted by light. world is placed inside this cube.
+
     function
     createSkybox() {
         var geometry = new THREE.BoxGeometry(15000,15000,15000);

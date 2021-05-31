@@ -17,6 +17,7 @@ export class Hill{
         this.Init(params);
     }
 
+    //Get values for world.
     Init(params){
         this.scene = params.scene;
         this.camera = params.camera;
@@ -26,10 +27,15 @@ export class Hill{
         this.yPosGround = params.yPosGround;
     }
 
+    //Function to create hill in the middle of level 1.
+    //Creates four semi-spheres 2 for each side of the hill. One is the outer layer and one is the inner layer for each side.
     function
     createHill() {
+
+        //Group used to make buliding objects in the scene easier to manage.
         const temp = new THREE.Group();
 
+        //Add physics for object as well as make it a static object so that it can't be moved.
         const groundShape = new CANNON.Box(new CANNON.Vec3(1000, 400, 50));
         this.groundBody = new CANNON.Body();
         this.groundBody.type = Body.STATIC;
@@ -41,6 +47,8 @@ export class Hill{
         this.world.addBody(this.groundBody);
         this.bodies.push(this.groundBody);
 
+
+        //Create geometry for hill as well as the material for the hill.
         const hillGeometry = new THREE.SphereBufferGeometry(1000, 8, 6, 0, Math.PI, 0, 0.5 * Math.PI);
         const hillMaterial = new THREE.MeshPhongMaterial({
             map: new THREE.TextureLoader().load('resources/images/grasslight-small.jpg'),
@@ -105,11 +113,6 @@ export class Hill{
         box.position.set(0, 600, 200);
 
         this.scene.add(box)
-
-
-
-
-
        }
 
     }
