@@ -1,4 +1,4 @@
-import * as THREE from './resources/threejs/r128/build/three.module.js';
+import * as THREE from '../resources/threejs/r128/build/three.module.js';
 
 
 export class ThirdPersonCamera {
@@ -11,14 +11,14 @@ export class ThirdPersonCamera {
     }
 
     _CalculateIdealOffset() {
-        const idealOffset = new THREE.Vector3(0, 30, -30);
+        const idealOffset = new THREE.Vector3(0, 70, -70);
         idealOffset.applyQuaternion(this._character.Rotation);
         idealOffset.add(this._character.Position);
         return idealOffset;
     }
 
     _CalculateIdealLookat() {
-        const idealLookat = new THREE.Vector3(0, 5, 50);
+        const idealLookat = new THREE.Vector3(0, 50, 20);
         idealLookat.applyQuaternion(this._character.Rotation);
         idealLookat.add(this._character.Position);
         return idealLookat;
