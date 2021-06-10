@@ -12,6 +12,7 @@ import * as TREE from "./js/tree.js";
 import * as MUSHROOM from "./js/mushroom.js";
 import * as HILL from "./js/hill.js";
 import * as FENCE from "./js/fence.js";
+import * as HOUSE from "./js/house.js";
 
 
 (function () {
@@ -97,14 +98,15 @@ class World {
 
 
         this.addGround();
-        //this.addSkybox();
+        this.addSkybox();
         this.addHill();
         this.paths();
         this.Shrub();
         this.Tree();
         this.Mushroom();
         this.Fence();
-
+        this.House();
+        //this.music();
 
         //Load animated Model
         this.LoadAnimatedModel();
@@ -275,14 +277,6 @@ class World {
         //Positions where pokemon will appear.
         let positions = []
 
-
-        //TOP RIGHT
-        for (let i = 0; i < 10; i++) {
-            let x = THREE.MathUtils.randFloat(-1800, -2800)
-            let z = THREE.MathUtils.randFloat(1900, 2700)
-            positions.push(new THREE.Vector3(x, this.yPosGround, z))
-        }
-
         //BLUE BOTTOM RIGHT
         for (let i = 0; i < 20; i++) {
             let x = THREE.MathUtils.randFloat(-1500, -2900)
@@ -290,13 +284,6 @@ class World {
             positions.push(new THREE.Vector3(x, this.yPosGround, z))
         }
 
-
-        //STARTING
-        for (let i = 0; i < 10; i++) {
-            let x = THREE.MathUtils.randFloat(2000, 2900)
-            let z = THREE.MathUtils.randFloat(-2100, -3000)
-            positions.push(new THREE.Vector3(x, this.yPosGround, z))
-        }
 
         //BLUE TOP LEFT
         for (let i = 0; i < 10; i++) {
@@ -407,6 +394,394 @@ class World {
 
     }
 
+
+
+
+    makeFence(x, y, z, r) {
+
+        return {
+            camera: this.camera,
+            scene: this.scene,
+            world: this.world,
+            bodies: this.bodies,
+            meshes: this.meshes,
+            x: x,
+            y: y,
+            z: z,
+            r: r
+
+        }
+    }
+
+    paths() {
+        this.addPath(100, 2000, 2000, this.yPosGround, -1000, 0, 0);
+        this.addPath(100, 2000, 800, this.yPosGround, -2300, 1, 0);
+        this.addPath(100, 700, 1700, this.yPosGround, 1700, 0, 0);
+        this.addPath(100, 3300, 0, this.yPosGround, 2000, 1, 0);
+        this.addPath(100, 3600, -1900, this.yPosGround, -300, 0, 0);
+        this.addPath(300, 3500, -200, this.yPosGround, 250, 1, 0);
+    }
+
+    addPath(pLength, pWidth, pX, pY, pZ, pR, pT) {
+
+        const CharParams = {
+            camera: this.camera,
+            scene: this.scene,
+            world: this.world,
+            bodies: this.bodies,
+            meshes: this.meshes,
+            pathSizeWidth: pWidth,
+            pathSizeLength: pLength,
+            pathX: pX,
+            pathY: pY,
+            pathZ: pZ,
+            pathRotate: pR,
+            pathType: pT
+        }
+        this.path = new PATH.Path(CharParams);
+        this.path.createPath();
+    }
+
+    Ball(x, y, z) {
+        const radius = 50;
+        let shape = new CANNON.Sphere(radius);
+        const sphereBody = new CANNON.Body({mass: 60000});
+        sphereBody.addShape(shape);
+        sphereBody.position.set(x, y, z);
+        this.world.addBody(sphereBody);
+        this.bodies.push(sphereBody);
+
+
+        const sphereGeometry = new THREE.SphereGeometry(radius, 64, 64);
+        const material = new THREE.MeshPhongMaterial({color: "#711a1a"});
+        const SphereShape = new THREE.Mesh(sphereGeometry, material);
+        SphereShape.position.set(x, y, z);
+        SphereShape.castShadow = true;
+        this.scene.add(SphereShape);
+        this.meshes.push(SphereShape);
+    }
+
+    Shrub() {
+        //Code repeated 4 times to make 4 walls around the map so that player is unable to escape.
+        let charParams = this.makeShrubs(3100, this.yPosGround+97 , 100, 0);
+        this.shrub = new SHRUB.Shrub(charParams);
+        let shrub = this.shrub.createShrub();
+        shrub.scale.set(10, 10, 2200);
+        this.scene.add(shrub);
+        this.meshes.push(shrub);
+
+        charParams = this.makeShrubs(-3050, this.yPosGround +97, 100, 0);
+        this.shrub = new SHRUB.Shrub(charParams);
+        shrub = this.shrub.createShrub();
+        shrub.scale.set(10, 10, 2200);
+        this.scene.add(shrub);
+        this.meshes.push(shrub);
+
+        charParams = this.makeShrubs(0, this.yPosGround+97 , 3000, 1);
+        this.shrub = new SHRUB.Shrub(charParams);
+        shrub = this.shrub.createShrub();
+        shrub.scale.set(10, 10, 2200);
+        this.scene.add(shrub);
+        this.meshes.push(shrub);
+
+        charParams = this.makeShrubs(0, this.yPosGround+105 , -3000, 1);
+        this.shrub = new SHRUB.Shrub(charParams);
+        shrub = this.shrub.createShrub();
+        shrub.scale.set(10, 10, 2200);
+        this.scene.add(shrub);
+        this.meshes.push(shrub);
+
+        //this.makeShrubs(300,400,this.yPosGround);
+    }
+
+    makeShrubs(x, y, z, r) {
+        return {
+            camera: this.camera,
+            scene: this.scene,
+            world: this.world,
+            bodies: this.bodies,
+            meshes: this.meshes,
+            x: x,
+            y: y,
+            z: z,
+            r: r
+        }
+    }
+
+    Tree() {
+
+        let charParams = this.makeTrees(2200, this.yPosGround + 15, -1900, 14, 3, 180, 50);
+        this.tree = new TREE.Tree(charParams);
+        this.tree.createTrees();
+        charParams = this.makeTrees(2200, this.yPosGround + 15, -1600, 3, 17, 90, 120);
+        this.tree = new TREE.Tree(charParams);
+        this.tree.createTrees();
+        charParams = this.makeTrees(2500, this.yPosGround + 15, -600, 10, 3, 180, 50);
+        this.tree = new TREE.Tree(charParams);
+        this.tree.createTrees();
+
+        charParams = this.makeTrees(1000, this.yPosGround + 15, -1900, 14, 3, 180, 50);
+        this.tree = new TREE.Tree(charParams);
+        this.tree.createTrees();
+        charParams = this.makeTrees(1700, this.yPosGround + 15, -1600, 2, 17, 90, 120);
+        this.tree = new TREE.Tree(charParams);
+        this.tree.createTrees();
+        charParams = this.makeTrees(1000, this.yPosGround + 15, -300, 12, 2, 180, 50);
+        this.tree = new TREE.Tree(charParams);
+        this.tree.createTrees();
+
+        charParams = this.makeTrees(-50, this.yPosGround + 15, -1900, 14, 2, 160, 90);
+        this.tree = new TREE.Tree(charParams);
+        this.tree.createTrees();
+        charParams = this.makeTrees(-50, this.yPosGround + 15, -1900, 2, 6, 160, 90);
+        this.tree = new TREE.Tree(charParams);
+        this.tree.createTrees();
+
+
+        charParams = this.makeTrees(2100, this.yPosGround + 15, 1400, 10, 2, 300, 90);
+        this.tree = new TREE.Tree(charParams);
+        this.tree.createTrees();
+        charParams = this.makeTrees(-1500, this.yPosGround + 15, 2100, 25, 2, 160, 180);
+        this.tree = new TREE.Tree(charParams);
+        this.tree.createTrees();
+
+
+    }
+
+    makeTrees(x, y, z, f, s, zAdd, xAdd) {
+        return {
+            camera: this.camera,
+            scene: this.scene,
+            world: this.world,
+            bodies: this.bodies,
+            meshes: this.meshes,
+            x: x,
+            y: y,
+            z: z,
+            firstLoop: f,
+            secondLoop: s,
+            zAdd: zAdd,
+            xAdd: xAdd
+
+        }
+    }
+
+    makeHouse(x, y, z, r) {
+        return {
+            camera: this.camera,
+            scene: this.scene,
+            world: this.world,
+            bodies: this.bodies,
+            meshes: this.meshes,
+            x: x,
+            y: y,
+            z: z,
+            r: r,
+        }
+    }
+
+
+    House(){
+        let charParams = this.makeHouse(3020, this.yPosGround + 50, -2770, 0);
+        this.house = new HOUSE.House(charParams);
+        let house = this.house.smallBlueHouse();
+        house.scale.set(10, 10, 10);
+        this.scene.add(house);
+        this.meshes.push(house);
+
+        charParams = this.makeHouse(2750, this.yPosGround + 50, -2070, 0);
+        this.house = new HOUSE.House(charParams);
+        house = this.house.smallBlueHouse();
+        house.scale.set(10, 10, 10);
+        this.scene.add(house);
+        this.meshes.push(house);
+
+        charParams = this.makeHouse(2400, this.yPosGround + 50, -2750, 0);
+        this.house = new HOUSE.House(charParams);
+        house = this.house.smallBlueHouse();
+        house.scale.set(10, 10, 10);
+        this.scene.add(house);
+        this.meshes.push(house);
+
+        charParams = this.makeHouse(3050, this.yPosGround + 50, -2350, 0);
+        this.house = new HOUSE.House(charParams);
+        house = this.house.biggerBlueHouse();
+        house.scale.set(10, 10, 10);
+        this.scene.add(house);
+        this.meshes.push(house);
+
+        charParams = this.makeHouse(2500, this.yPosGround + 50, -2070, 0);
+        this.house = new HOUSE.House(charParams);
+        house = this.house.biggerBlueHouse();
+        house.scale.set(10, 10, 10);
+        this.scene.add(house);
+        this.meshes.push(house);
+
+
+
+
+        charParams = this.makeHouse(-2800, this.yPosGround + 50, 2770, 0);
+        this.house = new HOUSE.House(charParams);
+        house = this.house.smallOrangeHouse();
+        house.scale.set(10, 10, 10);
+        this.scene.add(house);
+        this.meshes.push(house);
+
+        charParams = this.makeHouse(-2100, this.yPosGround + 50, 2770, 0);
+        this.house = new HOUSE.House(charParams);
+        house = this.house.smallOrangeHouse();
+        house.scale.set(10, 10, 10);
+        this.scene.add(house);
+        this.meshes.push(house);
+
+        charParams = this.makeHouse(-1800, this.yPosGround + 50, 2770, 0);
+        this.house = new HOUSE.House(charParams);
+        house = this.house.smallOrangeHouse();
+        house.scale.set(10, 10, 10);
+        this.scene.add(house);
+        this.meshes.push(house);
+
+
+        charParams = this.makeHouse(-2800, this.yPosGround + 50, 2400, 0);
+        this.house = new HOUSE.House(charParams);
+        house = this.house.smallOrangeHouse();
+        house.scale.set(10, 10, 10);
+        this.scene.add(house);
+        this.meshes.push(house);
+
+        charParams = this.makeHouse(-2800, this.yPosGround + 50, 2100, 0);
+        this.house = new HOUSE.House(charParams);
+        house = this.house.smallOrangeHouse();
+        house.scale.set(10, 10, 10);
+        this.scene.add(house);
+        this.meshes.push(house);
+
+        charParams = this.makeHouse(-2800, this.yPosGround + 50, 1800, 0);
+        this.house = new HOUSE.House(charParams);
+        house = this.house.smallOrangeHouse();
+        house.scale.set(10, 10, 10);
+        this.scene.add(house);
+        this.meshes.push(house);
+
+        charParams = this.makeHouse(-2400, this.yPosGround + 50, 2750, 0);
+        this.house = new HOUSE.House(charParams);
+        house = this.house.smallOrangeHouse();
+        house.scale.set(10, 10, 10);
+        this.scene.add(house);
+        this.meshes.push(house);
+
+
+        charParams = this.makeHouse(-2300, this.yPosGround + 50, 2070, 0);
+        this.house = new HOUSE.House(charParams);
+        house = this.house.biggerOrangeHouse();
+        house.scale.set(10, 10, 10);
+        this.scene.add(house);
+        this.meshes.push(house);
+
+
+    }
+
+    Mushroom() {
+        let charParams = this.makeMushroom(1100, this.yPosGround + 15, 100, 0);
+        this.mushroom = new MUSHROOM.Mushroom(charParams);
+        let mushroom = this.mushroom.createMushroom();
+        mushroom.scale.set(10, 10, 10);
+        this.scene.add(mushroom);
+        this.meshes.push(mushroom);
+        charParams = this.makeMushroom(1100, this.yPosGround + 15, 400, 0);
+        this.mushroom = new MUSHROOM.Mushroom(charParams);
+        mushroom = this.mushroom.createMushroom();
+        mushroom.scale.set(10, 10, 10);
+        this.scene.add(mushroom);
+        this.meshes.push(mushroom);
+
+        charParams = this.makeMushroom(-1100, this.yPosGround + 15, 100, 0);
+        this.mushroom = new MUSHROOM.Mushroom(charParams);
+        mushroom = this.mushroom.createMushroom();
+        mushroom.scale.set(10, 10, 10);
+        this.scene.add(mushroom);
+        this.meshes.push(mushroom);
+        charParams = this.makeMushroom(-1100, this.yPosGround + 15, 400, 0);
+        this.mushroom = new MUSHROOM.Mushroom(charParams);
+        mushroom = this.mushroom.createMushroom();
+        mushroom.scale.set(10, 10, 10);
+        this.scene.add(mushroom);
+        this.meshes.push(mushroom);
+
+        charParams = this.makeMushroom(3084, this.yPosGround + 15, 1300, 0);
+        this.mushroom = new MUSHROOM.Mushroom(charParams);
+        mushroom = this.mushroom.createMushroom();
+        mushroom.scale.set(10, 10, 10);
+        this.scene.add(mushroom);
+        this.meshes.push(mushroom);
+
+        charParams = this.makeMushroom(-3000, this.yPosGround + 15, -2950, 0);
+        this.mushroom = new MUSHROOM.Mushroom(charParams);
+        mushroom = this.mushroom.createMushroom();
+        mushroom.scale.set(10, 10, 10);
+        this.scene.add(mushroom);
+        this.meshes.push(mushroom);
+
+        let xAdditional = 0;
+        for (let j = 0; j < 2; j++) {
+            let zAdditional = 0;
+            for (let i = 0; i < 14; i++) {
+                let randomX = Math.floor(Math.random() * 100);
+                let randomZ = Math.floor(Math.random() * 100);
+                let charParams = this.makeMushroom(-2600 + xAdditional + randomX, this.yPosGround + 20, -1500 + zAdditional + randomZ, 0);
+                this.mushroom = new MUSHROOM.Mushroom(charParams);
+                let mushroom = this.mushroom.createMushroom();
+                mushroom.scale.set(40, 40, 40);
+                this.scene.add(mushroom);
+                this.meshes.push(mushroom);
+                zAdditional += 180;
+            }
+            xAdditional += 250;
+        }
+
+    }
+
+    makeMushroom(x, y, z, r) {
+        return {
+            camera: this.camera,
+            scene: this.scene,
+            world: this.world,
+            bodies: this.bodies,
+            meshes: this.meshes,
+            x: x,
+            y: y,
+            z: z,
+            r: r
+        }
+    }
+
+    music() {
+        const listener = new THREE.AudioListener();
+        this.camera.add(listener);
+
+        const sound = new THREE.Audio(listener);
+
+        const audioLoader = new THREE.AudioLoader();
+        audioLoader.load('resources/sounds/Magic-Clock-Shop_Looping.mp3', function (buffer) {
+            sound.setBuffer(buffer);
+            sound.setLoop(true);
+            sound.setVolume(0.5);
+            sound.play();
+        });
+    }
+
+
+    addSkybox() {
+        const CharParams = {
+            camera: this.camera,
+            scene: this.scene,
+            world: this.world,
+            bodies: this.bodies,
+            meshes: this.meshes
+        }
+        this.skybox = new SKYBOX.Skybox(CharParams);
+        this.skybox.createSkybox();
+    }
 
     Fence() {
         let xAdd = 0;
@@ -588,276 +963,7 @@ class World {
 
     }
 
-    makeFence(x, y, z, r) {
 
-        return {
-            camera: this.camera,
-            scene: this.scene,
-            world: this.world,
-            bodies: this.bodies,
-            meshes: this.meshes,
-            x: x,
-            y: y,
-            z: z,
-            r: r
-
-        }
-    }
-
-    paths() {
-        this.addPath(100, 2000, 2000, this.yPosGround, -1000, 0, 0);
-        this.addPath(100, 2000, 800, this.yPosGround, -2300, 1, 0);
-        this.addPath(100, 700, 1700, this.yPosGround, 1700, 0, 0);
-        this.addPath(100, 3300, 0, this.yPosGround, 2000, 1, 0);
-        this.addPath(100, 3600, -1900, this.yPosGround, -300, 0, 0);
-        this.addPath(300, 3500, -200, this.yPosGround, 250, 1, 0);
-    }
-
-    addPath(pLength, pWidth, pX, pY, pZ, pR, pT) {
-
-        const CharParams = {
-            camera: this.camera,
-            scene: this.scene,
-            world: this.world,
-            bodies: this.bodies,
-            meshes: this.meshes,
-            pathSizeWidth: pWidth,
-            pathSizeLength: pLength,
-            pathX: pX,
-            pathY: pY,
-            pathZ: pZ,
-            pathRotate: pR,
-            pathType: pT
-        }
-        this.path = new PATH.Path(CharParams);
-        this.path.createPath();
-    }
-
-    Ball(x, y, z) {
-        const radius = 50;
-        let shape = new CANNON.Sphere(radius);
-        const sphereBody = new CANNON.Body({mass: 60000});
-        sphereBody.addShape(shape);
-        sphereBody.position.set(x, y, z);
-        this.world.addBody(sphereBody);
-        this.bodies.push(sphereBody);
-
-
-        const sphereGeometry = new THREE.SphereGeometry(radius, 64, 64);
-        const material = new THREE.MeshPhongMaterial({color: "#711a1a"});
-        const SphereShape = new THREE.Mesh(sphereGeometry, material);
-        SphereShape.position.set(x, y, z);
-        SphereShape.castShadow = true;
-        this.scene.add(SphereShape);
-        this.meshes.push(SphereShape);
-    }
-
-    Shrub() {
-        //Code repeated 4 times to make 4 walls around the map so that player is unable to escape.
-        let charParams = this.makeShrubs(3100, this.yPosGround+97 , 100, 0);
-        this.shrub = new SHRUB.Shrub(charParams);
-        let shrub = this.shrub.createShrub();
-        shrub.scale.set(10, 10, 2200);
-        this.scene.add(shrub);
-        this.meshes.push(shrub);
-
-        charParams = this.makeShrubs(-3050, this.yPosGround +97, 100, 0);
-        this.shrub = new SHRUB.Shrub(charParams);
-        shrub = this.shrub.createShrub();
-        shrub.scale.set(10, 10, 2200);
-        this.scene.add(shrub);
-        this.meshes.push(shrub);
-
-        charParams = this.makeShrubs(0, this.yPosGround+97 , 3000, 1);
-        this.shrub = new SHRUB.Shrub(charParams);
-        shrub = this.shrub.createShrub();
-        shrub.scale.set(10, 10, 2200);
-        this.scene.add(shrub);
-        this.meshes.push(shrub);
-
-        charParams = this.makeShrubs(0, this.yPosGround+97 , -3000, 1);
-        this.shrub = new SHRUB.Shrub(charParams);
-        shrub = this.shrub.createShrub();
-        shrub.scale.set(10, 10, 2200);
-        this.scene.add(shrub);
-        this.meshes.push(shrub);
-
-        //this.makeShrubs(300,400,this.yPosGround);
-    }
-
-    makeShrubs(x, y, z, r) {
-        return {
-            camera: this.camera,
-            scene: this.scene,
-            world: this.world,
-            bodies: this.bodies,
-            meshes: this.meshes,
-            x: x,
-            y: y,
-            z: z,
-            r: r
-        }
-    }
-
-    Tree() {
-
-        let charParams = this.makeTrees(2200, this.yPosGround + 15, -1900, 14, 3, 180, 50);
-        this.tree = new TREE.Tree(charParams);
-        this.tree.createTrees();
-        charParams = this.makeTrees(2200, this.yPosGround + 15, -1600, 3, 17, 90, 120);
-        this.tree = new TREE.Tree(charParams);
-        this.tree.createTrees();
-        charParams = this.makeTrees(2500, this.yPosGround + 15, -600, 10, 3, 180, 50);
-        this.tree = new TREE.Tree(charParams);
-        this.tree.createTrees();
-
-        charParams = this.makeTrees(1000, this.yPosGround + 15, -1900, 14, 3, 180, 50);
-        this.tree = new TREE.Tree(charParams);
-        this.tree.createTrees();
-        charParams = this.makeTrees(1700, this.yPosGround + 15, -1600, 2, 17, 90, 120);
-        this.tree = new TREE.Tree(charParams);
-        this.tree.createTrees();
-        charParams = this.makeTrees(1000, this.yPosGround + 15, -300, 12, 2, 180, 50);
-        this.tree = new TREE.Tree(charParams);
-        this.tree.createTrees();
-
-        charParams = this.makeTrees(-50, this.yPosGround + 15, -1900, 14, 2, 160, 90);
-        this.tree = new TREE.Tree(charParams);
-        this.tree.createTrees();
-        charParams = this.makeTrees(-50, this.yPosGround + 15, -1900, 2, 6, 160, 90);
-        this.tree = new TREE.Tree(charParams);
-        this.tree.createTrees();
-
-
-        charParams = this.makeTrees(2100, this.yPosGround + 15, 1400, 10, 2, 300, 90);
-        this.tree = new TREE.Tree(charParams);
-        this.tree.createTrees();
-        charParams = this.makeTrees(-1500, this.yPosGround + 15, 2100, 25, 2, 160, 180);
-        this.tree = new TREE.Tree(charParams);
-        this.tree.createTrees();
-
-
-    }
-
-    makeTrees(x, y, z, f, s, zAdd, xAdd) {
-        return {
-            camera: this.camera,
-            scene: this.scene,
-            world: this.world,
-            bodies: this.bodies,
-            meshes: this.meshes,
-            x: x,
-            y: y,
-            z: z,
-            firstLoop: f,
-            secondLoop: s,
-            zAdd: zAdd,
-            xAdd: xAdd
-
-        }
-    }
-
-    Mushroom() {
-        let charParams = this.makeMushroom(1100, this.yPosGround + 15, 100, 0);
-        this.mushroom = new MUSHROOM.Mushroom(charParams);
-        let mushroom = this.mushroom.createMushroom();
-        mushroom.scale.set(10, 10, 10);
-        this.scene.add(mushroom);
-        this.meshes.push(mushroom);
-        charParams = this.makeMushroom(1100, this.yPosGround + 15, 400, 0);
-        this.mushroom = new MUSHROOM.Mushroom(charParams);
-        mushroom = this.mushroom.createMushroom();
-        mushroom.scale.set(10, 10, 10);
-        this.scene.add(mushroom);
-        this.meshes.push(mushroom);
-
-        charParams = this.makeMushroom(-1100, this.yPosGround + 15, 100, 0);
-        this.mushroom = new MUSHROOM.Mushroom(charParams);
-        mushroom = this.mushroom.createMushroom();
-        mushroom.scale.set(10, 10, 10);
-        this.scene.add(mushroom);
-        this.meshes.push(mushroom);
-        charParams = this.makeMushroom(-1100, this.yPosGround + 15, 400, 0);
-        this.mushroom = new MUSHROOM.Mushroom(charParams);
-        mushroom = this.mushroom.createMushroom();
-        mushroom.scale.set(10, 10, 10);
-        this.scene.add(mushroom);
-        this.meshes.push(mushroom);
-
-        charParams = this.makeMushroom(3084, this.yPosGround + 15, 1300, 0);
-        this.mushroom = new MUSHROOM.Mushroom(charParams);
-        mushroom = this.mushroom.createMushroom();
-        mushroom.scale.set(10, 10, 10);
-        this.scene.add(mushroom);
-        this.meshes.push(mushroom);
-
-        charParams = this.makeMushroom(-3000, this.yPosGround + 15, -2950, 0);
-        this.mushroom = new MUSHROOM.Mushroom(charParams);
-        mushroom = this.mushroom.createMushroom();
-        mushroom.scale.set(10, 10, 10);
-        this.scene.add(mushroom);
-        this.meshes.push(mushroom);
-
-        let xAdditional = 0;
-        for (let j = 0; j < 2; j++) {
-            let zAdditional = 0;
-            for (let i = 0; i < 14; i++) {
-                let randomX = Math.floor(Math.random() * 100);
-                let randomZ = Math.floor(Math.random() * 100);
-                let charParams = this.makeMushroom(-2600 + xAdditional + randomX, this.yPosGround + 20, -1500 + zAdditional + randomZ, 0);
-                this.mushroom = new MUSHROOM.Mushroom(charParams);
-                let mushroom = this.mushroom.createMushroom();
-                mushroom.scale.set(40, 40, 40);
-                this.scene.add(mushroom);
-                this.meshes.push(mushroom);
-                zAdditional += 180;
-            }
-            xAdditional += 250;
-        }
-
-    }
-
-    makeMushroom(x, y, z, r) {
-        return {
-            camera: this.camera,
-            scene: this.scene,
-            world: this.world,
-            bodies: this.bodies,
-            meshes: this.meshes,
-            x: x,
-            y: y,
-            z: z,
-            r: r
-        }
-    }
-
-    music() {
-        const listener = new THREE.AudioListener();
-        this.camera.add(listener);
-
-        const sound = new THREE.Audio(listener);
-
-        const audioLoader = new THREE.AudioLoader();
-        audioLoader.load('resources/sounds/Magic-Clock-Shop_Looping.mp3', function (buffer) {
-            sound.setBuffer(buffer);
-            sound.setLoop(true);
-            sound.setVolume(0.5);
-            sound.play();
-        });
-    }
-
-
-    addSkybox() {
-        const CharParams = {
-            camera: this.camera,
-            scene: this.scene,
-            world: this.world,
-            bodies: this.bodies,
-            meshes: this.meshes
-        }
-        this.skybox = new SKYBOX.Skybox(CharParams);
-        this.skybox.createSkybox();
-    }
 
     addHill() {
         const CharParams = {

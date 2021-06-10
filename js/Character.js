@@ -131,7 +131,7 @@ export class Character {
             const characterShape = new CANNON.Cylinder(depth , depth, height, 8)
             this.CharacterBody = new CANNON.Body({
                 mass: 80,
-                position:  new CANNON.Vec3(2700, -100, -2700),
+                position:  new CANNON.Vec3(2700, -100, -2880),
                 material: heavyMaterial
             });
             this.CharacterBody.addShape(characterShape, new CANNON.Vec3(0, height / 2, ));
@@ -365,7 +365,7 @@ export class Character {
         this.world.addBody(this.ballBody);
         this.scene.add(this.ballMesh);
 
-        let shootVel = 1000
+        let shootVel = 1000;
         this.ballBody.velocity.set(
             direction.x * shootVel,
             direction.y * shootVel,
