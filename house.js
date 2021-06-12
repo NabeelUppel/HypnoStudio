@@ -1,7 +1,5 @@
 import * as THREE from './resources/threejs/r128/build/three.module.js';
 import {OrbitControls} from './resources/threejs/r128/examples/jsm/controls/OrbitControls.js';
-import {FBXLoader} from './resources/threejs/r128/examples/jsm/loaders/FBXLoader.js';
-import { GLTFLoader } from './resources/threejs/r128/examples/jsm/loaders/GLTFLoader.js';
 
 
 let pressed = {};
@@ -741,9 +739,5 @@ function animate() {
     updatePhysics();
     render();
 }
-
-
-const loader = new GLTFLoader();
-
 
 main();
