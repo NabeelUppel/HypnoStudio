@@ -526,12 +526,13 @@ class World {
         this.scene.add(shrub);
         this.meshes.push(shrub);
 
-        charParams = this.makeShrubs(0, this.yPosGround+92 , 3000, 1);
+        charParams = this.makeShrubs(0, this.yPosGround+92 , 2950, 1);
         this.shrub = new SHRUB.Shrub(charParams);
         shrub = this.shrub.createShrub();
         shrub.scale.set(10, 10, 2200);
         this.scene.add(shrub);
         this.meshes.push(shrub);
+
 
         charParams = this.makeShrubs(0, this.yPosGround+92 , -3000, 1);
         this.shrub = new SHRUB.Shrub(charParams);
@@ -539,8 +540,6 @@ class World {
         shrub.scale.set(10, 10, 2200);
         this.scene.add(shrub);
         this.meshes.push(shrub);
-
-        //this.makeShrubs(300,400,this.yPosGround);
     }
 
     makeShrubs(x, y, z, r) {
@@ -590,7 +589,8 @@ class World {
         charParams = this.makeTrees(2100, this.yPosGround + 15, 1400, 10, 2, 300, 90);
         this.tree = new TREE.Tree(charParams);
         this.tree.createTrees();
-        charParams = this.makeTrees(-1500, this.yPosGround + 15, 2100, 25, 2, 160, 180);
+
+        charParams = this.makeTrees(-1500, this.yPosGround + 15, 2200, 25, 3, 200, 180);
         this.tree = new TREE.Tree(charParams);
         this.tree.createTrees();
 
@@ -813,7 +813,7 @@ class World {
         const sound = new THREE.Audio(listener);
 
         const audioLoader = new THREE.AudioLoader();
-        audioLoader.load('resources/sounds/Magic-Clock-Shop_Looping.mp3', function (buffer) {
+        audioLoader.load('resources/sounds/level1.mp3', function (buffer) {
             sound.setBuffer(buffer);
             sound.setLoop(true);
             sound.setVolume(0.5);
