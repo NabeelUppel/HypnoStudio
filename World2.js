@@ -13,6 +13,7 @@ import * as MUSHROOM from "./js/mushroom.js";
 import * as HILL from "./js/hill.js";
 import * as FENCE from "./js/fence.js";
 import * as HOUSE from "./js/house.js";
+import * as LEVEL2 from "./js/level2.js";
 
 
 (function () {
@@ -97,16 +98,19 @@ class World {
         this.addHemisphereLight(0xB1E1FF, 0xB97A20)
 
 
+
         this.addGround();
         this.addSkybox();
-        this.addHill();
+        /*this.addHill();
         this.paths();
         this.Shrub();
         this.Tree();
         this.Mushroom();
         this.Fence();
-        this.House();
-        //this.music();
+        this.House();*/
+        this.music();
+        this.level2();
+
 
         //Load animated Model
         this.LoadAnimatedModel();
@@ -163,6 +167,19 @@ class World {
         this.scene.add(light);
     }
 
+    level2(){
+        const CharParams = {
+            camera: this.camera,
+            scene: this.scene,
+            world: this.world,
+            bodies: this.bodies,
+            meshes: this.meshes,
+            yPosGround : this.yPosGround,
+        }
+        this.level2 = new LEVEL2.Level2(CharParams);
+        this.level2.level2Layout();
+    }
+
     //Add Ground.
     addGround() {
         const planeSize = 8000;
@@ -204,8 +221,8 @@ class World {
         });
 
         let Ground = new THREE.Mesh(planeGeo, planeMat);
-        Ground.castShadow = false;
-        Ground.receiveShadow = true;
+        //Ground.castShadow = false;
+        //Ground.receiveShadow = true;
         Ground.quaternion.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
         this.scene.add(Ground);
         this.meshes.push(Ground);
@@ -277,20 +294,34 @@ class World {
         //Positions where pokemon will appear.
         let positions = []
 
-        //BLUE BOTTOM RIGHT
-        for (let i = 0; i < 20; i++) {
-            let x = THREE.MathUtils.randFloat(-1500, -2900)
-            let z = THREE.MathUtils.randFloat(-2100, -2900)
+        //Top left
+        for (let i = 0; i < 5; i++) {
+            let x = THREE.MathUtils.randFloat(2500, 3700)
+            let z = THREE.MathUtils.randFloat(2500, 3500)
             positions.push(new THREE.Vector3(x, this.yPosGround, z))
         }
 
-
-        //BLUE TOP LEFT
-        for (let i = 0; i < 10; i++) {
-            let x = THREE.MathUtils.randFloat(2000, 3000)
-            let z = THREE.MathUtils.randFloat(150, 1000)
+        //Top right
+        for (let i = 0; i < 5; i++) {
+            let x = THREE.MathUtils.randFloat(-2500, -3700)
+            let z = THREE.MathUtils.randFloat(2500, 3500)
             positions.push(new THREE.Vector3(x, this.yPosGround, z))
         }
+
+        //Bottom right
+        for (let i = 0; i < 5; i++) {
+            let x = THREE.MathUtils.randFloat(-2500, -3700)
+            let z = THREE.MathUtils.randFloat(-2500, -3500)
+            positions.push(new THREE.Vector3(x, this.yPosGround, z))
+        }
+
+        //Bottom left
+        for (let i = 0; i < 5; i++) {
+            let x = THREE.MathUtils.randFloat(2500, 3700)
+            let z = THREE.MathUtils.randFloat(-2500, -3500)
+            positions.push(new THREE.Vector3(x, this.yPosGround, z))
+        }
+
 
         //If Position is on player dont spawn pokemon there.
         var playerPosition = new THREE.Vector3(2700, this.yPosGround, -2700);
@@ -415,7 +446,7 @@ class World {
 
     paths() {
         this.addPath(100, 2000, 2000, this.yPosGround, -1000, 0, 0);
-        this.addPath(100, 2500, 500, this.yPosGround, -2300, 1, 0);
+        this.addPath(100, 2000, 800, this.yPosGround, -2300, 1, 0);
         this.addPath(100, 700, 1700, this.yPosGround, 1700, 0, 0);
         this.addPath(100, 3300, 0, this.yPosGround, 2000, 1, 0);
         this.addPath(100, 3600, -1900, this.yPosGround, -300, 0, 0);
@@ -463,28 +494,28 @@ class World {
 
     Shrub() {
         //Code repeated 4 times to make 4 walls around the map so that player is unable to escape.
-        let charParams = this.makeShrubs(3100, this.yPosGround+92 , 100, 0);
+        let charParams = this.makeShrubs(3100, this.yPosGround+97 , 100, 0);
         this.shrub = new SHRUB.Shrub(charParams);
         let shrub = this.shrub.createShrub();
         shrub.scale.set(10, 10, 2200);
         this.scene.add(shrub);
         this.meshes.push(shrub);
 
-        charParams = this.makeShrubs(-3050, this.yPosGround +92, 100, 0);
+        charParams = this.makeShrubs(-3050, this.yPosGround +97, 100, 0);
         this.shrub = new SHRUB.Shrub(charParams);
         shrub = this.shrub.createShrub();
         shrub.scale.set(10, 10, 2200);
         this.scene.add(shrub);
         this.meshes.push(shrub);
 
-        charParams = this.makeShrubs(0, this.yPosGround+92 , 3000, 1);
+        charParams = this.makeShrubs(0, this.yPosGround+97 , 3000, 1);
         this.shrub = new SHRUB.Shrub(charParams);
         shrub = this.shrub.createShrub();
         shrub.scale.set(10, 10, 2200);
         this.scene.add(shrub);
         this.meshes.push(shrub);
 
-        charParams = this.makeShrubs(0, this.yPosGround+92 , -3000, 1);
+        charParams = this.makeShrubs(0, this.yPosGround+105 , -3000, 1);
         this.shrub = new SHRUB.Shrub(charParams);
         shrub = this.shrub.createShrub();
         shrub.scale.set(10, 10, 2200);
@@ -688,8 +719,6 @@ class World {
         mushroom.scale.set(10, 10, 10);
         this.scene.add(mushroom);
         this.meshes.push(mushroom);
-
-
         charParams = this.makeMushroom(1100, this.yPosGround + 15, 400, 0);
         this.mushroom = new MUSHROOM.Mushroom(charParams);
         mushroom = this.mushroom.createMushroom();
@@ -764,10 +793,10 @@ class World {
         const sound = new THREE.Audio(listener);
 
         const audioLoader = new THREE.AudioLoader();
-        audioLoader.load('resources/sounds/Magic-Clock-Shop_Looping.mp3', function (buffer) {
+        audioLoader.load('resources/sounds/level2.mp3', function (buffer) {
             sound.setBuffer(buffer);
             sound.setLoop(true);
-            sound.setVolume(0.5);
+            sound.setVolume(0.3);
             sound.play();
         });
     }
@@ -978,6 +1007,53 @@ class World {
         }
         this.hill = new HILL.Hill(CharParams);
         this.hill.createHill();
+
+        /*  const temp = new THREE.Group();
+
+          const groundShape = new CANNON.Box(new CANNON.Vec3(1000, 400, 50));
+          this.groundBody = new CANNON.Body();
+          this.groundBody.type = Body.STATIC;
+          this.groundBody.mass = 0;
+          this.groundBody.updateMassProperties();
+          this.groundBody.addShape(groundShape)
+          //this.groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
+          this.groundBody.position.set(0,this.yPosGround , 900);
+          this.world.addBody(this.groundBody);
+          this.bodies.push(this.groundBody);
+
+          const hillGeometry = new THREE.SphereBufferGeometry(1000, 8, 6, 0, Math.PI, 0, 0.5 * Math.PI);
+          const hillMaterial = new THREE.MeshPhongMaterial({
+              map : new THREE.TextureLoader().load('resources/images/grasslight-small.jpg'),
+              side: THREE.DoubleSide,
+          });
+          let hill = new THREE.Mesh(hillGeometry, hillMaterial);
+          hill.position.set(0, this.yPosGround, 100);
+          temp.add(hill);
+
+          const innerHillGeometry = new THREE.CircleBufferGeometry(1000, 15, 0, Math.PI, 0, 0.5*Math.PI);
+          const innerHillMaterial = new THREE.MeshPhongMaterial({
+              map : new THREE.TextureLoader().load('resources/images/backgrounddetailed6.jpg'),
+              side: THREE.DoubleSide,
+          });
+          let hill2 = new THREE.Mesh(innerHillGeometry, innerHillMaterial);
+          hill2.position.set(0, this.yPosGround, 100);
+          temp.add(hill2)
+          this.scene.add(temp);
+          this.meshes.push(temp);
+
+  */
+
+
+        /* const CharParams = {
+             camera: this.camera,
+             scene: this.scene,
+             world:this.world,
+             bodies: this.bodies,
+             meshes: this.meshes
+         }
+         //this.terrain = new TERRAIN.Terrain(CharParams);
+         //this.terrain.createTerrain();*/
+
 
     }
 }

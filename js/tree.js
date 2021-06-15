@@ -3,6 +3,7 @@ import * as CANNON from "../resources/cannon-es/dist/cannon-es.js";
 import {Body} from "../resources/cannon-es/dist/cannon-es.js";
 
 
+
 let Ground, groundBody;
 let world, timeStep = 1 / 60;
 let camera, scene, renderer, canvas, controls;
@@ -38,7 +39,17 @@ export class Tree{
         const group = new THREE.Group();
 
         const geom = new THREE.SphereGeometry( 2, 30, 30 );
-        const mat = new THREE.MeshLambertMaterial( {color: "#228C22"} );
+        const rndInt = Math.floor(Math.random() * 3) + 1;
+        let mat;
+        if(rndInt === 1){
+            mat = mat = new THREE.MeshLambertMaterial( {color: "#228C22"} );
+        }
+        else if(rndInt === 2){
+            mat = mat = new THREE.MeshLambertMaterial( {color: "#345f02"} );
+        }
+        else{
+            mat = mat = new THREE.MeshLambertMaterial( {color: "#5faf04"} );
+        }
 
         const sphere1 = new THREE.Mesh( geom, mat );
         sphere1.position.set(0,10,1)
@@ -80,7 +91,16 @@ export class Tree{
         const group = new THREE.Group();
 
         const geom = new THREE.SphereGeometry( 1, 30, 30 );
-        const mat = new THREE.MeshLambertMaterial( {color: "#228C22"} );
+
+        const rndInt = Math.floor(Math.random() * 2) + 1;
+        let mat;
+        if(rndInt === 1){
+            mat = mat = new THREE.MeshLambertMaterial( {color: "#228C22"} );
+        }
+        else{
+            mat = mat = new THREE.MeshLambertMaterial( {color: "#345f02"} );
+        }
+
 
         const sphere1 = new THREE.Mesh( geom, mat );
         sphere1.position.set(0,10,1);
@@ -143,7 +163,17 @@ export class Tree{
         const t = new THREE.Group();
         //Tree trunk
         // load bark texture, set wrap mode to repeat
-        const texture = new THREE.TextureLoader().load("./resources/images/tree_bark.jpg");
+        const rndInt = Math.floor(Math.random() * 3) + 1;
+        let texture;
+        if(rndInt === 1){
+            texture = new THREE.TextureLoader().load("./resources/images/tree_bark.jpg");
+        }
+        else if(rndInt === 2){
+            texture = new THREE.TextureLoader().load("./resources/images/tree_bark2.jpg");
+        }
+        else{
+            texture = new THREE.TextureLoader().load("./resources/images/tree_bark3.jpg");
+        }
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set(4, 4);

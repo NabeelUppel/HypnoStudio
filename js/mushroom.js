@@ -35,7 +35,7 @@ export class Mushroom{
     function
     squareBody;
     createMushroom() {
-        const shape = new CANNON.Box(new CANNON.Vec3(20, 40, 20));
+        const shape = new CANNON.Box(new CANNON.Vec3(5, 10, 5));
         this.shroomBody = new CANNON.Body();
         this.shroomBody.type = Body.STATIC;
         this.shroomBody.mass = 0;
@@ -71,7 +71,6 @@ export class Mushroom{
         const circle = new THREE.Mesh( geometry, material );
         circle.rotateX(29.85);
         shroom.add( circle );
-
         shroom.position.set(10,2,1);
 
         return shroom;

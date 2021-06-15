@@ -131,7 +131,7 @@ export class Character {
             const characterShape = new CANNON.Cylinder(depth , depth, height, 8)
             this.CharacterBody = new CANNON.Body({
                 mass: 80,
-                position:  new CANNON.Vec3(2700, -100, -2880),
+                position:  new CANNON.Vec3(2700, -100, -2700),
                 material: heavyMaterial
             });
             this.CharacterBody.addShape(characterShape, new CANNON.Vec3(0, height / 2, ));
@@ -231,6 +231,16 @@ export class Character {
         //If the character is running or walking add a  little forward/backward displacement.
         //Otherwise jump up without other displacements.
         if (this.input.CharacterMotions.jump) {
+            const listener = new THREE.AudioListener();
+            this.camera.add(listener);
+            const sound = new THREE.Audio(listener);
+            const audioLoader = new THREE.AudioLoader();
+            audioLoader.load('resources/sounds/jumpSound.wav', function (buffer) {
+                sound.setBuffer(buffer);
+                sound.setVolume(0.3);
+                sound.play();
+            });
+
             if (this.CharacterBody.position.y <= jumpInitialHeight + 2.5) {
                 if (this.stateMachine._currentState.Name === 'jump') {
                     this.CharacterBody.position.y += 5;
@@ -365,7 +375,7 @@ export class Character {
         this.world.addBody(this.ballBody);
         this.scene.add(this.ballMesh);
 
-        let shootVel = 1000;
+        let shootVel = 1000
         this.ballBody.velocity.set(
             direction.x * shootVel,
             direction.y * shootVel,
@@ -383,6 +393,17 @@ export class Character {
         let pNames = this.pokemon.Names;
         let index = pBodies.indexOf(e.body);
         if (index>-1){
+
+            const listener = new THREE.AudioListener();
+            this.camera.add(listener);
+            const sound = new THREE.Audio(listener);
+            const audioLoader = new THREE.AudioLoader();
+            audioLoader.load('resources/sounds/pokemonCaught.mp3', function (buffer) {
+                sound.setBuffer(buffer);
+                sound.setVolume(0.3);
+                sound.play();
+            });
+
             let name = pNames[index];
             let body = pBodies[index];
             let mesh = pMeshes[index];

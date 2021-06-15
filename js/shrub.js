@@ -1,5 +1,6 @@
 import * as THREE from '../resources/threejs/r128/build/three.module.js';
 import * as CANNON from "../resources/cannon-es/dist/cannon-es.js";
+import {Body, Vec3} from "../resources/cannon-es/dist/cannon-es.js";
 
 
 let Ground, groundBody;
@@ -105,9 +106,12 @@ export class Shrub{
         temp.add(shrubs3);
         temp.position.setX(-20);
         temp.rotateX(150);
-        const shape = new CANNON.Box(new CANNON.Vec3(35, 40, 3020));
-        this.squareBody = new CANNON.Body({mass: 20000});
-        this.squareBody.addShape(shape);
+        const shape = new CANNON.Box(new CANNON.Vec3(35, 20, 4020));
+        this.squareBody = new CANNON.Body();
+        this.squareBody.type = Body.STATIC;
+        this.squareBody.mass = 0;
+        this.squareBody.updateMassProperties();
+        this.squareBody.addShape(shape,new Vec3(0, -50, 0));
         this.squareBody.position.set(this.x, this.y, this.z);
         if(this.r === 1){
             this.squareBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), -Math.PI / 2);

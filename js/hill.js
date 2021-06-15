@@ -25,6 +25,8 @@ export class Hill{
         this.meshes = params.meshes;
         this.world = params.world;
         this.yPosGround = params.yPosGround;
+        this.x = params.x;
+        this.z = params.z;
     }
 
     //Function to create hill in the middle of level 1.
@@ -113,6 +115,18 @@ export class Hill{
         box.position.set(0, 600, 200);
 
         this.scene.add(box)
+       }
+
+       function
+       fullHill(){
+           const hillGeometry = new THREE.SphereBufferGeometry(1000, 8, 6, 0);
+           const hillMaterial = new THREE.MeshPhongMaterial({
+               map: new THREE.TextureLoader().load('resources/images/grasslight-small.jpg'),
+               side: THREE.DoubleSide,
+           });
+           let hill = new THREE.Mesh(hillGeometry, hillMaterial);
+           hill.position.set(this.x, this.yPosGround, this.z);
+           this.scene.add(hill);
        }
 
     }
