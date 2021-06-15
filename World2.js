@@ -94,7 +94,7 @@ class World {
         this.LightEnable(light);
         this.scene.add(light);
 
-        //add hemisphere ligth to scene.
+        //add hemisphere light to scene.
         this.addHemisphereLight(0xB1E1FF, 0xB97A20)
 
 

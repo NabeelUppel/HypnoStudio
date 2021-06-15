@@ -29,6 +29,7 @@ export class Level2 {
         this.yPosGround = params.yPosGround;
     }
 
+    //Function which calls other functions which contain objects that are in the world.
     function
     level2Layout(){
         this.paths();
@@ -42,23 +43,27 @@ export class Level2 {
 
     }
 
+    //Ambient sounds near villages.
     Sound(){
+
             const listener = new THREE.AudioListener();
             this.camera.add( listener );
 
+            //Creates a positional audio which only plays music in certain locations.
             const sound = new THREE.PositionalAudio( listener );
 
 
             const audioLoader = new THREE.AudioLoader();
             audioLoader.load( 'resources/sounds/townAmbience.mp3', function( buffer ) {
                 sound.setBuffer( buffer );
-                sound.setRefDistance(200);
+                sound.setRefDistance(200); //The distance for how far you can go before the sound gets softer.
                 sound.setLoop(true);
                 sound.setVolume(0.5);
                 sound.play();
             });
 
-
+            //Create box that covers area where the sound should be. Make the box opaque so that you can't see it
+            //Add sound to object so that when you in close to the object sound will play.
             const sphere = new THREE.BoxGeometry( 2000, 0.1,2000);
             const material = new THREE.MeshPhongMaterial( { color: 0xff2200,transparent: true, opacity : 0  } );
             const mesh = new THREE.Mesh( sphere, material );
@@ -67,6 +72,7 @@ export class Level2 {
             mesh.add(sound);
     }
 
+    //Function to access mushrooms class and add the mushrooms to the scene in certain locations.
     Mushroom() {
         let charParams = this.makeMushroom(3200, this.yPosGround + 10, 3200, 0);
         this.mushroom = new MUSHROOM.Mushroom(charParams);
@@ -110,7 +116,7 @@ export class Level2 {
             r: r
         }
     }
-
+    //Function to access trees class and add the trees to the scene in certain locations.
     Tree() {
 
         let charParams = this.makeTrees(300, this.yPosGround + 15, 1000, 2, 10, 180, 150);
@@ -163,7 +169,7 @@ export class Level2 {
             r: r,
         }
     }
-
+ //Function to access House class and add the houses to the scene in certain locations.
     House() {
         let charParams = this.makeHouse(700, this.yPosGround + 50, 600, 0);
         this.house = new HOUSE.House(charParams);
@@ -223,6 +229,7 @@ export class Level2 {
 
     }
 
+    //Function to access paths class and add the paths to the scene in certain locations.
     function
     paths(){
         this.addPath(200, 2000, 1800, this.yPosGround, 0, 1, 0);
@@ -274,6 +281,7 @@ export class Level2 {
         }
     }
 
+    //Function to access Fence class and add the fences to the scene in certain locations.
     Fence() {
         //Fences alongside the 2 left and right paths from spawn
         this.FenceHorizontal(12,1,1040,100);
@@ -349,6 +357,7 @@ export class Level2 {
         this.FenceHorizontal(6,0,2900,-2170);
     }
 
+    //Create fences of a certain length in the horizontal direction.
     FenceHorizontal(amountFences,FenceRotation,xPos,zPos){
         let xAdd = 0;
         for (let i = 0; i < amountFences; ++i) {
@@ -361,6 +370,7 @@ export class Level2 {
         }
     }
 
+    //Create fences of a certain length in the vertical direction.
     FenceVertical(amountFences,FenceRotation,xPos,zPos){
         let zAdd = 0;
         for (let i = 0; i < amountFences; ++i) {
@@ -373,6 +383,7 @@ export class Level2 {
         }
     }
 
+    //Functions to access Shrubs class and add shrubs to the scene.
     Shrubs(){
         //Code repeated 4 times to make 4 walls around the map so that player is unable to escape.
         let charParams = this.makeShrubs(3900, this.yPosGround+92, 100, 0);
@@ -418,6 +429,7 @@ export class Level2 {
         }
     }
 
+    //Function to access Shrubs class and add shrubs to the scene.
     Hill(){
         this.addHill(1500,1500);
         this.addHill(-1500,1500);

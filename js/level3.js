@@ -29,6 +29,7 @@ export class Level3 {
         this.yPosGround = params.yPosGround;
     }
 
+    //Function which calls other functions which contain objects that are in the world.
     function
     level3Layout(){
         this.paths();
@@ -41,10 +42,13 @@ export class Level3 {
         this.Sound();
 
     }
+
+    //Ambient sounds near villages.
      Sound(){
          const listener = new THREE.AudioListener();
          this.camera.add( listener );
 
+         //Creates a positional audio which only plays music in certain locations.
          const sound = new THREE.PositionalAudio( listener );
 
 
@@ -58,6 +62,8 @@ export class Level3 {
          });
 
 
+         //Create box that covers area where the sound should be. Make the box opaque so that you can't see it
+         //Add sound to object so that when you in close to the object sound will play.
          const sphere = new THREE.BoxGeometry( 2000, 0.1,2000);
          const material = new THREE.MeshPhongMaterial( { color: 0xff2200,transparent: true, opacity : 0  } );
          const mesh = new THREE.Mesh( sphere, material );
@@ -68,9 +74,11 @@ export class Level3 {
          const listener2 = new THREE.AudioListener();
          this.camera.add( listener2 );
 
+         //Creates a positional audio which only plays music in certain locations.
          const sound2 = new THREE.PositionalAudio( listener2 );
 
-
+         //Create box that covers area where the sound should be. Make the box opaque so that you can't see it
+         //Add sound to object so that when you in close to the object sound will play.
          const audioLoader2 = new THREE.AudioLoader();
          audioLoader2.load( 'resources/sounds/townAmbience.mp3', function( buffer ) {
              sound2.setBuffer( buffer );
@@ -89,6 +97,7 @@ export class Level3 {
 
      }
 
+    //Function to access mushrooms class and add the mushrooms to the scene in certain locations.
     Mushroom() {
         let xAdditional = 0;
         for (let j = 0; j < 10; j++) {
@@ -122,6 +131,7 @@ export class Level3 {
         }
     }
 
+    //Function to access trees class and add the trees to the scene in certain locations.
     Tree() {
 
         let charParams = this.makeTrees(-2500, this.yPosGround + 15, -1600, 15, 6, 200, 390);
@@ -170,6 +180,7 @@ export class Level3 {
         }
     }
 
+    //Function to access House class and add the houses to the scene in certain locations.
     House() {
         let zAdd = 0
         for(let i = 0; i < 5;++i){
@@ -212,6 +223,7 @@ export class Level3 {
         }
 }
 
+    //Function to access paths class and add the paths to the scene in certain locations.
     function
     paths(){
         this.addPath(200, 1000, 3000, this.yPosGround, -2500, 0, 0);
@@ -262,6 +274,7 @@ export class Level3 {
         }
     }
 
+    //Function to access Fence class and add the fences to the scene in certain locations.
     Fence() {
         this.FenceVertical(11,3,2850,-3600);
         this.FenceHorizontal(44,1,-2625,-1800);
@@ -287,6 +300,7 @@ export class Level3 {
         this.FenceVertical(9,2,-2440,1470);
     }
 
+    //Create fences of a certain length in the horizontal direction.
     FenceHorizontal(amountFences,FenceRotation,xPos,zPos){
         let xAdd = 0;
         for (let i = 0; i < amountFences; ++i) {
@@ -298,7 +312,7 @@ export class Level3 {
             xAdd += 150;
         }
     }
-
+    //Create fences of a certain length in the vertical direction.
     FenceVertical(amountFences,FenceRotation,xPos,zPos){
         let zAdd = 0;
         for (let i = 0; i < amountFences; ++i) {
@@ -311,6 +325,7 @@ export class Level3 {
         }
     }
 
+    //Functions to access Shrubs class and add shrubs to the scene.
     Shrubs(){
         //Code repeated 4 times to make 4 walls around the map so that player is unable to escape.
         let charParams = this.makeShrubs(3900, this.yPosGround+92, 100, 0);
@@ -355,7 +370,7 @@ export class Level3 {
             r: r
         }
     }
-
+    //Function to access Shrubs class and add shrubs to the scene.
     Hill(){
         this.addHill(1800,-3000);
         this.addHill(200,-3000);
