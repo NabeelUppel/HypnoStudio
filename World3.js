@@ -76,7 +76,7 @@ class World {
         const fov = 60;
         const aspect = 1920 / 1080;
         const near = 1;
-        const far = 2000;
+        const far = 1600;
         this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
         this.camera.position.set(25, 30, 25);
 
@@ -282,29 +282,22 @@ class World {
         let positions = []
 
         //Top left
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 10; i++) {
             let x = THREE.MathUtils.randFloat(2500, 3700)
             let z = THREE.MathUtils.randFloat(2500, 3500)
             positions.push(new THREE.Vector3(x, this.yPosGround, z))
         }
 
-        //Top right
-        for (let i = 0; i < 5; i++) {
+        //Middle right
+        for (let i = 0; i < 10; i++) {
             let x = THREE.MathUtils.randFloat(-2500, -3700)
-            let z = THREE.MathUtils.randFloat(2500, 3500)
+            let z = THREE.MathUtils.randFloat(1200, 2300)
             positions.push(new THREE.Vector3(x, this.yPosGround, z))
         }
 
         //Bottom right
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 10; i++) {
             let x = THREE.MathUtils.randFloat(-2500, -3700)
-            let z = THREE.MathUtils.randFloat(-2500, -3500)
-            positions.push(new THREE.Vector3(x, this.yPosGround, z))
-        }
-
-        //Bottom left
-        for (let i = 0; i < 5; i++) {
-            let x = THREE.MathUtils.randFloat(2500, 3700)
             let z = THREE.MathUtils.randFloat(-2500, -3500)
             positions.push(new THREE.Vector3(x, this.yPosGround, z))
         }
@@ -421,7 +414,7 @@ class World {
         const sound = new THREE.Audio(listener);
 
         const audioLoader = new THREE.AudioLoader();
-        audioLoader.load('resources/sounds/level2.mp3', function (buffer) {
+        audioLoader.load('resources/sounds/level3.mp3', function (buffer) {
             sound.setBuffer(buffer);
             sound.setLoop(true);
             sound.setVolume(0.3);

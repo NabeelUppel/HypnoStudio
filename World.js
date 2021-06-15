@@ -106,7 +106,8 @@ class World {
         this.Mushroom();
         this.Fence();
         this.House();
-        //this.music();
+        this.music();
+        this.ambientSounds();
 
         //Load animated Model
         this.LoadAnimatedModel();
@@ -391,6 +392,54 @@ class World {
                     break;
             }
         })
+
+    }
+
+    ambientSounds(){
+        const listener = new THREE.AudioListener();
+        this.camera.add( listener );
+
+        const sound = new THREE.PositionalAudio( listener );
+
+
+        const audioLoader = new THREE.AudioLoader();
+        audioLoader.load( 'resources/sounds/townAmbience.mp3', function( buffer ) {
+            sound.setBuffer( buffer );
+            sound.setRefDistance(200);
+            sound.setLoop(true);
+            sound.setVolume(0.5);
+            sound.play();
+        });
+
+
+        const sphere = new THREE.BoxGeometry( 2000, 0.1,2000);
+        const material = new THREE.MeshPhongMaterial( { color: 0xff2200,transparent: true, opacity : 0  } );
+        const mesh = new THREE.Mesh( sphere, material );
+        mesh.position.set(3000, -99, -2700);
+        this.scene.add( mesh );
+        mesh.add(sound);
+
+        const listener2 = new THREE.AudioListener();
+        this.camera.add( listener2 );
+
+        const sound2 = new THREE.PositionalAudio( listener2 );
+
+
+        const audioLoader2 = new THREE.AudioLoader();
+        audioLoader2.load( 'resources/sounds/townAmbience.mp3', function( buffer ) {
+            sound2.setBuffer( buffer );
+            sound2.setRefDistance(200);
+            sound2.setLoop(true);
+            sound2.setVolume(0.5);
+            sound2.play();
+        });
+
+        const sphere2 = new THREE.BoxGeometry( 2000, 0.1,2000);
+        const material2 = new THREE.MeshPhongMaterial( { color: 0xff2200,transparent: true, opacity : 0  } );
+        const mesh2 = new THREE.Mesh( sphere2, material2 );
+        mesh2.position.set(-3000, -99, 2700);
+        this.scene.add( mesh2 );
+        mesh2.add(sound2);
 
     }
 

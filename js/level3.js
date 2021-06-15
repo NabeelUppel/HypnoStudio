@@ -38,37 +38,74 @@ export class Level3 {
         this.Hill();
         this.Tree();
         this.Mushroom();
+        this.Sound();
 
     }
+     Sound(){
+         const listener = new THREE.AudioListener();
+         this.camera.add( listener );
+
+         const sound = new THREE.PositionalAudio( listener );
+
+
+         const audioLoader = new THREE.AudioLoader();
+         audioLoader.load( 'resources/sounds/townAmbience.mp3', function( buffer ) {
+             sound.setBuffer( buffer );
+             sound.setRefDistance(200);
+             sound.setLoop(true);
+             sound.setVolume(0.5);
+             sound.play();
+         });
+
+
+         const sphere = new THREE.BoxGeometry( 2000, 0.1,2000);
+         const material = new THREE.MeshPhongMaterial( { color: 0xff2200,transparent: true, opacity : 0  } );
+         const mesh = new THREE.Mesh( sphere, material );
+         mesh.position.set(3100, -99, -2700);
+         this.scene.add( mesh );
+         mesh.add(sound);
+
+         const listener2 = new THREE.AudioListener();
+         this.camera.add( listener2 );
+
+         const sound2 = new THREE.PositionalAudio( listener2 );
+
+
+         const audioLoader2 = new THREE.AudioLoader();
+         audioLoader2.load( 'resources/sounds/townAmbience.mp3', function( buffer ) {
+             sound2.setBuffer( buffer );
+             sound2.setRefDistance(200);
+             sound2.setLoop(true);
+             sound2.setVolume(0.5);
+             sound2.play();
+         });
+
+         const sphere2 = new THREE.BoxGeometry( 2000, 0.1,2000);
+         const material2 = new THREE.MeshPhongMaterial( { color: 0xff2200,transparent: true, opacity : 0  } );
+         const mesh2 = new THREE.Mesh( sphere2, material2 );
+         mesh2.position.set(-3100, -99, 2700);
+         this.scene.add( mesh2 );
+         mesh2.add(sound2);
+
+     }
 
     Mushroom() {
-        let charParams = this.makeMushroom(3200, this.yPosGround + 10, 3200, 0);
-        this.mushroom = new MUSHROOM.Mushroom(charParams);
-        let mushroom = this.mushroom.createMushroom();
-        mushroom.scale.set(5, 5, 5);
-        this.scene.add(mushroom);
-        this.meshes.push(mushroom);
-
-        charParams = this.makeMushroom(3500, this.yPosGround + 10, 3500, 0);
-        this.mushroom = new MUSHROOM.Mushroom(charParams);
-        mushroom = this.mushroom.createMushroom();
-        mushroom.scale.set(5, 5, 5);
-        this.scene.add(mushroom);
-        this.meshes.push(mushroom);
-
-        charParams = this.makeMushroom(3700, this.yPosGround + 10, 3700, 0);
-        this.mushroom = new MUSHROOM.Mushroom(charParams);
-        mushroom = this.mushroom.createMushroom();
-        mushroom.scale.set(5, 5, 5);
-        this.scene.add(mushroom);
-        this.meshes.push(mushroom);
-
-        charParams = this.makeMushroom(3600, this.yPosGround + 10, 3800, 0);
-        this.mushroom = new MUSHROOM.Mushroom(charParams);
-        mushroom = this.mushroom.createMushroom();
-        mushroom.scale.set(5, 5, 5);
-        this.scene.add(mushroom);
-        this.meshes.push(mushroom);
+        let xAdditional = 0;
+        for (let j = 0; j < 10; j++) {
+            let zAdditional = 0;
+            for (let i = 0; i < 5; i++) {
+                let randomX = Math.floor(Math.random() * 100);
+                let randomZ = Math.floor(Math.random() * 100);
+                let charParams = this.makeMushroom(200 + xAdditional + randomX, this.yPosGround + 20, -100 + zAdditional + randomZ, 0);
+                this.mushroom = new MUSHROOM.Mushroom(charParams);
+                let mushroom = this.mushroom.createMushroom();
+                mushroom.scale.set(14, 14, 14);
+                this.scene.add(mushroom);
+                this.meshes.push(mushroom);
+                zAdditional += 180;
+            }
+            xAdditional += 250;
+        }
     }
 
     makeMushroom(x, y, z, r) {
@@ -87,20 +124,15 @@ export class Level3 {
 
     Tree() {
 
-        let charParams = this.makeTrees(300, this.yPosGround + 15, 1000, 2, 10, 180, 150);
+        let charParams = this.makeTrees(-2500, this.yPosGround + 15, -1600, 15, 6, 200, 390);
         this.tree = new TREE.Tree(charParams);
         this.tree.createTrees();
 
-
-        charParams = this.makeTrees(-320, this.yPosGround + 15, 1000, 2, 10, 180, 150);
+        charParams = this.makeTrees(-2300, this.yPosGround + 15, 1600, 6, 6, 200, 390);
         this.tree = new TREE.Tree(charParams);
         this.tree.createTrees();
 
-        charParams = this.makeTrees(-2320, this.yPosGround + 15, -2400, 10, 10, 210, 200);
-        this.tree = new TREE.Tree(charParams);
-        this.tree.createTrees();
-
-        charParams = this.makeTrees(320, this.yPosGround + 15, -2400, 10, 10, 210, 200);
+        charParams = this.makeTrees(-2700, this.yPosGround + 15, 0, 6, 6, 200, 480);
         this.tree = new TREE.Tree(charParams);
         this.tree.createTrees();
 
@@ -139,77 +171,59 @@ export class Level3 {
     }
 
     House() {
-        let charParams = this.makeHouse(700, this.yPosGround + 50, 600, 0);
+        let zAdd = 0
+        for(let i = 0; i < 5;++i){
+            let charParams = this.makeHouse(3800, this.yPosGround + 50, -2000+zAdd, 0);
+            this.house = new HOUSE.House(charParams);
+            let house = this.house.smallBlueHouse();
+            house.scale.set(10, 10, 10);
+            this.scene.add(house);
+            this.meshes.push(house);
+            zAdd = zAdd-400;
+        }
+
+        let charParams = this.makeHouse(3300, this.yPosGround + 50, -3600, 0);
         this.house = new HOUSE.House(charParams);
-        let house = this.house.smallBlueHouse();
+        let house = this.house.biggerBlueHouse();
         house.scale.set(10, 10, 10);
         this.scene.add(house);
         this.meshes.push(house);
 
-        charParams = this.makeHouse(450, this.yPosGround + 50, 600, 0);
-        this.house = new HOUSE.House(charParams);
-        house = this.house.smallBlueHouse();
-        house.scale.set(10, 10, 10);
-        this.scene.add(house);
-        this.meshes.push(house);
+        zAdd = 0
+        for(let i = 0; i < 4;++i){
+            let charParams = this.makeHouse(-3700, this.yPosGround + 50, 3700+zAdd, 0);
+            this.house = new HOUSE.House(charParams);
+            let house = this.house.smallOrangeHouse();
+            house.scale.set(10, 10, 10);
+            this.scene.add(house);
+            this.meshes.push(house);
+            zAdd = zAdd-400;
+        }
 
-        charParams = this.makeHouse(-500, this.yPosGround + 50, 600, 0);
-        this.house = new HOUSE.House(charParams);
-        house = this.house.smallBlueHouse();
-        house.scale.set(10, 10, 10);
-        this.scene.add(house);
-        this.meshes.push(house);
-
-        charParams = this.makeHouse(-250, this.yPosGround + 50, 600, 0);
-        this.house = new HOUSE.House(charParams);
-        house = this.house.smallBlueHouse();
-        house.scale.set(10, 10, 10);
-        this.scene.add(house);
-        this.meshes.push(house);
-
-        charParams = this.makeHouse(700, this.yPosGround + 50, -350, 0);
-        this.house = new HOUSE.House(charParams);
-        house = this.house.smallOrangeHouse();
-        house.scale.set(10, 10, 10);
-        this.scene.add(house);
-        this.meshes.push(house);
-
-        charParams = this.makeHouse(450, this.yPosGround + 50, -350, 0);
-        this.house = new HOUSE.House(charParams);
-        house = this.house.smallOrangeHouse();
-        house.scale.set(10, 10, 10);
-        this.scene.add(house);
-        this.meshes.push(house);
-
-        charParams = this.makeHouse(-500, this.yPosGround + 50, -350, 0);
-        this.house = new HOUSE.House(charParams);
-        house = this.house.smallOrangeHouse();
-        house.scale.set(10, 10, 10);
-        this.scene.add(house);
-        this.meshes.push(house);
-
-        charParams = this.makeHouse(-250, this.yPosGround + 50, -350, 0);
-        this.house = new HOUSE.House(charParams);
-        house = this.house.smallOrangeHouse();
-        house.scale.set(10, 10, 10);
-        this.scene.add(house);
-        this.meshes.push(house);
-
-    }
+        let xAdd = 0
+        for(let i = 0; i < 3;++i){
+            let charParams = this.makeHouse(-2600+xAdd, this.yPosGround + 50, 3700, 0);
+            this.house = new HOUSE.House(charParams);
+            let house = this.house.smallOrangeHouse();
+            house.scale.set(10, 10, 10);
+            this.scene.add(house);
+            this.meshes.push(house);
+            xAdd = xAdd-400;
+        }
+}
 
     function
     paths(){
-        this.addPath(200, 2000, 1800, this.yPosGround, 0, 1, 0);
-        this.addPath(200, 4500, 2800, this.yPosGround, 0, 0, 0);
-
-        this.addPath(200, 2000, -1800, this.yPosGround, 0, 1, 0);
-        this.addPath(200, 4500, -2800, this.yPosGround, 0, 0, 0);
-
-        this.addPath(200, 5000, 0, this.yPosGround, 3000, 1, 0);
-        this.addPath(200, 5000, 0, this.yPosGround, -3000, 1, 0);
-
-        this.addPath(200, 2500, 0, this.yPosGround, 1800, 0, 0);
-        this.addPath(200, 2500, 0, this.yPosGround, -1800, 0, 0);
+        this.addPath(200, 1000, 3000, this.yPosGround, -2500, 0, 0);
+        this.addPath(200, 4000, 1100, this.yPosGround, -1950, 1, 0);
+        this.addPath(200, 1000, -800, this.yPosGround, -2500, 0, 0);
+        this.addPath(200, 1500, -1600, this.yPosGround, -2900, 1, 0);
+        this.addPath(200, 2000, -3000, this.yPosGround, -1250, 0, 0);
+        this.addPath(200, 6200, 0, this.yPosGround, -350, 1, 0);
+        this.addPath(400, 2600, 2900, this.yPosGround, 900, 0, 0);
+        this.addPath(200, 3200, 0, this.yPosGround, 1300, 0, 0);
+        this.addPath(200, 2500, -1200, this.yPosGround, 1350, 1, 0);
+        this.addPath(200, 5200, 100, this.yPosGround, 3000, 1, 0);
     }
 
     function
@@ -249,78 +263,28 @@ export class Level3 {
     }
 
     Fence() {
-        //Fences alongside the 2 left and right paths from spawn
-        this.FenceHorizontal(12,1,1040,100);
-        this.FenceHorizontal(12,1,-2450,100);
-        this.FenceHorizontal(12,0,800,-100);
-        this.FenceHorizontal(12,0,-2650,-100);
-
-        //Fences alongside the 2 front and back paths from spawn
-        this.FenceVertical(14,2,100,700);
-        this.FenceVertical(14,3,-100,900);
-        this.FenceVertical(14,2,100,-2800);
-        this.FenceVertical(14,3,-100,-2600);
-
-
-        //Fences alongside the right side of map.
-        this.FenceVertical(13,2,-2700,145);
-        this.FenceVertical(13,2,-2700,-2130);
-        this.FenceVertical(28,3,-2900,-1930);
-
-        //Fences alongside the left side of map.
-        this.FenceVertical(13,3,2660,350);
-        this.FenceVertical(13,3,2660,-1930);
-        this.FenceVertical(28,2,2900,-2130);
-
-        //Fences alongside the top side of map.
-        this.FenceHorizontal(15,0,100,2900);
-        this.FenceHorizontal(15,0,-2450,2900);
-        this.FenceHorizontal(32,1,-2250,3100);
-
-        //Fences alongside the bottom side of map.
-        this.FenceHorizontal(15,0,100,-2800);
-        this.FenceHorizontal(15,0,-2450,-2800);
-        this.FenceHorizontal(32,1,-2250,-3100);
-
-        //Fences connecting back and left of spawn
-        this.FenceHorizontal(4,0,150,-600);
-        this.FenceVertical(3,2,800,-600);
-
-        //Fences connecting front and left of spawn
-        this.FenceHorizontal(4,0,150,700);
-        this.FenceVertical(3,2,800,150);
-
-        //Fences connecting back and right of spawn
-        this.FenceHorizontal(4,0,-750,-600);
-        this.FenceVertical(3,2,-750,-600);
-
-        //Fences connecting front and right of spawn
-        this.FenceHorizontal(4,0,-750,700);
-        this.FenceVertical(3,2,-750,150);
-
-        //Fences covering top right corner
-        this.FenceVertical(4,2,-2450,3150);
-        this.FenceVertical(4,2,-2450,2240);
-        this.FenceHorizontal(1,0,-2650,2190);
-        this.FenceHorizontal(6,0,-3850,2170);
-
-        //Fences covering top left corner
-        this.FenceVertical(4,2,2450,3150);
-        this.FenceVertical(4,2,2450,2240);
-        this.FenceHorizontal(1,0,2450,2190);
-        this.FenceHorizontal(6,0,2900,2170);
-
-        //Fences covering bottom right corner
-        this.FenceVertical(4,2,-2450,-3750);
-        this.FenceVertical(4,2,-2450,-2850);
-        this.FenceHorizontal(1,0,-2650,-2190);
-        this.FenceHorizontal(6,0,-3850,-2170);
-
-        //Fences covering bottom left corner
-        this.FenceVertical(4,2,2450,-3750);
-        this.FenceVertical(4,2,2450,-2850);
-        this.FenceHorizontal(1,0,2450,-2190);
-        this.FenceHorizontal(6,0,2900,-2170);
+        this.FenceVertical(11,3,2850,-3600);
+        this.FenceHorizontal(44,1,-2625,-1800);
+        this.FenceHorizontal(23,0,-675,-2100);
+        this.FenceVertical(6,3,-900,-2550);
+        this.FenceVertical(11,3,-700,-3600);
+        this.FenceHorizontal(4,1,-3650,-1800);
+        this.FenceVertical(8,2,-2875,-1800);
+        this.FenceVertical(10,3,-3160,-1600);
+        this.FenceHorizontal(39,1,-2650,-500);
+        this.FenceVertical(26,2,3110,-1750);
+        this.FenceVertical(20,3,2660,0);
+        this.FenceHorizontal(20,1,-2975,-220);
+        this.FenceHorizontal(16,1,340,-220);
+        this.FenceHorizontal(16,1,350,2900);
+        this.FenceHorizontal(4,1,3370,2220);
+        this.FenceVertical(20,2,100,-200);
+        this.FenceVertical(9,3,-100,0);
+        this.FenceVertical(9,3,-100,1670);
+        this.FenceHorizontal(15,1,-2230,1430);
+        this.FenceHorizontal(24,0,-3810,1230);
+        this.FenceHorizontal(15,1,-2230,2890);
+        this.FenceVertical(9,2,-2440,1470);
     }
 
     FenceHorizontal(amountFences,FenceRotation,xPos,zPos){
@@ -393,8 +357,9 @@ export class Level3 {
     }
 
     Hill(){
-        this.addHill(1500,1500);
-        this.addHill(-1500,1500);
+        this.addHill(1800,-3000);
+        this.addHill(200,-3000);
+        this.addHill(1500,1600);
     }
 
     addHill(x,z) {
