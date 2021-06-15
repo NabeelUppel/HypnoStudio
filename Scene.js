@@ -2,7 +2,6 @@ import * as THREE from './resources/threejs/r128/build/three.module.js';
 import {OrbitControls} from './resources/threejs/r128/examples/jsm/controls/OrbitControls.js';
 import {FBXLoader} from './resources/threejs/r128/examples/jsm/loaders/FBXLoader.js';
 
-
 let pressed = {};
 let clock = new THREE.Clock();
 let world, timeStep = 1 / 60;
@@ -24,7 +23,7 @@ function main() {
     initCannon();
     initThree();
     //BOX POSITIONS NOT SIZE
-    Box(0,1,0);
+    //Box(0,1,0);
     Display(0,1,0);
     animate();
 }
@@ -93,6 +92,126 @@ function orbitalControls() {
     controls.target.set(0, 5, 0);
     controls.update();
     controls.enableKeys = false;
+}
+
+function sign(town,x,y,z){
+    const group = new THREE.Group();
+
+
+
+    const geometry = new THREE.CylinderGeometry( 0.25,0.25,8, 32 );
+    const material = new THREE.MeshLambertMaterial ({
+        color: "#C0C0C0",
+        envMap: scene.background, // must be the background of scene
+        combine: THREE.MixOperation,
+        reflectivity: .5
+    })
+
+    x = 0
+
+    for (var i = 0; i < 2; i++) {
+        const cylinder = new THREE.Mesh( geometry, material );
+        cylinder.position.set(i + x,4,0);
+        group.add( cylinder );
+        x = 3;
+
+    }
+
+
+    const texture2 = new THREE.TextureLoader().load( "./resources/images/"+ town+".png" );
+    texture2.wrapS = THREE.RepeatWrapping;
+    texture2.wrapT = THREE.RepeatWrapping;
+    texture2.repeat.set( 1, 1 );
+
+    var m = new THREE.MeshBasicMaterial({ map: texture2 });
+    
+    const Geo = new THREE.BoxGeometry(7, 2, 0.5, 10, 10);
+    const CubeShape1 = new THREE.Mesh(Geo, m);
+    CubeShape1.position.set(2,8,0);
+    CubeShape1.castShadow = true;
+    group.add(CubeShape1);
+
+
+    return(group);
+}
+
+function lampPost(x,y,z){
+
+    const group = new THREE.Group();
+
+    const texture0 = new THREE.TextureLoader().load( "./resources/images/fence.jpg" );
+    texture0.wrapS = THREE.RepeatWrapping;
+    texture0.wrapT = THREE.RepeatWrapping;
+    texture0.repeat.set( 2, 1 );
+
+    const cubeGeo = new THREE.BoxGeometry(1, 9, 1, 10, 10);
+    const material = new THREE.MeshPhongMaterial({map: texture0, side: THREE.DoubleSide});
+    //const material = new THREE.MeshLambertMaterial({color: "#8e8d8d"});
+    CubeShape = new THREE.Mesh(cubeGeo, material);
+    CubeShape.position.setY(4.5);
+    CubeShape.castShadow = true;
+
+    group.add(CubeShape);
+
+    const Geo = new THREE.BoxGeometry(6, 1, 0.5, 10, 10);
+    const CubeShape1 = new THREE.Mesh(Geo, material);
+    CubeShape1.position.set(-2,8,0);
+    CubeShape1.castShadow = true;
+    group.add(CubeShape1);
+
+    const Geometry = new THREE.BoxGeometry(3, 0.5, 0.5, 10, 10);
+    const CubeShape2 = new THREE.Mesh(Geometry, material);
+    CubeShape2.position.set(-1.2,6.5,0);
+    CubeShape2.rotateZ(-4);
+    CubeShape2.castShadow = true;
+    group.add(CubeShape2);
+
+    const texture = new THREE.TextureLoader().load( "./resources/images/lantern.jpg" );
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set( 1, 1 );
+
+
+
+    const g = new THREE.CylinderGeometry( 0.75,0.5,1.5,4 );
+    const m = new THREE.MeshLambertMaterial({color: "#8e8d8d"});
+    //const m = new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide});
+    const cylinder = new THREE.Mesh( g, m );
+    cylinder.position.set(-4,5,0)
+    group.add( cylinder );
+
+    const g2 = new THREE.CylinderGeometry( 0.1,0.75,1,4 );
+    const m2 = new THREE.MeshLambertMaterial({color: "#000000"});
+
+    const cylinder2 = new THREE.Mesh( g2, m2 );
+    cylinder2.position.set(-4,6.25,0)
+
+    group.add( cylinder2 );
+
+    const g3 = new THREE.CylinderGeometry( 0.65,0.75,0.2,4 );
+    const m3 = new THREE.MeshLambertMaterial({color: "#000000"});
+    const cylinder3 = new THREE.Mesh( g3, m3 );
+    cylinder3.position.set(-4,4.2,0)
+    group.add( cylinder3 );
+
+
+    const texture2 = new THREE.TextureLoader().load( "./resources/images/rope2.jpg" );
+    texture2.wrapS = THREE.RepeatWrapping;
+    texture2.wrapT = THREE.RepeatWrapping;
+    texture2.repeat.set( 2, 2 );
+
+
+
+    const g4 = new THREE.CylinderGeometry( 0.15,0.15,2,32 );
+    const m4 = new THREE.MeshLambertMaterial({color: "#b5651d"});
+    //const m4 = new THREE.MeshPhongMaterial({map: texture2, side: THREE.DoubleSide});
+    const cylinder4 = new THREE.Mesh( g4, m4 );
+    cylinder4.position.set(-4,7,0)
+    group.add( cylinder4 );
+
+
+    return group;
+
 }
 
 function shrub(x,y,z) {
@@ -453,6 +572,18 @@ function house(x,y,z){
 
 function Display(x, y, z) {
 
+    var signage = sign('pallet',x,y,z);
+    scene.add(signage);
+
+    /*
+
+    var post = lampPost(x,y,z);
+    scene.add(post);
+
+     */
+
+    /*
+
     var tree = Tree(x,y,z);
     tree.position.setX(5);
 
@@ -471,6 +602,8 @@ function Display(x, y, z) {
     scene.add(shroom);
     scene.add(g3);
     scene.add(shrubs);
+
+     */
 
 
 }
