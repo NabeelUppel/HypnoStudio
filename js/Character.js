@@ -478,7 +478,7 @@ export class Character {
         text2.style.height = 200+"px";
         text2.innerHTML = Text;
         text2.style.top = 400 + 'px';
-        text2.style.left = (this.canvas.width-width)+'px';
+        text2.style.left = (this.canvas.width-width)/2+'px';
         text2.style.fontSize=40+'px'
         text2.style.color='#ffffff'
         text2.style.fontFamily="Tahoma, sans-serif"

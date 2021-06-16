@@ -72,10 +72,6 @@ class World {
         this.scene.background = loader.load('./resources/images/skybox/rainbow_rt.png');
 
 
-        this.mapCamera = new THREE.OrthographicCamera(-1000, 1000, 1000, -1000, 1, 1000);
-        this.mapCamera.position.y = 500;
-        this.scene.add(this.mapCamera);
-
 
         //Camera Setup
         const fov = 60;
@@ -84,6 +80,22 @@ class World {
         const far = 2000;
         this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
         this.camera.position.set(25, 30, 25);
+
+
+        this.mapWidth = 256
+        this.mapHeight = 256
+        this.mapCamera = new THREE.OrthographicCamera(
+            3000,		// Left
+            -3000,		// Right
+            -3000,		// Top
+            3000,		// Bottom
+            1,            			// Near
+            1000 );
+
+        this.mapCamera.up = new THREE.Vector3(0,0,-1);
+        this.mapCamera.lookAt( new THREE.Vector3(0,-1,0) );
+        this.mapCamera.position.y = 250;
+        this.scene.add(this.mapCamera);
 
         //Camera Controller. Disabled by default. Hold "C" down to use.
         this.orbitalControls()
@@ -95,23 +107,6 @@ class World {
 
         //add hemisphere ligth to scene.
         this.addHemisphereLight(0xB1E1FF, 0xB97A20)
-
-        const loadingManager = new THREE.LoadingManager( () => {
-
-            const loadingScreen = document.getElementById( 'loading-screen' );
-            loadingScreen.classList.add( 'fade-out' );
-
-            // optional: remove loader from DOM via event listener
-            loadingScreen.addEventListener( 'transitionend', onTransitionEnd );
-        } );
-
-
-        function onTransitionEnd( event ) {
-
-            const element = event.target;
-            element.remove();
-
-        }
 
 
         this.addGround();
@@ -261,7 +256,21 @@ class World {
 
             //actually render the scene.
 
+            var w = window.innerWidth, h = window.innerHeight;
+
+
+            // full display
+            this.renderer.setViewport( 0, 0, w, h );
+            this.renderer.setScissor(0, 0, w, h);
+            this.renderer.setScissorTest(true);
             this.renderer.render(this.scene, this.camera);
+
+
+            // minimap (overhead orthogonal camera)
+            this.renderer.setViewport( 0, 0, this.mapWidth, this.mapHeight);
+            this.renderer.setScissor(0, 0, this.mapWidth,this.mapHeight);
+            this.renderer.setScissorTest(true);
+            this.renderer.render(this.scene, this.mapCamera);
 
             //physics and other updates done in this function.
             this.Step(t - this._previousRAF);
@@ -401,7 +410,9 @@ class World {
             switch (e.code) {
                 case "KeyC": // c
                     this.OrbitalControls.enabled = true;
+
                     break
+
                 case "KeyP":
             }
         })
