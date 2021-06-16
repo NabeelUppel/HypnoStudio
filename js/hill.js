@@ -106,7 +106,7 @@ export class Hill{
            this.meshes.push(temp2);
 
         const boxGeometry = new THREE.BoxGeometry(1400, 300, 500);
-        const boxMaterial = new THREE.MeshPhongMaterial({
+        const boxMaterial = new THREE.MeshBasicMaterial({
             map : new THREE.TextureLoader().load('resources/images/backgrounddetailed6.jpg'),
             side: THREE.DoubleSide,
         });
@@ -124,7 +124,7 @@ export class Hill{
                map: new THREE.TextureLoader().load('resources/images/grasslight-small.jpg'),
                side: THREE.DoubleSide,
            });
-           hillMaterial.shading = THREE.SmoothShading;
+           hillMaterial.flatShading = true;
            let hill = new THREE.Mesh(hillGeometry, hillMaterial);
            hill.position.set(this.x, this.yPosGround, this.z);
            this.scene.add(hill);

@@ -97,6 +97,7 @@ export class Fence {
         }
         f.position.set(0, 0, 0);
         f.scale.set(25,10,25);
+        f.castShadow = false;
         return f;
     }
 

@@ -64,7 +64,7 @@ export class Sign {
         //group.add( cubeCamera );
         this.scene.add(cubeCamera);
 
-        const chromeMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff, envMap: cubeRenderTarget.texture } );
+        const chromeMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff, envMap: cubeCamera.renderTarget.texture } );
 
         const geometry = new THREE.CylinderGeometry( 0.25,0.25,8, 32 );
         const material = new THREE.MeshLambertMaterial ({

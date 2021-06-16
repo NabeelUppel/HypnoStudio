@@ -187,7 +187,7 @@ export class Tree{
         let bushes = this.bush();
         t.add(bushes);
         t.position.set(this.x,this.y,this.z);
-
+        t.castShadow = false;
         return t;
     }
 
