@@ -1,6 +1,8 @@
 import * as THREE from '../resources/threejs/r128/build/three.module.js';
 import {FBXLoader} from '../resources/threejs/r128/examples/jsm/loaders/FBXLoader.js';
 import * as CANNON from '../resources/cannon-es/dist/cannon-es.js'
+import {Pokedex} from "./Pokedex.js"
+
 
 /*
 * The Character uses a FBX model with animations.
@@ -58,10 +60,11 @@ export class Character {
         this.world = params.world;
         this.renderer = params.renderer;
         this.camera = params.camera;
-
+        this.startPos = params.startPos;
         //used for bodies and meshes that need to be synced together
         this.meshes = params.meshes;
         this.bodies = params.bodies;
+        this.canvas = params.canvas;
 
         //used for bodies and meshes that need to be removed.
         this.rBodies = params.rBodies;
@@ -77,7 +80,7 @@ export class Character {
         //used to store animations that are loaded.
         this.allAnimations = {};
 
-
+        this.pokedex = new Pokedex()
 
         //Initialise
         let proxy = new BasicCharacterControllerProxy(this.allAnimations)
@@ -99,7 +102,21 @@ export class Character {
     }
 
     LoadModel() {
-        const loader = new FBXLoader();
+        this.manager = new THREE.LoadingManager();
+        this.manager.onLoad = () => {
+            const loadingScreen = document.getElementById( 'loading-screen' );
+            loadingScreen.classList.add( 'fade-out' );
+
+            // optional: remove loader from DOM via event listener
+            loadingScreen.addEventListener( 'transitionend', onTransitionEnd );
+        };
+
+        function onTransitionEnd( event ) {
+            const element = event.target;
+            element.remove();
+        }
+
+        const loader = new FBXLoader(this.manager);
         loader.setPath("./resources/models/Maximo/AJ/")
         loader.load("aj.fbx", (fbx) => {
             //Scale Down Model
@@ -131,7 +148,7 @@ export class Character {
             const characterShape = new CANNON.Cylinder(depth , depth, height, 8)
             this.CharacterBody = new CANNON.Body({
                 mass: 80,
-                position:  new CANNON.Vec3(2700, -100, -2700),
+                position: this.startPos,
                 material: heavyMaterial
             });
             this.CharacterBody.addShape(characterShape, new CANNON.Vec3(0, height / 2, ));
@@ -377,9 +394,9 @@ export class Character {
 
         let shootVel = 1000
         this.ballBody.velocity.set(
-            direction.x * shootVel,
+            direction.x * shootVel*2,
             direction.y * shootVel,
-            direction.z * shootVel
+            direction.z * shootVel*2
         )
 
         this.bodies.push(this.ballBody);
@@ -393,33 +410,90 @@ export class Character {
         let pNames = this.pokemon.Names;
         let index = pBodies.indexOf(e.body);
         if (index>-1){
-
-            const listener = new THREE.AudioListener();
-            this.camera.add(listener);
-            const sound = new THREE.Audio(listener);
-            const audioLoader = new THREE.AudioLoader();
-            audioLoader.load('resources/sounds/pokemonCaught.mp3', function (buffer) {
-                sound.setBuffer(buffer);
-                sound.setVolume(0.3);
-                sound.play();
-            });
-
             let name = pNames[index];
-            let body = pBodies[index];
-            let mesh = pMeshes[index];
-            this.caught.push(name);
-            this.rBodies.push(this.ballBody);
-            this.rMeshes.push(this.ballMesh);
-            this.rBodies.push(body);
-            this.rMeshes.push(mesh);
+            if(this.isCaught(name)){
+
+                const listener = new THREE.AudioListener();
+                this.camera.add(listener);
+                const sound = new THREE.Audio(listener);
+                const audioLoader = new THREE.AudioLoader();
+                audioLoader.load('resources/sounds/pokemonCaught.mp3', function (buffer) {
+                    sound.setBuffer(buffer);
+                    sound.setVolume(0.3);
+                    sound.play();
+                });
+                this.addText("You Caught "+name+"!")
+
+                let body = pBodies[index];
+                let mesh = pMeshes[index];
+                this.caught.push(name);
+                this.rBodies.push(this.ballBody);
+                this.rMeshes.push(this.ballMesh);
+                this.rBodies.push(body);
+                this.rMeshes.push(mesh);
+            }else{
+                console.log("Escaped")
+                this.addText(name+" Escaped!")
+            }
+
+
         }
         this.rBodies.push(this.ballBody);
         this.rMeshes.push(this.ballMesh);
     }
 
 
+    isCaught(PokemonName){
+        let R1 = THREE.MathUtils.randInt(0, 255)
+        let rate = this.pokedex.getRate(PokemonName)
+        return rate*2 >= R1/2.5;
+    }
+    addText(Text){
+
+        const elem = document.getElementById("text-label");
+        if(elem != null){
+            elem.parentNode.removeChild(elem);
+        }
+
+        let replace = {"NidoranMale":"Nidoran♂" ,  "NidoranFemale":"Nidoran♀", "Farfetchd":"Farfetch'd", "MrMime":"Mr. Mime"};
+        let replaceList=["NidoranMale","NidoranFemale","Farfetchd","MrMime"]
+
+        for (let i = 0; i <replaceList.length ; i++) {
+            if(Text.includes(replaceList[i])){
+                console.log(Text)
+                Text.replace(replaceList[i], replace[replaceList[i]])
+                break
+            }
+        }
 
 
+        let new_canvas=document.createElement('canvas')
+        let ctx = new_canvas.getContext("2d")
+        ctx.font="40px Tahoma, sans-serif"
+        var width = ctx.measureText(Text).width
+        let text2=document.createElement('div')
+        text2.style.position = 'absolute';
+        text2.id= 'text-label';
+        text2.style.width = width+"px";
+        text2.style.height = 200+"px";
+        text2.innerHTML = Text;
+        text2.style.top = 400 + 'px';
+        text2.style.left = (this.canvas.width-width)+'px';
+        text2.style.fontSize=40+'px'
+        text2.style.color='#ffffff'
+        text2.style.fontFamily="Tahoma, sans-serif"
+        text2.unselectable="on"
+        document.body.appendChild(text2)
+        this.removeText()
+    }
+    removeText(){
+        setTimeout(() => {
+            const elem = document.getElementById("text-label");
+            if(elem != null){
+                elem.parentNode.removeChild(elem);
+            }
+        }, 5000);
+    }
 }
 
 
