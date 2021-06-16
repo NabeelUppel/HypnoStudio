@@ -178,7 +178,7 @@ class World {
 
     //Adds HemisphereLight.
     addHemisphereLight(skyColor, groundColor) {
-        const intensity = 1;
+        const intensity = 0.8;
         const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
         this.scene.add(light);
     }

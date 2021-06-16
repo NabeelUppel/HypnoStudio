@@ -2,15 +2,6 @@ import * as THREE from '../resources/threejs/r128/build/three.module.js';
 import * as CANNON from "../resources/cannon-es/dist/cannon-es.js";
 import {Body, Vec3} from "../resources/cannon-es/dist/cannon-es.js";
 
-
-let Ground, groundBody;
-let world, timeStep = 1 / 60;
-let camera, scene, renderer, canvas, controls;
-let meshes = [];
-let bodies = [];
-let SphereShape, sphereBody;
-
-
 export class Lamp {
     constructor(params) {
         this.Init(params);
@@ -60,6 +51,7 @@ export class Lamp {
         this.bodies.push(this.lampBody);
 
 
+
         const group = new THREE.Group();
 
         const texture0 = new THREE.TextureLoader().load( "./resources/images/fence2.jpg" );
@@ -69,7 +61,6 @@ export class Lamp {
 
         const cubeGeo = new THREE.BoxGeometry(1, 9, 1, 10, 10);
         const material = new THREE.MeshPhongMaterial({map: texture0, side: THREE.DoubleSide});
-        //const material = new THREE.MeshLambertMaterial({color: "#8e8d8d"});
         this.CubeShape = new THREE.Mesh(cubeGeo, material);
         this.CubeShape.position.setY(4.5);
         this.CubeShape.castShadow = true;
@@ -89,19 +80,24 @@ export class Lamp {
         CubeShape2.castShadow = true;
         group.add(CubeShape2);
 
-        const texture = new THREE.TextureLoader().load( "./resources/images/lantern.jpg" );
+        const texture = new THREE.TextureLoader().load( "./resources/images/lamp.png" );
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set( 1, 1 );
 
 
-
-        const g = new THREE.CylinderGeometry( 0.75,0.5,1.5,4 );
-        const m = new THREE.MeshLambertMaterial({color: "#8e8d8d"});
-        //const m = new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide});
+        const g = new THREE.BoxGeometry( 1,1.5,0.75 );
+        const m = new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide,});
+        m.emissive.set(0xffa500);
+        m.emissiveIntensity = 0.6;
         const cylinder = new THREE.Mesh( g, m );
         cylinder.position.set(-4,5,0)
         group.add( cylinder );
+
+        let light1 = new THREE.SpotLight(0xffa500, 1.0);
+        light1.position.set(-4,6,0);
+        light1.target = cylinder
+        group.add(light1)
 
         const g2 = new THREE.CylinderGeometry( 0.1,0.75,1,4 );
         const m2 = new THREE.MeshLambertMaterial({color: "#000000"});
@@ -118,22 +114,14 @@ export class Lamp {
         group.add( cylinder3 );
 
 
-        const texture2 = new THREE.TextureLoader().load( "./resources/images/rope2.jpg" );
-        texture2.wrapS = THREE.RepeatWrapping;
-        texture2.wrapT = THREE.RepeatWrapping;
-        texture2.repeat.set( 2, 2 );
-
-
-
         const g4 = new THREE.CylinderGeometry( 0.15,0.15,2,32 );
         const m4 = new THREE.MeshLambertMaterial({color: "#b5651d"});
-        //const m4 = new THREE.MeshPhongMaterial({map: texture2, side: THREE.DoubleSide});
         const cylinder4 = new THREE.Mesh( g4, m4 );
         cylinder4.position.set(-4,7,0)
-
         group.add( cylinder4 );
 
         group.scale.set(12,15,12);
+
         this.scene.add(group);
         this.meshes.push(group);
     }
