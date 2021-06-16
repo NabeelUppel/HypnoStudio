@@ -1,5 +1,4 @@
 import * as THREE from './resources/threejs/r128/build/three.module.js';
-import {OrbitControls} from './resources/threejs/r128/examples/jsm/controls/OrbitControls.js';
 import cannonDebugger from "./resources/cannon-es-debugger/dist/cannon-es-debugger.js"
 import * as CANNON from './resources/cannon-es/dist/cannon-es.js'
 import * as CHARACTER from "./js/Character.js"
@@ -144,17 +143,6 @@ class World {
         this.world.defaultContactMaterial.contactEquationStiffness = 1e9;
         this.world.defaultContactMaterial.contactEquationRegularizationTime = 4;
 
-    }
-
-
-
-    //Function used to set up orbital controls that allows the user to pan  the scene.
-    orbitalControls() {
-        this.OrbitalControls = new OrbitControls(this.camera, this.canvas);
-        this.OrbitalControls.maxPolarAngle = Math.PI / 2
-        this.OrbitalControls.update();
-        this.OrbitalControls.enableKeys = false;
-        this.OrbitalControls.enabled = false;
     }
 
     //Enable different properties for the light.
@@ -414,19 +402,6 @@ class World {
         if (this.Character) {
             this.CAM.Update(timeElapsedS)
         }
-
-
-        //Allows for the orbital controls to be used on "C" key down.
-        document.addEventListener('keydown', (e) => {
-            switch (e.code) {
-                case "KeyP":
-            }
-        })
-        document.addEventListener('keyup', (e) => {
-            switch (e.code) {
-
-            }
-        })
 
     }
 
