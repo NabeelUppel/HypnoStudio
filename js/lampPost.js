@@ -119,6 +119,7 @@ export class Lamp {
         const cylinder4 = new THREE.Mesh( g4, m4 );
         cylinder4.position.set(-4,7,0)
         group.add( cylinder4 );
+        group.castShadow = true;
 
         group.scale.set(12,15,12);
 

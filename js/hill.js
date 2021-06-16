@@ -124,6 +124,7 @@ export class Hill{
                map: new THREE.TextureLoader().load('resources/images/grasslight-small.jpg'),
                side: THREE.DoubleSide,
            });
+           hillMaterial.shading = THREE.SmoothShading;
            let hill = new THREE.Mesh(hillGeometry, hillMaterial);
            hill.position.set(this.x, this.yPosGround, this.z);
            this.scene.add(hill);

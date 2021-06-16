@@ -159,7 +159,7 @@ class World {
 
     //Adds HemisphereLight.
     addHemisphereLight(skyColor, groundColor) {
-        const intensity = 1;
+        const intensity = 0.6;
         const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
         this.scene.add(light);
     }
@@ -218,8 +218,9 @@ class World {
         });
 
         let Ground = new THREE.Mesh(planeGeo, planeMat);
-        //Ground.castShadow = false;
-        //Ground.receiveShadow = true;
+        Ground.castShadow = true;
+        Ground.receiveShadow = true;
+        Ground.material.needsUpdate = true;
         Ground.quaternion.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
         this.scene.add(Ground);
         this.meshes.push(Ground);

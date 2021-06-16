@@ -61,8 +61,8 @@ export class Sign {
 
         // Create cube camera
         const cubeCamera = new THREE.CubeCamera( 1, 100000, cubeRenderTarget );
-        group.add( cubeCamera );
-        //this.scene.add(cubeCamera);
+        //group.add( cubeCamera );
+        this.scene.add(cubeCamera);
 
         const chromeMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff, envMap: cubeRenderTarget.texture } );
 

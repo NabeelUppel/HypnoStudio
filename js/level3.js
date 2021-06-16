@@ -13,6 +13,8 @@ import * as MUSHROOM from "./mushroom.js";
 import * as HILL from "./hill.js";
 import * as FENCE from "./fence.js";
 import * as HOUSE from "./house.js";
+import * as LAMPPOST from "./lampPost.js";
+import * as SIGN from "./sign.js";
 
 
 export class Level3 {
@@ -40,6 +42,8 @@ export class Level3 {
         this.Tree();
         this.Mushroom();
         this.Sound();
+        this.lampPost();
+        this.sign();
 
     }
 
@@ -96,6 +100,50 @@ export class Level3 {
          mesh2.add(sound2);
 
      }
+
+    //Function to place several lampposts into the scene.
+    lampPost(){
+        this.makeLampPost(3000,-100,-1700,2);
+    }
+
+    makeLampPost(x,y,z,r){
+        const CharParams = {
+            camera: this.camera,
+            scene: this.scene,
+            world: this.world,
+            bodies: this.bodies,
+            meshes: this.meshes,
+            x: x,
+            y: y,
+            z: z,
+            r: r,
+        }
+        this.lampPost = new LAMPPOST.Lamp(CharParams);
+        this.lampPost.createLamp();
+    }
+
+    //Function to place several signs into the scene.
+    sign(){
+        this.makeSign(3200,-100,-1900,1,"twinleaf");
+        this.makeSign(-3200,-100,2600,1,"newbark");
+    }
+
+    makeSign(x,y,z,r,town){
+        const CharParams = {
+            camera: this.camera,
+            scene: this.scene,
+            world: this.world,
+            bodies: this.bodies,
+            meshes: this.meshes,
+            x: x,
+            y: y,
+            z: z,
+            r: r,
+            town: town,
+        }
+        this.sign = new SIGN.Sign(CharParams);
+        this.sign.createSign();
+    }
 
     //Function to access mushrooms class and add the mushrooms to the scene in certain locations.
     Mushroom() {

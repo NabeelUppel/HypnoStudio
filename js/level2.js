@@ -1,11 +1,4 @@
 import * as THREE from '../resources/threejs/r128/build/three.module.js';
-import {OrbitControls} from '../resources/threejs/r128/examples/jsm/controls/OrbitControls.js';
-import cannonDebugger from "../resources/cannon-es-debugger/dist/cannon-es-debugger.js"
-import * as CANNON from '../resources/cannon-es/dist/cannon-es.js'
-import * as CHARACTER from "./Character.js"
-import * as CAMERA from "./ThirdPersonCamera.js";
-import * as POKEMON from "./Pokemon.js"
-import * as SKYBOX from "./skybox.js";
 import * as PATH from "./paths.js";
 import * as SHRUB from "./shrub.js";
 import * as TREE from "./tree.js";
@@ -13,6 +6,8 @@ import * as MUSHROOM from "./mushroom.js";
 import * as HILL from "./hill.js";
 import * as FENCE from "./fence.js";
 import * as HOUSE from "./house.js";
+import * as LAMPPOST from "./lampPost.js";
+import * as SIGN from "./sign.js";
 
 
 export class Level2 {
@@ -40,6 +35,8 @@ export class Level2 {
         this.Tree();
         this.Mushroom();
         this.Sound();
+        this.lampPost();
+        this.sign();
 
     }
 
@@ -169,6 +166,57 @@ export class Level2 {
             r: r,
         }
     }
+
+    //Function to place several lampposts into the scene.
+    lampPost(){
+        this.makeLampPost(-800,-100,150,1);
+        this.makeLampPost(-800,-100,-150,1);
+        this.makeLampPost(850,-100,150,0);
+        this.makeLampPost(850,-100,-150,0);
+        this.makeLampPost(140,-100,750,2);
+        this.makeLampPost(-140,-100,750,2);
+        this.makeLampPost(140,-100,-750,3);
+        this.makeLampPost(-140,-100,-750,3);
+    }
+
+    makeLampPost(x,y,z,r){
+        const CharParams = {
+            camera: this.camera,
+            scene: this.scene,
+            world: this.world,
+            bodies: this.bodies,
+            meshes: this.meshes,
+            x: x,
+            y: y,
+            z: z,
+            r: r,
+        }
+        this.lampPost = new LAMPPOST.Lamp(CharParams);
+        this.lampPost.createLamp();
+    }
+
+    //Function to place several signs into the scene.
+    sign(){
+        this.makeSign(200,-100,600,1,"oldale");
+    }
+
+    makeSign(x,y,z,r,town){
+        const CharParams = {
+            camera: this.camera,
+            scene: this.scene,
+            world: this.world,
+            bodies: this.bodies,
+            meshes: this.meshes,
+            x: x,
+            y: y,
+            z: z,
+            r: r,
+            town: town,
+        }
+        this.sign = new SIGN.Sign(CharParams);
+        this.sign.createSign();
+    }
+
  //Function to access House class and add the houses to the scene in certain locations.
     House() {
         let charParams = this.makeHouse(700, this.yPosGround + 50, 600, 0);

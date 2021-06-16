@@ -554,7 +554,7 @@ class World {
     }
     //Function to access paths class and add the paths to the scene in certain locations.
     paths() {
-        this.addPath(100, 2000, 2000, this.yPosGround, -1000, 0, 0);
+        this.addPath(100, 2000, 1975, this.yPosGround, -1000, 0, 0);
         this.addPath(300, 2500, 500, this.yPosGround, -2500, 1, 0);
         this.addPath(100, 700, 1700, this.yPosGround, 1700, 0, 0);
         this.addPath(200, 3300, 0, this.yPosGround, 1900, 1, 0);
