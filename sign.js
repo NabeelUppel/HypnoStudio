@@ -65,11 +65,20 @@ export class Sign {
         const group = new THREE.Group();
 
 
+        // Create cube render target
+        const cubeRenderTarget = new THREE.WebGLCubeRenderTarget( 128, { format: THREE.RGBFormat, generateMipmaps: true, minFilter: THREE.LinearMipmapLinearFilter } );
+
+        // Create cube camera
+        const cubeCamera = new THREE.CubeCamera( 1, 100000, cubeRenderTarget );
+        group.add( cubeCamera );
+        //scene.add(cubeCamera);
+
+        const chromeMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff, envMap: cubeRenderTarget.texture } );
 
         const geometry = new THREE.CylinderGeometry( 0.25,0.25,8, 32 );
         const material = new THREE.MeshLambertMaterial ({
             color: "#C0C0C0",
-            envMap: this.scene.background, // must be the background of scene
+            envMap: scene.background, // must be the background of scene
             combine: THREE.MixOperation,
             reflectivity: .5
         })
@@ -77,16 +86,17 @@ export class Sign {
         x = 0
 
         for (var i = 0; i < 2; i++) {
-            const cylinder = new THREE.Mesh( geometry, material );
+            const cylinder = new THREE.Mesh( geometry, chromeMaterial );
             cylinder.position.set(i + x,4,0);
-            cylinder.castShadow = true;
             group.add( cylinder );
+
+
             x = 3;
 
         }
 
 
-        const texture2 = new THREE.TextureLoader().load( "./resources/images/"+ this.town+".png" );
+        const texture2 = new THREE.TextureLoader().load( "./resources/images/"+ town+".png" );
         texture2.wrapS = THREE.RepeatWrapping;
         texture2.wrapT = THREE.RepeatWrapping;
         texture2.repeat.set( 1, 1 );

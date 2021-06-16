@@ -97,7 +97,15 @@ function orbitalControls() {
 function sign(town,x,y,z){
     const group = new THREE.Group();
 
+    // Create cube render target
+    const cubeRenderTarget = new THREE.WebGLCubeRenderTarget( 128, { format: THREE.RGBFormat, generateMipmaps: true, minFilter: THREE.LinearMipmapLinearFilter } );
 
+// Create cube camera
+    const cubeCamera = new THREE.CubeCamera( 1, 100000, cubeRenderTarget );
+    group.add( cubeCamera );
+    //scen.add(cubeCamera);
+
+    const chromeMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff, envMap: cubeRenderTarget.texture } );
 
     const geometry = new THREE.CylinderGeometry( 0.25,0.25,8, 32 );
     const material = new THREE.MeshLambertMaterial ({
@@ -110,9 +118,11 @@ function sign(town,x,y,z){
     x = 0
 
     for (var i = 0; i < 2; i++) {
-        const cylinder = new THREE.Mesh( geometry, material );
+        const cylinder = new THREE.Mesh( geometry, chromeMaterial );
         cylinder.position.set(i + x,4,0);
         group.add( cylinder );
+
+
         x = 3;
 
     }
@@ -564,18 +574,19 @@ function house(x,y,z){
 
 function Display(x, y, z) {
 
-    /*
+
 
     var signage = sign('oldale',x,y,z);
     scene.add(signage);
 
-     */
 
 
-
+/*
     var post = lampPost(x,y,z);
     scene.add(post);
 
+
+ */
 
 
     /*
