@@ -63,14 +63,13 @@ export class Lamp {
 
         const group = new THREE.Group();
 
-        const texture0 = new THREE.TextureLoader().load( "./resources/images/fence.jpg" );
+        const texture0 = new THREE.TextureLoader().load( "./resources/images/fence2.jpg" );
         texture0.wrapS = THREE.RepeatWrapping;
         texture0.wrapT = THREE.RepeatWrapping;
         texture0.repeat.set( 2, 1 );
 
         const cubeGeo = new THREE.BoxGeometry(1, 9, 1, 10, 10);
         const material = new THREE.MeshPhongMaterial({map: texture0, side: THREE.DoubleSide});
-        //const material = new THREE.MeshLambertMaterial({color: "#8e8d8d"});
         CubeShape = new THREE.Mesh(cubeGeo, material);
         CubeShape.position.setY(4.5);
         CubeShape.castShadow = true;
@@ -90,16 +89,15 @@ export class Lamp {
         CubeShape2.castShadow = true;
         group.add(CubeShape2);
 
-        const texture = new THREE.TextureLoader().load( "./resources/images/lantern.jpg" );
+        const texture = new THREE.TextureLoader().load( "./resources/images/lamp.png" );
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set( 1, 1 );
 
 
 
-        const g = new THREE.CylinderGeometry( 0.75,0.5,1.5,4 );
-        const m = new THREE.MeshLambertMaterial({color: "#8e8d8d"});
-        //const m = new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide});
+        const g = new THREE.BoxGeometry( 1,1.5,0.75 );
+        const m = new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide});
         const cylinder = new THREE.Mesh( g, m );
         cylinder.position.set(-4,5,0)
         group.add( cylinder );
@@ -119,19 +117,10 @@ export class Lamp {
         group.add( cylinder3 );
 
 
-        const texture2 = new THREE.TextureLoader().load( "./resources/images/rope2.jpg" );
-        texture2.wrapS = THREE.RepeatWrapping;
-        texture2.wrapT = THREE.RepeatWrapping;
-        texture2.repeat.set( 2, 2 );
-
-
-
         const g4 = new THREE.CylinderGeometry( 0.15,0.15,2,32 );
         const m4 = new THREE.MeshLambertMaterial({color: "#b5651d"});
-        //const m4 = new THREE.MeshPhongMaterial({map: texture2, side: THREE.DoubleSide});
         const cylinder4 = new THREE.Mesh( g4, m4 );
         cylinder4.position.set(-4,7,0)
-
         group.add( cylinder4 );
 
 
