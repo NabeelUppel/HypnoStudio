@@ -13,6 +13,8 @@ import * as MUSHROOM from "./js/mushroom.js";
 import * as HILL from "./js/hill.js";
 import * as FENCE from "./js/fence.js";
 import * as HOUSE from "./js/house.js";
+import * as LAMPPOST from "./js/lampPost.js";
+import * as SIGN from "./js/sign.js";
 
 
 (function () {
@@ -37,6 +39,7 @@ class World {
         this.InitTHREE();
         this.debug = new cannonDebugger(this.scene, this.world.bodies);
     }
+
 
     //Declare Variables that is needed.
     _Declare() {
@@ -82,17 +85,17 @@ class World {
         this.camera.position.set(25, 30, 25);
 
 
-        this.StartPos = new CANNON.Vec3(2700, -100, 1000);
+        this.StartPos = new CANNON.Vec3(2700, -100, -2900);
 
-        this.mapWidth = 256
-        this.mapHeight = 256
+        this.mapWidth = 300
+        this.mapHeight = 300
         this.mapCamera = new THREE.OrthographicCamera(
-            1500,		// Left
-            -1500,		// Right
-            -1500,		// Top
-            1500,	// Bottom
+            1750,		// Left
+            -1750,		// Right
+            -1750,		// Top
+            1750,	// Bottom
             1,         // Near
-            1000);
+            2000);
 
         this.mapCamera.up = new THREE.Vector3(0,0,-1);
         this.mapCamera.lookAt( new THREE.Vector3(0,-1,0) );
@@ -116,14 +119,19 @@ class World {
         this.Mushroom();
         this.Fence();
         this.House();
-        //this.music();
+        this.music();
+        this.ambientSounds();
+        this.lampPost();
+        this.sign();
 
         //Load animated Model
         this.LoadAnimatedModel();
 
         //Render the initial scene. Will be recursively called thereafter.
         this.Render();
+
     }
+
 
     //Initialise CannonJS (Physics) including setting up the gravity and other resources.
     InitCANNON() {
@@ -138,6 +146,16 @@ class World {
 
     }
 
+
+
+    //Function used to set up orbital controls that allows the user to pan  the scene.
+    orbitalControls() {
+        this.OrbitalControls = new OrbitControls(this.camera, this.canvas);
+        this.OrbitalControls.maxPolarAngle = Math.PI / 2
+        this.OrbitalControls.update();
+        this.OrbitalControls.enableKeys = false;
+        this.OrbitalControls.enabled = false;
+    }
 
     //Enable different properties for the light.
     LightEnable(light) {
@@ -248,15 +266,11 @@ class World {
             var w = window.innerWidth, h = window.innerHeight;
 
 
-            this.renderer.clear();
             // full display
             this.renderer.setViewport( 0, 0, w, h );
-            this.renderer.setScissor(0, 0, w,h);
+            this.renderer.setScissor(0, 0, w, h);
             this.renderer.setScissorTest(true);
             this.renderer.render(this.scene, this.camera);
-
-
-            this.renderer.clearDepth()
 
             // minimap (overhead orthogonal camera)
 
@@ -266,13 +280,10 @@ class World {
                 this.renderer.setScissor(0, 0, this.mapWidth,this.mapHeight);
                 this.renderer.setScissorTest(true);
                 console.log(this.mapCamera.position)
-                this.mapCamera.position.y =250;
+                this.mapCamera.position.y =800;
                 console.log("after",this.mapCamera.position)
                 this.renderer.render(this.scene, this.mapCamera);
             }
-
-
-
 
 
             //physics and other updates done in this function.
@@ -322,8 +333,7 @@ class World {
         }
 
         //If Position is on player dont spawn pokemon there.
-        var playerPosition = new THREE.Vector3();
-        playerPosition.copy(this.StartPos)
+        var playerPosition = new THREE.Vector3(2700, this.yPosGround, 2700);
         const index = positions.indexOf(playerPosition)
         if (index > -1) {
             positions.splice(index, 1)
@@ -402,7 +412,7 @@ class World {
 
         //Update the third person camera.
         if (this.Character) {
-                this.CAM.Update(timeElapsedS)
+            this.CAM.Update(timeElapsedS)
         }
 
 
@@ -420,7 +430,108 @@ class World {
 
     }
 
+    //Ambient sounds near villages.
+    ambientSounds(){
+        const listener = new THREE.AudioListener();
+        this.camera.add( listener );
 
+        //Creates a positional audio which only plays music in certain locations.
+        const sound = new THREE.PositionalAudio( listener );
+
+
+        const audioLoader = new THREE.AudioLoader();
+        audioLoader.load( 'resources/sounds/townAmbience.mp3', function( buffer ) {
+            sound.setBuffer( buffer );
+            sound.setRefDistance(200);
+            sound.setLoop(true);
+            sound.setVolume(0.5);
+            sound.play();
+        });
+
+        //Create box that covers area where the sound should be. Make the box opaque so that you can't see it
+        //Add sound to object so that when you in close to the object sound will play.
+        const sphere = new THREE.BoxGeometry( 2000, 0.1,2000);
+        const material = new THREE.MeshPhongMaterial( { color: 0xff2200,transparent: true, opacity : 0  } );
+        const mesh = new THREE.Mesh( sphere, material );
+        mesh.position.set(3000, -99, -2700);
+        this.scene.add( mesh );
+        mesh.add(sound);
+
+        const listener2 = new THREE.AudioListener();
+        this.camera.add( listener2 );
+
+        const sound2 = new THREE.PositionalAudio( listener2 );
+
+
+        const audioLoader2 = new THREE.AudioLoader();
+        audioLoader2.load( 'resources/sounds/townAmbience.mp3', function( buffer ) {
+            sound2.setBuffer( buffer );
+            sound2.setRefDistance(200);
+            sound2.setLoop(true);
+            sound2.setVolume(0.5);
+            sound2.play();
+        });
+
+        //Create box that covers area where the sound should be. Make the box opaque so that you can't see it
+        //Add sound to object so that when you in close to the object sound will play.
+        const sphere2 = new THREE.BoxGeometry( 2000, 0.1,2000);
+        const material2 = new THREE.MeshPhongMaterial( { color: 0xff2200,transparent: true, opacity : 0  } );
+        const mesh2 = new THREE.Mesh( sphere2, material2 );
+        mesh2.position.set(-3000, -99, 2700);
+        this.scene.add( mesh2 );
+        mesh2.add(sound2);
+
+    }
+
+    //Function to place several signs into the scene.
+    sign(){
+        this.makeSign(2200,-100,-2100,1,"pallet");
+        this.makeSign(-2250,-100,1975,2,"lavender");
+    }
+
+    makeSign(x,y,z,r,town){
+        const CharParams = {
+            camera: this.camera,
+            scene: this.scene,
+            world: this.world,
+            bodies: this.bodies,
+            meshes: this.meshes,
+            x: x,
+            y: y,
+            z: z,
+            r: r,
+            town: town,
+        }
+        this.sign = new SIGN.Sign(CharParams);
+        this.sign.createSign();
+    }
+
+
+    //Function to place several lampposts into the scene.
+    lampPost(){
+        this.makeLampPost(2100,-100,-2100,2);
+        this.makeLampPost(1900,-100,-2100,2);
+        this.makeLampPost(1050,-100,80,1);
+        this.makeLampPost(1050,-100,400,1);
+        this.makeLampPost(-1050,-100,80,0);
+        this.makeLampPost(-1050,-100,400,0);
+    }
+
+    makeLampPost(x,y,z,r){
+        const CharParams = {
+            camera: this.camera,
+            scene: this.scene,
+            world: this.world,
+            bodies: this.bodies,
+            meshes: this.meshes,
+            x: x,
+            y: y,
+            z: z,
+            r: r,
+        }
+        this.lampPost = new LAMPPOST.Lamp(CharParams);
+        this.lampPost.createLamp();
+    }
 
 
     makeFence(x, y, z, r) {
@@ -438,13 +549,13 @@ class World {
 
         }
     }
-
+    //Function to access paths class and add the paths to the scene in certain locations.
     paths() {
         this.addPath(100, 2000, 2000, this.yPosGround, -1000, 0, 0);
-        this.addPath(100, 2500, 500, this.yPosGround, -2300, 1, 0);
+        this.addPath(300, 2500, 500, this.yPosGround, -2500, 1, 0);
         this.addPath(100, 700, 1700, this.yPosGround, 1700, 0, 0);
-        this.addPath(100, 3300, 0, this.yPosGround, 2000, 1, 0);
-        this.addPath(100, 3600, -1900, this.yPosGround, -300, 0, 0);
+        this.addPath(200, 3300, 0, this.yPosGround, 1900, 1, 0);
+        this.addPath(300, 3600, -1800, this.yPosGround, -300, 0, 0);
         this.addPath(300, 3500, -200, this.yPosGround, 250, 1, 0);
     }
 
@@ -468,25 +579,7 @@ class World {
         this.path.createPath();
     }
 
-    Ball(x, y, z) {
-        const radius = 50;
-        let shape = new CANNON.Sphere(radius);
-        const sphereBody = new CANNON.Body({mass: 60000});
-        sphereBody.addShape(shape);
-        sphereBody.position.set(x, y, z);
-        this.world.addBody(sphereBody);
-        this.bodies.push(sphereBody);
-
-
-        const sphereGeometry = new THREE.SphereGeometry(radius, 64, 64);
-        const material = new THREE.MeshPhongMaterial({color: "#711a1a"});
-        const SphereShape = new THREE.Mesh(sphereGeometry, material);
-        SphereShape.position.set(x, y, z);
-        SphereShape.castShadow = true;
-        this.scene.add(SphereShape);
-        this.meshes.push(SphereShape);
-    }
-
+    //Functions to access Shrubs class and add shrubs to the scene.
     Shrub() {
         //Code repeated 4 times to make 4 walls around the map so that player is unable to escape.
         let charParams = this.makeShrubs(3100, this.yPosGround+92 , 100, 0);
@@ -503,12 +596,13 @@ class World {
         this.scene.add(shrub);
         this.meshes.push(shrub);
 
-        charParams = this.makeShrubs(0, this.yPosGround+92 , 3000, 1);
+        charParams = this.makeShrubs(0, this.yPosGround+92 , 2950, 1);
         this.shrub = new SHRUB.Shrub(charParams);
         shrub = this.shrub.createShrub();
         shrub.scale.set(10, 10, 2200);
         this.scene.add(shrub);
         this.meshes.push(shrub);
+
 
         charParams = this.makeShrubs(0, this.yPosGround+92 , -3000, 1);
         this.shrub = new SHRUB.Shrub(charParams);
@@ -516,8 +610,6 @@ class World {
         shrub.scale.set(10, 10, 2200);
         this.scene.add(shrub);
         this.meshes.push(shrub);
-
-        //this.makeShrubs(300,400,this.yPosGround);
     }
 
     makeShrubs(x, y, z, r) {
@@ -534,6 +626,7 @@ class World {
         }
     }
 
+    //Function to access trees class and add the trees to the scene in certain locations.
     Tree() {
 
         let charParams = this.makeTrees(2200, this.yPosGround + 15, -1900, 14, 3, 180, 50);
@@ -567,10 +660,10 @@ class World {
         charParams = this.makeTrees(2100, this.yPosGround + 15, 1400, 10, 2, 300, 90);
         this.tree = new TREE.Tree(charParams);
         this.tree.createTrees();
-        charParams = this.makeTrees(-1500, this.yPosGround + 15, 2100, 25, 2, 160, 180);
+
+        charParams = this.makeTrees(-1500, this.yPosGround + 15, 2200, 25, 3, 200, 180);
         this.tree = new TREE.Tree(charParams);
         this.tree.createTrees();
-
 
     }
 
@@ -606,7 +699,7 @@ class World {
         }
     }
 
-
+    //Function to access House class and add the houses to the scene in certain locations.
     House(){
         let charParams = this.makeHouse(3020, this.yPosGround + 50, -2770, 0);
         this.house = new HOUSE.House(charParams);
@@ -707,38 +800,12 @@ class World {
 
     }
 
+    //Function to access mushrooms class and add the mushrooms to the scene in certain locations.
     Mushroom() {
-        let charParams = this.makeMushroom(1100, this.yPosGround + 15, 100, 0);
+
+        let charParams = this.makeMushroom(3084, this.yPosGround + 15, 1300, 0);
         this.mushroom = new MUSHROOM.Mushroom(charParams);
         let mushroom = this.mushroom.createMushroom();
-        mushroom.scale.set(10, 10, 10);
-        this.scene.add(mushroom);
-        this.meshes.push(mushroom);
-
-
-        charParams = this.makeMushroom(1100, this.yPosGround + 15, 400, 0);
-        this.mushroom = new MUSHROOM.Mushroom(charParams);
-        mushroom = this.mushroom.createMushroom();
-        mushroom.scale.set(10, 10, 10);
-        this.scene.add(mushroom);
-        this.meshes.push(mushroom);
-
-        charParams = this.makeMushroom(-1100, this.yPosGround + 15, 100, 0);
-        this.mushroom = new MUSHROOM.Mushroom(charParams);
-        mushroom = this.mushroom.createMushroom();
-        mushroom.scale.set(10, 10, 10);
-        this.scene.add(mushroom);
-        this.meshes.push(mushroom);
-        charParams = this.makeMushroom(-1100, this.yPosGround + 15, 400, 0);
-        this.mushroom = new MUSHROOM.Mushroom(charParams);
-        mushroom = this.mushroom.createMushroom();
-        mushroom.scale.set(10, 10, 10);
-        this.scene.add(mushroom);
-        this.meshes.push(mushroom);
-
-        charParams = this.makeMushroom(3084, this.yPosGround + 15, 1300, 0);
-        this.mushroom = new MUSHROOM.Mushroom(charParams);
-        mushroom = this.mushroom.createMushroom();
         mushroom.scale.set(10, 10, 10);
         this.scene.add(mushroom);
         this.meshes.push(mushroom);
@@ -790,7 +857,7 @@ class World {
         const sound = new THREE.Audio(listener);
 
         const audioLoader = new THREE.AudioLoader();
-        audioLoader.load('resources/sounds/Magic-Clock-Shop_Looping.mp3', function (buffer) {
+        audioLoader.load('resources/sounds/level1.mp3', function (buffer) {
             sound.setBuffer(buffer);
             sound.setLoop(true);
             sound.setVolume(0.5);
@@ -811,184 +878,52 @@ class World {
         this.skybox.createSkybox();
     }
 
-    Fence() {
+    //Create fences of a certain length in the horizontal direction.
+    FenceHorizontal(amountFences,FenceRotation,xPos,zPos){
         let xAdd = 0;
-        for (let i = 0; i < 6; ++i) {
-            let charParams = this.makeFence(2300 + xAdd, this.yPosGround, -2050, 1);
+        for (let i = 0; i < amountFences; ++i) {
+            let charParams = this.makeFence(xPos + xAdd, this.yPosGround, zPos, FenceRotation);
             this.fence = new FENCE.Fence(charParams);
             let fence = this.fence.createFence();
             this.scene.add(fence);
             this.meshes.push(fence);
             xAdd += 150;
         }
+    }
 
+    //Create fences of a certain length in the vertical direction.
+    FenceVertical(amountFences,FenceRotation,xPos,zPos){
         let zAdd = 0;
-        for (let i = 0; i < 13; ++i) {
-            let charParams = this.makeFence(2070, this.yPosGround, -2000 + zAdd, 2);
+        for (let i = 0; i < amountFences; ++i) {
+            let charParams = this.makeFence(xPos, this.yPosGround, zPos + zAdd, FenceRotation);
             this.fence = new FENCE.Fence(charParams);
             let fence = this.fence.createFence();
             this.scene.add(fence);
             this.meshes.push(fence);
             zAdd += 150;
         }
+    }
 
-
-        xAdd = 0;
-        for (let i = 0; i < 6; ++i) {
-            let charParams = this.makeFence(2130 + xAdd, this.yPosGround, 10, 0);
-            this.fence = new FENCE.Fence(charParams);
-            let fence = this.fence.createFence();
-            this.scene.add(fence);
-            this.meshes.push(fence);
-            xAdd += 150;
-        }
-
-
-        xAdd = 0;
-        for (let i = 0; i < 18; ++i) {
-            let charParams = this.makeFence(-700 + xAdd, this.yPosGround, -2050, 1);
-            this.fence = new FENCE.Fence(charParams);
-            let fence = this.fence.createFence();
-            this.scene.add(fence);
-            this.meshes.push(fence);
-            xAdd += 150;
-        }
-
-
-        zAdd = 0;
-        for (let i = 0; i < 13; ++i) {
-            let charParams = this.makeFence(1900, this.yPosGround, -1800 + zAdd, 3);
-            this.fence = new FENCE.Fence(charParams);
-            let fence = this.fence.createFence();
-            this.scene.add(fence);
-            this.meshes.push(fence);
-            zAdd += 150;
-        }
-
-
-        xAdd = 0;
-        for (let i = 0; i < 6; ++i) {
-            let charParams = this.makeFence(900 + xAdd, this.yPosGround, 0, 0);
-            this.fence = new FENCE.Fence(charParams);
-            let fence = this.fence.createFence();
-            this.scene.add(fence);
-            this.meshes.push(fence);
-            xAdd += 150;
-        }
-
-
-        zAdd = 0;
-        for (let i = 0; i < 13; ++i) {
-            let charParams = this.makeFence(-900, this.yPosGround, -2050 + zAdd, 2);
-            this.fence = new FENCE.Fence(charParams);
-            let fence = this.fence.createFence();
-            this.scene.add(fence);
-            this.meshes.push(fence);
-            zAdd += 150;
-        }
-
-
-        xAdd = 0;
-        for (let i = 0; i < 6; ++i) {
-            let charParams = this.makeFence(2276 + xAdd, this.yPosGround, 1300, 1);
-            this.fence = new FENCE.Fence(charParams);
-            let fence = this.fence.createFence();
-            this.scene.add(fence);
-            this.meshes.push(fence);
-            xAdd += 150;
-        }
-
-        zAdd = 0;
-        for (let i = 0; i < 5; ++i) {
-            let charParams = this.makeFence(2050, this.yPosGround, 1350 + zAdd, 2);
-            this.fence = new FENCE.Fence(charParams);
-            let fence = this.fence.createFence();
-            this.scene.add(fence);
-            this.meshes.push(fence);
-            zAdd += 150;
-        }
-
-        xAdd = 0;
-        for (let i = 0; i < 23; ++i) {
-            let charParams = this.makeFence(-1300 + xAdd, this.yPosGround, 2100, 1);
-            this.fence = new FENCE.Fence(charParams);
-            let fence = this.fence.createFence();
-            this.scene.add(fence);
-            this.meshes.push(fence);
-            xAdd += 150;
-        }
-
-        zAdd = 0;
-        for (let i = 0; i < 5; ++i) {
-            let charParams = this.makeFence(-1550, this.yPosGround, 2080 + zAdd, 2);
-            this.fence = new FENCE.Fence(charParams);
-            let fence = this.fence.createFence();
-            this.scene.add(fence);
-            this.meshes.push(fence);
-            zAdd += 150;
-        }
-
-
-        xAdd = 0;
-        for (let i = 0; i < 13; ++i) {
-            let charParams = this.makeFence(-800 + xAdd, this.yPosGround, 1400, 1);
-            this.fence = new FENCE.Fence(charParams);
-            let fence = this.fence.createFence();
-            this.scene.add(fence);
-            this.meshes.push(fence);
-            xAdd += 150;
-        }
-
-        zAdd = 0;
-        for (let i = 0; i < 6; ++i) {
-            let charParams = this.makeFence(1000, this.yPosGround, 450 + zAdd, 2);
-            this.fence = new FENCE.Fence(charParams);
-            let fence = this.fence.createFence();
-            this.scene.add(fence);
-            this.meshes.push(fence);
-            zAdd += 150;
-        }
-
-        zAdd = 0;
-        for (let i = 0; i < 6; ++i) {
-            let charParams = this.makeFence(-1000, this.yPosGround, 450 + zAdd, 2);
-            this.fence = new FENCE.Fence(charParams);
-            let fence = this.fence.createFence();
-            this.scene.add(fence);
-            this.meshes.push(fence);
-            zAdd += 150;
-        }
-
-        zAdd = 0;
-        for (let i = 0; i < 22; ++i) {
-            let charParams = this.makeFence(-2000, this.yPosGround, -2000 + zAdd, 2);
-            this.fence = new FENCE.Fence(charParams);
-            let fence = this.fence.createFence();
-            this.scene.add(fence);
-            this.meshes.push(fence);
-            zAdd += 150;
-        }
-
-        xAdd = 0;
-        for (let i = 0; i < 6; ++i) {
-            let charParams = this.makeFence(-2800 + xAdd, this.yPosGround, 1300, 1);
-            this.fence = new FENCE.Fence(charParams);
-            let fence = this.fence.createFence();
-            this.scene.add(fence);
-            this.meshes.push(fence);
-            xAdd += 150;
-        }
-
-        xAdd = 0;
-        for (let i = 0; i < 6; ++i) {
-            let charParams = this.makeFence(-2800 + xAdd, this.yPosGround, -2050, 1);
-            this.fence = new FENCE.Fence(charParams);
-            let fence = this.fence.createFence();
-            this.scene.add(fence);
-            this.meshes.push(fence);
-            xAdd += 150;
-        }
-
+    //Function to access Fence class and add the fences to the scene in certain locations.
+    //Calls many functions as fences are used to block the player off from restricted areas.
+    Fence() {
+        this.FenceHorizontal(6,1,2300,-2050);
+        this.FenceVertical(13,2,2070,-2000);
+        this.FenceHorizontal(6,0,2130,10);
+        this.FenceHorizontal(18,1,-700,-2050);
+        this.FenceVertical(13,3,1900,-1800);
+        this.FenceHorizontal(6,0,900,0);
+        this.FenceVertical(13,2,-900,-2050);
+        this.FenceHorizontal(6,1,2276,1300);
+        this.FenceVertical(5,2,2050,1350);
+        this.FenceHorizontal(23,1,-1300,2100);
+        this.FenceVertical(5,2,-1550,2080);
+        this.FenceHorizontal(13,1,-800,1400);
+        this.FenceVertical(6,2,1000,450);
+        this.FenceVertical(6,2,-1000,450);
+        this.FenceVertical(22,2,-2000,-2000);
+        this.FenceHorizontal(6,1,-2800,1300);
+        this.FenceHorizontal(6,1,-2800,-2050);
     }
 
 
