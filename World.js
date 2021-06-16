@@ -64,7 +64,7 @@ class World {
         });
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
+        this.renderer.autoClear=false;
 
         //Scene Setup
         this.scene = new THREE.Scene();
@@ -82,30 +82,28 @@ class World {
         this.camera.position.set(25, 30, 25);
 
 
+        this.StartPos = new CANNON.Vec3(2700, -100, 1000);
+
         this.mapWidth = 256
         this.mapHeight = 256
         this.mapCamera = new THREE.OrthographicCamera(
-            3000,		// Left
-            -3000,		// Right
-            -3000,		// Top
-            3000,		// Bottom
-            1,            			// Near
-            1000 );
+            1500,		// Left
+            -1500,		// Right
+            -1500,		// Top
+            1500,	// Bottom
+            1,         // Near
+            1000);
 
         this.mapCamera.up = new THREE.Vector3(0,0,-1);
         this.mapCamera.lookAt( new THREE.Vector3(0,-1,0) );
-        this.mapCamera.position.y = 250;
-        this.scene.add(this.mapCamera);
 
-        //Camera Controller. Disabled by default. Hold "C" down to use.
-        this.orbitalControls()
 
         //adds directional light to scene.
         let light = new THREE.DirectionalLight(0xFFFFFF, 1.0);
         this.LightEnable(light);
         this.scene.add(light);
 
-        //add hemisphere ligth to scene.
+        //add hemisphere light to scene.
         this.addHemisphereLight(0xB1E1FF, 0xB97A20)
 
 
@@ -140,15 +138,6 @@ class World {
 
     }
 
-
-    //Function used to set up orbital controls that allows the user to pan  the scene.
-    orbitalControls() {
-        this.OrbitalControls = new OrbitControls(this.camera, this.canvas);
-        this.OrbitalControls.maxPolarAngle = Math.PI / 2
-        this.OrbitalControls.update();
-        this.OrbitalControls.enableKeys = false;
-        this.OrbitalControls.enabled = false;
-    }
 
     //Enable different properties for the light.
     LightEnable(light) {
@@ -259,18 +248,32 @@ class World {
             var w = window.innerWidth, h = window.innerHeight;
 
 
+            this.renderer.clear();
             // full display
             this.renderer.setViewport( 0, 0, w, h );
-            this.renderer.setScissor(0, 0, w, h);
+            this.renderer.setScissor(0, 0, w,h);
             this.renderer.setScissorTest(true);
             this.renderer.render(this.scene, this.camera);
 
 
+            this.renderer.clearDepth()
+
             // minimap (overhead orthogonal camera)
-            this.renderer.setViewport( 0, 0, this.mapWidth, this.mapHeight);
-            this.renderer.setScissor(0, 0, this.mapWidth,this.mapHeight);
-            this.renderer.setScissorTest(true);
-            this.renderer.render(this.scene, this.mapCamera);
+
+
+            if (this.Character){
+                this.renderer.setViewport( 0, 0, this.mapWidth, this.mapHeight);
+                this.renderer.setScissor(0, 0, this.mapWidth,this.mapHeight);
+                this.renderer.setScissorTest(true);
+                console.log(this.mapCamera.position)
+                this.mapCamera.position.y =250;
+                console.log("after",this.mapCamera.position)
+                this.renderer.render(this.scene, this.mapCamera);
+            }
+
+
+
+
 
             //physics and other updates done in this function.
             this.Step(t - this._previousRAF);
@@ -319,7 +322,8 @@ class World {
         }
 
         //If Position is on player dont spawn pokemon there.
-        var playerPosition = new THREE.Vector3(2700, this.yPosGround, 2700);
+        var playerPosition = new THREE.Vector3();
+        playerPosition.copy(this.StartPos)
         const index = positions.indexOf(playerPosition)
         if (index > -1) {
             positions.splice(index, 1)
@@ -344,7 +348,7 @@ class World {
 
         const pokemonList = this.PokemonLoader.List;
         //Params to be passed to the character class.
-        const StartPos = new CANNON.Vec3(2700, -100, 1000);
+
         const CharParams = {
             renderer: this.renderer,
             camera: this.camera,
@@ -353,10 +357,11 @@ class World {
             meshes: this.meshes,
             bodies: this.bodies,
             pokemon: pokemonList,
-            startPos: StartPos,
+            startPos: this.StartPos,
             rBodies: this.removeBodies,
             rMeshes: this.removeMeshes,
-            canvas:this.canvas
+            canvas:this.canvas,
+            mapCamera: this.mapCamera
         }
         this.Character = new CHARACTER.Character(CharParams);
 
@@ -397,30 +402,19 @@ class World {
 
         //Update the third person camera.
         if (this.Character) {
-            if (!this.OrbitalControls.enabled) {
                 this.CAM.Update(timeElapsedS)
-            }
-        } else {
-            this.OrbitalControls.enabled = true;
         }
 
 
         //Allows for the orbital controls to be used on "C" key down.
         document.addEventListener('keydown', (e) => {
             switch (e.code) {
-                case "KeyC": // c
-                    this.OrbitalControls.enabled = true;
-
-                    break
-
                 case "KeyP":
             }
         })
         document.addEventListener('keyup', (e) => {
             switch (e.code) {
-                case "KeyC": // c
-                    this.OrbitalControls.enabled = false;
-                    break;
+
             }
         })
 
