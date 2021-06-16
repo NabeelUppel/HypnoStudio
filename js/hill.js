@@ -119,7 +119,7 @@ export class Hill{
 
        function
        fullHill(){
-           const hillGeometry = new THREE.SphereBufferGeometry(1000, 8, 6, 0);
+           const hillGeometry = new THREE.SphereBufferGeometry(900, 8, 6, 0);
            const hillMaterial = new THREE.MeshPhongMaterial({
                map: new THREE.TextureLoader().load('resources/images/grasslight-small.jpg'),
                side: THREE.DoubleSide,

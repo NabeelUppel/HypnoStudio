@@ -1,5 +1,4 @@
 import * as THREE from './resources/threejs/r128/build/three.module.js';
-import {OrbitControls} from './resources/threejs/r128/examples/jsm/controls/OrbitControls.js';
 import cannonDebugger from "./resources/cannon-es-debugger/dist/cannon-es-debugger.js"
 import * as CANNON from './resources/cannon-es/dist/cannon-es.js'
 import * as CHARACTER from "./js/Character.js"
@@ -76,21 +75,33 @@ class World {
         const fov = 60;
         const aspect = 1920 / 1080;
         const near = 1;
-        const far = 2000;
+        const far = 1600;
         this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
         this.camera.position.set(25, 30, 25);
 
-        //Camera Controller. Disabled by default. Hold "C" down to use.
-        this.orbitalControls()
 
         //adds directional light to scene.
         let light = new THREE.DirectionalLight(0xFFFFFF, 1.0);
         this.LightEnable(light);
         this.scene.add(light);
 
-        //add hemisphere ligth to scene.
+        //add hemisphere light to scene.
         this.addHemisphereLight(0xB1E1FF, 0xB97A20)
 
+        this.StartPos = new CANNON.Vec3(2950, -100, -2900);
+
+        this.mapWidth = 300
+        this.mapHeight = 300
+        this.mapCamera = new THREE.OrthographicCamera(
+            1750,		// Left
+            -1750,		// Right
+            -1750,		// Top
+            1750,	// Bottom
+            1,         // Near
+            2000);
+
+        this.mapCamera.up = new THREE.Vector3(0,0,-1);
+        this.mapCamera.lookAt( new THREE.Vector3(0,-1,0) );
 
 
         this.addGround();
@@ -248,7 +259,28 @@ class World {
 
             //actually render the scene.
 
+            var w = window.innerWidth, h = window.innerHeight;
+
+
+            // full display
+            this.renderer.setViewport( 0, 0, w, h );
+            this.renderer.setScissor(0, 0, w, h);
+            this.renderer.setScissorTest(true);
             this.renderer.render(this.scene, this.camera);
+
+            // minimap (overhead orthogonal camera)
+
+
+            if (this.Character){
+                this.renderer.setViewport( 0, 0, this.mapWidth, this.mapHeight);
+                this.renderer.setScissor(0, 0, this.mapWidth,this.mapHeight);
+                this.renderer.setScissorTest(true);
+                console.log(this.mapCamera.position)
+                this.mapCamera.position.y =800;
+                console.log("after",this.mapCamera.position)
+                this.renderer.render(this.scene, this.mapCamera);
+            }
+
 
             //physics and other updates done in this function.
             this.Step(t - this._previousRAF);
@@ -282,29 +314,22 @@ class World {
         let positions = []
 
         //Top left
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 10; i++) {
             let x = THREE.MathUtils.randFloat(2500, 3700)
             let z = THREE.MathUtils.randFloat(2500, 3500)
             positions.push(new THREE.Vector3(x, this.yPosGround, z))
         }
 
-        //Top right
-        for (let i = 0; i < 5; i++) {
+        //Middle right
+        for (let i = 0; i < 10; i++) {
             let x = THREE.MathUtils.randFloat(-2500, -3700)
-            let z = THREE.MathUtils.randFloat(2500, 3500)
+            let z = THREE.MathUtils.randFloat(1200, 2300)
             positions.push(new THREE.Vector3(x, this.yPosGround, z))
         }
 
         //Bottom right
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 10; i++) {
             let x = THREE.MathUtils.randFloat(-2500, -3700)
-            let z = THREE.MathUtils.randFloat(-2500, -3500)
-            positions.push(new THREE.Vector3(x, this.yPosGround, z))
-        }
-
-        //Bottom left
-        for (let i = 0; i < 5; i++) {
-            let x = THREE.MathUtils.randFloat(2500, 3700)
             let z = THREE.MathUtils.randFloat(-2500, -3500)
             positions.push(new THREE.Vector3(x, this.yPosGround, z))
         }
@@ -336,6 +361,7 @@ class World {
 
         const pokemonList = this.PokemonLoader.List;
         //Params to be passed to the character class.
+
         const CharParams = {
             renderer: this.renderer,
             camera: this.camera,
@@ -344,9 +370,11 @@ class World {
             meshes: this.meshes,
             bodies: this.bodies,
             pokemon: pokemonList,
-
+            startPos: this.StartPos,
             rBodies: this.removeBodies,
-            rMeshes: this.removeMeshes
+            rMeshes: this.removeMeshes,
+            canvas:this.canvas,
+            mapCamera: this.mapCamera
         }
         this.Character = new CHARACTER.Character(CharParams);
 
@@ -360,6 +388,8 @@ class World {
         }
 
     }
+
+
 
     //Physic Update Function.
     Step(timeElapsed) {
@@ -385,30 +415,8 @@ class World {
 
         //Update the third person camera.
         if (this.Character) {
-            if (!this.OrbitalControls.enabled) {
-                this.CAM.Update(timeElapsedS)
-            }
-        } else {
-            this.OrbitalControls.enabled = true;
+            this.CAM.Update(timeElapsedS)
         }
-
-
-        //Allows for the orbital controls to be used on "C" key down.
-        document.addEventListener('keydown', (e) => {
-            switch (e.code) {
-                case "KeyC": // c
-                    this.OrbitalControls.enabled = true;
-                    break
-                case "KeyP":
-            }
-        })
-        document.addEventListener('keyup', (e) => {
-            switch (e.code) {
-                case "KeyC": // c
-                    this.OrbitalControls.enabled = false;
-                    break;
-            }
-        })
 
     }
 
@@ -421,7 +429,7 @@ class World {
         const sound = new THREE.Audio(listener);
 
         const audioLoader = new THREE.AudioLoader();
-        audioLoader.load('resources/sounds/level2.mp3', function (buffer) {
+        audioLoader.load('resources/sounds/level3.mp3', function (buffer) {
             sound.setBuffer(buffer);
             sound.setLoop(true);
             sound.setVolume(0.3);
