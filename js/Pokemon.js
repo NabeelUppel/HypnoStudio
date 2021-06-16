@@ -1,6 +1,7 @@
 import * as THREE from '../resources/threejs/r128/build/three.module.js';
 import {FBXLoader} from '../resources/threejs/r128/examples/jsm/loaders/FBXLoader.js';
 import * as CANNON from '../resources/cannon-es/dist/cannon-es.js'
+import {Pokedex} from "./Pokedex.js"
 
 
 export class Pokemon {
@@ -82,7 +83,15 @@ export class Pokemon {
             "NidoranMale",
             "Alakazam",
             "Nidorina",
-            "Kadabra"
+            "Kadabra",
+            "Gengar",
+            "Charmeleon",
+            "Vaporeon",
+            "Wartortle",
+            "Slowpoke",
+            "Charizard",
+            "Charmander",
+            "Zapdos"
         ];
         this.AdjustedModels = ["Gengar",
             "Charmeleon",
@@ -159,16 +168,29 @@ export class Pokemon {
                 fbx.position.y+=1.5
             }
         }
+        this.RarityTiers=
+            {
+                1: ['Dewgong', 'Seel', 'Machoke', 'NidoranFemale',  'Doduo',  'Magikarp', 'NidoranMale'],
+                2: ['Slowbro', 'Metapod', 'Dodrio','Cubone','Machop','Pikachu', 'Nidorino', 'Nidorina'],
+                3: ['Butterfree', 'Arcanine', 'Sandslash','MrMime','Nidoking', 'Kadabra','Pinsir', 'Scyther','Machamp',  'Rhydon','Nidoqueen','Slowpoke'],
+                4: ['Eevee','Squirtle','Marowak', 'Omastar', 'Bulbasaur','Farfetchd','Abra','Gengar','Charmander'],
+                5: ['Hitmonchan', 'Porygon', 'Ivysaur', 'Charmeleon', 'Wartortle','Flareon','Gyarados'],
+                6: [ 'Omanyte', 'Charizard','Venusaur', 'Blastoise',  'Alakazam', 'Vaporeon'],
+                7: ['Mew', 'Jolteon', 'Mewtwo','Zapdos']
+            }
     }
 
 
     LoadModels() {
+
+
 
         this.manager = new THREE.LoadingManager();
         this.manager.onLoad = () => {
             this.PokemonList["Names"] = this.pNames;
             this.PokemonList["Bodies"] = this.pBodies;
             this.PokemonList["Meshes"] = this.pMeshes;
+            this.CreateTaskList()
             this.update();
         };
 
@@ -211,8 +233,29 @@ export class Pokemon {
 
         const loader = new FBXLoader(this.manager);
         loader.setPath("./resources/models/Pokemon/Perfect/");
+        let R1 = THREE.MathUtils.randInt(1, 100)
         for (let i = 0; i <this.Positions.length ; i++) {
-            let randPokemon = this.PokemonModels[Math.floor(Math.random() * this.PokemonModels.length)];
+            let Rarity = 1
+
+            if(i%2===0){
+                Rarity=2
+            }
+
+            if(i <= 25){
+                Rarity = THREE.MathUtils.randInt(3, 4)
+            }
+
+            if(R1>=85){
+                Rarity =  THREE.MathUtils.randInt(5, 6)
+                R1 = THREE.MathUtils.randInt(1, 100)
+            }
+
+            if(R1>=95){
+                Rarity = 7
+                R1 = 1
+            }
+            let Models = this.RarityTiers[Rarity]
+            let randPokemon = Models[Math.floor(Math.random() * Models.length)];
             let position = this.Positions[i];
             loader.load(randPokemon+".fbx", (a) => {
                 _OnLoad(randPokemon, a, position,i);
@@ -306,7 +349,13 @@ export class Pokemon {
         }
     }
 
-
+    CreateTaskList(){
+    let px = new Pokedex()
+        for (let i = 0; i <this.pNames.length ; i++) {
+            let x = px.getType(this.pNames[i])
+            console.log(this.pNames[i],x)
+        }
+    }
 }
 
 

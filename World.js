@@ -96,6 +96,23 @@ class World {
         //add hemisphere ligth to scene.
         this.addHemisphereLight(0xB1E1FF, 0xB97A20)
 
+        const loadingManager = new THREE.LoadingManager( () => {
+
+            const loadingScreen = document.getElementById( 'loading-screen' );
+            loadingScreen.classList.add( 'fade-out' );
+
+            // optional: remove loader from DOM via event listener
+            loadingScreen.addEventListener( 'transitionend', onTransitionEnd );
+        } );
+
+
+        function onTransitionEnd( event ) {
+
+            const element = event.target;
+            element.remove();
+
+        }
+
 
         this.addGround();
         this.addSkybox();
@@ -294,7 +311,7 @@ class World {
         }
 
         //If Position is on player dont spawn pokemon there.
-        var playerPosition = new THREE.Vector3(2700, this.yPosGround, -2700);
+        var playerPosition = new THREE.Vector3(2700, this.yPosGround, 2700);
         const index = positions.indexOf(playerPosition)
         if (index > -1) {
             positions.splice(index, 1)
@@ -319,6 +336,7 @@ class World {
 
         const pokemonList = this.PokemonLoader.List;
         //Params to be passed to the character class.
+        const StartPos = new CANNON.Vec3(2700, -100, 1000);
         const CharParams = {
             renderer: this.renderer,
             camera: this.camera,
@@ -327,9 +345,10 @@ class World {
             meshes: this.meshes,
             bodies: this.bodies,
             pokemon: pokemonList,
-
+            startPos: StartPos,
             rBodies: this.removeBodies,
-            rMeshes: this.removeMeshes
+            rMeshes: this.removeMeshes,
+            canvas:this.canvas
         }
         this.Character = new CHARACTER.Character(CharParams);
 
@@ -343,6 +362,8 @@ class World {
         }
 
     }
+
+
 
     //Physic Update Function.
     Step(timeElapsed) {
