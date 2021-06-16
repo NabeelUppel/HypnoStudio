@@ -13,6 +13,8 @@ import * as MUSHROOM from "./js/mushroom.js";
 import * as HILL from "./js/hill.js";
 import * as FENCE from "./js/fence.js";
 import * as HOUSE from "./js/house.js";
+import * as LAMPPOST from "./js/lampPost.js";
+import * as SIGN from "./js/sign.js";
 
 
 (function () {
@@ -125,6 +127,8 @@ class World {
         this.House();
         this.music();
         this.ambientSounds();
+        this.lampPost();
+        this.sign();
 
         //Load animated Model
         this.LoadAnimatedModel();
@@ -336,7 +340,7 @@ class World {
 
         const pokemonList = this.PokemonLoader.List;
         //Params to be passed to the character class.
-        const StartPos = new CANNON.Vec3(2700, -100, 1000);
+        const StartPos = new CANNON.Vec3(2700, -100, -2900);
         const CharParams = {
             renderer: this.renderer,
             camera: this.camera,
@@ -469,7 +473,55 @@ class World {
 
     }
 
+    //Function to place several signs into the scene.
+    sign(){
+        this.makeSign(2200,-100,-2100,1,"pallet");
+        this.makeSign(-2250,-100,1975,2,"lavender");
+    }
 
+    makeSign(x,y,z,r,town){
+        const CharParams = {
+            camera: this.camera,
+            scene: this.scene,
+            world: this.world,
+            bodies: this.bodies,
+            meshes: this.meshes,
+            x: x,
+            y: y,
+            z: z,
+            r: r,
+            town: town,
+        }
+        this.sign = new SIGN.Sign(CharParams);
+        this.sign.createSign();
+    }
+
+
+    //Function to place several lampposts into the scene.
+    lampPost(){
+    this.makeLampPost(2100,-100,-2100,2);
+    this.makeLampPost(1900,-100,-2100,2);
+    this.makeLampPost(1050,-100,80,1);
+    this.makeLampPost(1050,-100,400,1);
+    this.makeLampPost(-1050,-100,80,0);
+    this.makeLampPost(-1050,-100,400,0);
+    }
+
+    makeLampPost(x,y,z,r){
+        const CharParams = {
+            camera: this.camera,
+            scene: this.scene,
+            world: this.world,
+            bodies: this.bodies,
+            meshes: this.meshes,
+            x: x,
+            y: y,
+            z: z,
+            r: r,
+        }
+        this.lampPost = new LAMPPOST.Lamp(CharParams);
+        this.lampPost.createLamp();
+    }
 
 
     makeFence(x, y, z, r) {
@@ -740,37 +792,10 @@ class World {
 
     //Function to access mushrooms class and add the mushrooms to the scene in certain locations.
     Mushroom() {
-        let charParams = this.makeMushroom(1100, this.yPosGround + 15, 100, 0);
+
+        let charParams = this.makeMushroom(3084, this.yPosGround + 15, 1300, 0);
         this.mushroom = new MUSHROOM.Mushroom(charParams);
         let mushroom = this.mushroom.createMushroom();
-        mushroom.scale.set(10, 10, 10);
-        this.scene.add(mushroom);
-        this.meshes.push(mushroom);
-
-
-        charParams = this.makeMushroom(1100, this.yPosGround + 15, 400, 0);
-        this.mushroom = new MUSHROOM.Mushroom(charParams);
-        mushroom = this.mushroom.createMushroom();
-        mushroom.scale.set(10, 10, 10);
-        this.scene.add(mushroom);
-        this.meshes.push(mushroom);
-
-        charParams = this.makeMushroom(-1100, this.yPosGround + 15, 100, 0);
-        this.mushroom = new MUSHROOM.Mushroom(charParams);
-        mushroom = this.mushroom.createMushroom();
-        mushroom.scale.set(10, 10, 10);
-        this.scene.add(mushroom);
-        this.meshes.push(mushroom);
-        charParams = this.makeMushroom(-1100, this.yPosGround + 15, 400, 0);
-        this.mushroom = new MUSHROOM.Mushroom(charParams);
-        mushroom = this.mushroom.createMushroom();
-        mushroom.scale.set(10, 10, 10);
-        this.scene.add(mushroom);
-        this.meshes.push(mushroom);
-
-        charParams = this.makeMushroom(3084, this.yPosGround + 15, 1300, 0);
-        this.mushroom = new MUSHROOM.Mushroom(charParams);
-        mushroom = this.mushroom.createMushroom();
         mushroom.scale.set(10, 10, 10);
         this.scene.add(mushroom);
         this.meshes.push(mushroom);

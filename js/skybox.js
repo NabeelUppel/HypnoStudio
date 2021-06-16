@@ -36,16 +36,6 @@ export class Skybox{
             new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load('resources/images/skybox/rainbow_lf.png'), side: THREE.DoubleSide}),
         ];
 
-        //const skyboxShape = new CANNON.Box(new CANNON.Vec3(7500,7500,7500));
-        //let skyboxBody = new CANNON.Body({mass: 0});
-        //skyboxBody.addShape(skyboxShape)
-        //skyboxBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
-        //skyboxBody.position.set(0, 0, 0);
-        //skyboxBody.userData = {name: "skybox"};
-        //this.world.addBody(skyboxBody);
-        //this.bodies.push(skyboxBody);
-
-
         var material = new THREE.MeshFaceMaterial(cubeMaterials);
         var cube = new THREE.Mesh(geometry,material);
         this.scene.add(cube)
