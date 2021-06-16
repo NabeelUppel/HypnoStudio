@@ -89,15 +89,15 @@ class World {
 
         this.StartPos = new CANNON.Vec3(0, -100, 0);
 
-        this.mapWidth = 300
-        this.mapHeight = 300
+        this.mapWidth = 384
+        this.mapHeight = 192
         this.mapCamera = new THREE.OrthographicCamera(
-            1750,		// Left
-            -1750,		// Right
-            -1750,		// Top
-            1750,	// Bottom
+            this.mapWidth*2,		// Left
+            -this.mapWidth*2,		// Right
+            -this.mapHeight*2,		// Top
+            this.mapHeight*2,	// Bottom
             1,         // Near
-            2000);
+            1000);
 
         this.mapCamera.up = new THREE.Vector3(0,0,-1);
         this.mapCamera.lookAt( new THREE.Vector3(0,-1,0) );
@@ -270,12 +270,10 @@ class World {
 
 
             if (this.Character){
-                this.renderer.setViewport( 0, 0, this.mapWidth, this.mapHeight);
-                this.renderer.setScissor(0, 0, this.mapWidth,this.mapHeight);
+                this.renderer.setViewport( 50, 50, this.mapWidth, this.mapHeight);
+                this.renderer.setScissor(50, 50, this.mapWidth,this.mapHeight);
                 this.renderer.setScissorTest(true);
-                console.log(this.mapCamera.position)
                 this.mapCamera.position.y =800;
-                console.log("after",this.mapCamera.position)
                 this.renderer.render(this.scene, this.mapCamera);
             }
 
