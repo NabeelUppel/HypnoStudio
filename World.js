@@ -40,6 +40,7 @@ class World {
         this.debug = new cannonDebugger(this.scene, this.world.bodies);
     }
 
+
     //Declare Variables that is needed.
     _Declare() {
         this.clock = new THREE.Clock();
@@ -83,22 +84,6 @@ class World {
         this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
         this.camera.position.set(25, 30, 25);
 
-
-        this.mapWidth = 256
-        this.mapHeight = 256
-        this.mapCamera = new THREE.OrthographicCamera(
-            3000,		// Left
-            -3000,		// Right
-            -3000,		// Top
-            3000,		// Bottom
-            1,            			// Near
-            1000 );
-
-        this.mapCamera.up = new THREE.Vector3(0,0,-1);
-        this.mapCamera.lookAt( new THREE.Vector3(0,-1,0) );
-        this.mapCamera.position.y = 250;
-        this.scene.add(this.mapCamera);
-
         //Camera Controller. Disabled by default. Hold "C" down to use.
         this.orbitalControls()
 
@@ -130,7 +115,9 @@ class World {
 
         //Render the initial scene. Will be recursively called thereafter.
         this.Render();
+
     }
+
 
     //Initialise CannonJS (Physics) including setting up the gravity and other resources.
     InitCANNON() {
@@ -144,6 +131,7 @@ class World {
         this.world.defaultContactMaterial.contactEquationRegularizationTime = 4;
 
     }
+
 
 
     //Function used to set up orbital controls that allows the user to pan  the scene.
@@ -269,13 +257,6 @@ class World {
             this.renderer.setScissor(0, 0, w, h);
             this.renderer.setScissorTest(true);
             this.renderer.render(this.scene, this.camera);
-
-
-            // minimap (overhead orthogonal camera)
-            this.renderer.setViewport( 0, 0, this.mapWidth, this.mapHeight);
-            this.renderer.setScissor(0, 0, this.mapWidth,this.mapHeight);
-            this.renderer.setScissorTest(true);
-            this.renderer.render(this.scene, this.mapCamera);
 
             //physics and other updates done in this function.
             this.Step(t - this._previousRAF);

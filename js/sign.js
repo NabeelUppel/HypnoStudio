@@ -66,7 +66,7 @@ export class Sign {
 
 
         const geometry = new THREE.CylinderGeometry( 0.25,0.25,8, 32 );
-        const material = new THREE.MeshStandardMaterial ({
+        const material = new THREE.MeshPhongMaterial ({
             color: "#C0C0C0",
             envMap: this.scene.background, // must be the background of scene
             combine: THREE.MixOperation,
