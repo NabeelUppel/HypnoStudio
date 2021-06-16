@@ -165,7 +165,7 @@ class World {
 
     //Adds HemisphereLight.
     addHemisphereLight(skyColor, groundColor) {
-        const intensity = 1;
+        const intensity = 0.8;
         const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
         this.scene.add(light);
     }
@@ -267,9 +267,7 @@ class World {
                 this.renderer.setViewport( 0, 0, this.mapWidth, this.mapHeight);
                 this.renderer.setScissor(0, 0, this.mapWidth,this.mapHeight);
                 this.renderer.setScissorTest(true);
-                console.log(this.mapCamera.position)
                 this.mapCamera.position.y =800;
-                console.log("after",this.mapCamera.position)
                 this.renderer.render(this.scene, this.mapCamera);
             }
 

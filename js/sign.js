@@ -2,15 +2,6 @@ import * as THREE from '../resources/threejs/r128/build/three.module.js';
 import * as CANNON from "../resources/cannon-es/dist/cannon-es.js";
 import {Body, Vec3} from "../resources/cannon-es/dist/cannon-es.js";
 
-
-let Ground, groundBody;
-let world, timeStep = 1 / 60;
-let camera, scene, renderer, canvas, controls;
-let meshes = [];
-let bodies = [];
-let SphereShape, sphereBody;
-
-
 export class Sign {
     constructor(params) {
         this.Init(params);
@@ -65,22 +56,32 @@ export class Sign {
         const group = new THREE.Group();
 
 
+        // Create cube render target
+        const cubeRenderTarget = new THREE.WebGLCubeRenderTarget( 128, { format: THREE.RGBFormat, generateMipmaps: true, minFilter: THREE.LinearMipmapLinearFilter } );
+
+        // Create cube camera
+        const cubeCamera = new THREE.CubeCamera( 1, 100000, cubeRenderTarget );
+        group.add( cubeCamera );
+        //this.scene.add(cubeCamera);
+
+        const chromeMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff, envMap: cubeRenderTarget.texture } );
+
         const geometry = new THREE.CylinderGeometry( 0.25,0.25,8, 32 );
-        const material = new THREE.MeshPhongMaterial ({
+        const material = new THREE.MeshLambertMaterial ({
             color: "#C0C0C0",
             envMap: this.scene.background, // must be the background of scene
             combine: THREE.MixOperation,
-            side: THREE.DoubleSide,
-            reflectivity: 0.5,
+            reflectivity: .5
         })
 
         let x = 0
 
-        for (var i = 0; i < 2; i++) {
-            const cylinder = new THREE.Mesh( geometry, material );
+        for (let i = 0; i < 2; i++) {
+            const cylinder = new THREE.Mesh( geometry, chromeMaterial );
             cylinder.position.set(i + x,4,0);
-            cylinder.castShadow = true;
             group.add( cylinder );
+
+
             x = 3;
 
         }
