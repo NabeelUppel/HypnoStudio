@@ -65,6 +65,7 @@ export class Character {
         this.meshes = params.meshes;
         this.bodies = params.bodies;
         this.canvas = params.canvas;
+        this.mapCamera = params.mapCamera;
 
         //used for bodies and meshes that need to be removed.
         this.rBodies = params.rBodies;
@@ -133,6 +134,7 @@ export class Character {
             });
 
             this.Character = fbx;
+            this.Character.add(this.mapCamera)
 
 
             //Add Physics
