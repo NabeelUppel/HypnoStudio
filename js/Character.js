@@ -430,6 +430,7 @@ export class Character {
         this.pokeballs = this.pokeballs-1
         this.bodies.push(this.ballBody);
         this.meshes.push(this.ballMesh);
+
         this.ballBody.addEventListener("collide", (e)=>this.collisionCheck(e))
     }
     collisionCheck (e){
@@ -462,6 +463,16 @@ export class Character {
                 this.rBodies.push(body);
                 this.rMeshes.push(mesh);
             }else{
+                const listener = new THREE.AudioListener();
+                this.camera.add(listener);
+                const sound = new THREE.Audio(listener);
+                const audioLoader = new THREE.AudioLoader();
+                audioLoader.load('resources/sounds/pokemonEscape.mp3', function (buffer) {
+                    sound.setBuffer(buffer);
+                    sound.setVolume(0.3);
+                    sound.play();
+                });
+                console.log("Escaped")
                 this.addText(name+" Escaped!")
             }
         }else{

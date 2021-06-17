@@ -54,22 +54,21 @@ export class Sign {
 
 
         const group = new THREE.Group();
+        let textureURLs = [  // URLs of the six faces of the cube map
+            "resources/images/skybox/rainbow_ft.png",   // Note:  The order in which
+            "resources/images/skybox/rainbow_bk.png",   //   the images are listed is
+            "resources/images/skybox/rainbow_up.png",   //   important!
+            "resources/images/skybox/rainbow_dn.png",
+            "resources/images/skybox/rainbow_rt.png",
+            "resources/images/skybox/rainbow_lf.png"
+        ];
 
-
-        // Create cube render target
-        const cubeRenderTarget = new THREE.WebGLCubeRenderTarget( 128, { format: THREE.RGBFormat, generateMipmaps: true, minFilter: THREE.LinearMipmapLinearFilter } );
-
-        // Create cube camera
-        const cubeCamera = new THREE.CubeCamera( 1, 100000, cubeRenderTarget );
-        //group.add( cubeCamera );
-        this.scene.add(cubeCamera);
-
-        const chromeMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff, envMap: cubeCamera.renderTarget.texture } );
+        let texture = new THREE.CubeTextureLoader().load(textureURLs);
 
         const geometry = new THREE.CylinderGeometry( 0.25,0.25,8, 32 );
         const material = new THREE.MeshLambertMaterial ({
             color: "#C0C0C0",
-            envMap: this.scene.background, // must be the background of scene
+            envMap: texture, // must be the background of scene
             combine: THREE.MixOperation,
             reflectivity: .5
         })
@@ -77,7 +76,7 @@ export class Sign {
         let x = 0
 
         for (let i = 0; i < 2; i++) {
-            const cylinder = new THREE.Mesh( geometry, chromeMaterial );
+            const cylinder = new THREE.Mesh( geometry, material );
             cylinder.position.set(i + x,4,0);
             group.add( cylinder );
 

@@ -14,6 +14,7 @@ import * as FENCE from "./js/fence.js";
 import * as HOUSE from "./js/house.js";
 import * as LAMPPOST from "./js/lampPost.js";
 import * as SIGN from "./js/sign.js";
+import {Body, Vec3} from "./resources/cannon-es/dist/cannon-es.js";
 
 
 (function () {
@@ -37,7 +38,7 @@ class World {
         this.InitCANNON();
         this.InitTHREE();
         this.InitUI();
-        this.debug = new cannonDebugger(this.scene, this.world.bodies);
+        //this.debug = new cannonDebugger(this.scene, this.world.bodies);
     }
 
 
@@ -53,7 +54,6 @@ class World {
         //used for character model and animations.
         this._mixers = [];
         this._previousRAF = null;
-
         this.Pokeballs = 60;
         this.Pause = false;
     }
@@ -120,21 +120,6 @@ class World {
 
 
         this.addGround();
-       //this.levelOne()
-
-        this.addCheckObject()
-
-        //Load animated Model
-        this.LoadAnimatedModel();
-
-        //Render the initial scene. Will be recursively called thereafter.
-        this.Render();
-
-    }
-
-
-    levelOne(){
-
         this.addSkybox();
         this.addHill();
         this.paths();
@@ -147,7 +132,16 @@ class World {
         this.ambientSounds();
         this.lampPost();
         this.sign();
+        this.createChecker();
+
+        //Load animated Model
+        this.LoadAnimatedModel();
+
+        //Render the initial scene. Will be recursively called thereafter.
+        this.Render();
+
     }
+
 
     //Initialise CannonJS (Physics) including setting up the gravity and other resources.
     InitCANNON() {
@@ -267,6 +261,8 @@ class World {
 
             this.camera.updateProjectionMatrix();
         }
+
+
         if(this.Pause===true){
             return
         }
@@ -374,8 +370,7 @@ class World {
 
         const pokemonList = this.PokemonLoader.List;
         //Params to be passed to the character class.
-        const TaskList =  this.PokemonLoader.Task;
-        //console.log("SOMEBODY")
+
         const CharParams = {
             renderer: this.renderer,
             camera: this.camera,
@@ -389,9 +384,7 @@ class World {
             rMeshes: this.removeMeshes,
             canvas:this.canvas,
             mapCamera: this.mapCamera,
-            pokeballs: this.Pokeballs,
-            taskList: TaskList,
-            WorkStation:this.Cube
+            pokeballs: this.Pokeballs
         }
         this.Character = new CHARACTER.Character(CharParams);
 
@@ -422,7 +415,9 @@ class World {
             this.PokemonLoader.update()
             this.Pokeballs = this.Character.Pokeballs
             this.updatePokeballText()
-
+            if(!this.TaskList){
+                this.TaskList =  this.PokemonLoader.TaskList;
+            }
 
         }
 
@@ -1047,29 +1042,81 @@ class World {
         this.Render()
     }
 
+    createChecker(){
+        const shape = new CANNON.Box(new CANNON.Vec3(20, 60, 20));
+        this.checkerBody = new CANNON.Body();
+        this.checkerBody.type = Body.STATIC;
+        this.checkerBody.mass = 0;
+        this.checkerBody.updateMassProperties();
+        this.checkerBody.addShape(shape);
+        this.checkerBody.position.set(-2100, -100, 1975);
+        this.world.addBody(this.checkerBody);
+        this.bodies.push(this.checkerBody);
 
-    addCheckObject(){
-        let pos = new CANNON.Vec3(2700, 0, -2500)
-        const bodyShape = new CANNON.Box(new CANNON.Vec3(100,100,100))
-        const heavyMaterial = new CANNON.Material('heavy');
-        let body = new CANNON.Body({
-            mass: 100,
-            position: pos,
-            material: heavyMaterial
-        })
-        body.addShape(bodyShape);
-        console.log("change")
-        const cubeGeo = new THREE.BoxGeometry(200, 200, 200, 10, 10);
-        const material = new THREE.MeshBasicMaterial();
+        this.checkObject = new THREE.Group();
+        let textureURLs = [  // URLs of the six faces of the cube map
+            "resources/images/skybox/rainbow_ft.png",   // Note:  The order in which
+            "resources/images/skybox/rainbow_bk.png",   //   the images are listed is
+            "resources/images/skybox/rainbow_up.png",   //   important!
+            "resources/images/skybox/rainbow_dn.png",
+            "resources/images/skybox/rainbow_rt.png",
+            "resources/images/skybox/rainbow_lf.png"
+        ];
 
-        this.Cube = new THREE.Mesh(cubeGeo, material);
-        this.Cube.position.set(pos.x,pos.y,pos.z)
-        this.meshes.push(this.Cube);
-        this.bodies.push(body);
-        this.scene.add(this.Cube)
-        this.world.addBody(body)
+        let texture = new THREE.CubeTextureLoader().load(textureURLs);
+
+        let geometry = new THREE.BoxGeometry( 10, 25, 10);
+        let material = new THREE.MeshBasicMaterial( {
+            color: 0xA8A9AD,
+            envMap: texture
+        });
+        const Box = new THREE.Mesh( geometry, material );
+        this.checkObject.add(Box);
+
+        geometry = new THREE.BoxGeometry( 7, 5, 7);
+        material = new THREE.MeshBasicMaterial( {
+            color: 0x000000,
+        });
+        const laptopBottom = new THREE.Mesh( geometry, material );
+        laptopBottom.position.set(0,11,0)
+        this.checkObject.add(laptopBottom);
+
+        texture = new THREE.TextureLoader().load("resources/images/keyboard.png");
+        geometry = new THREE.PlaneGeometry(7,7)
+        material = new THREE.MeshBasicMaterial( {
+            map : texture,
+            side: THREE.DoubleSide,
+        });
+        const laptopKeys = new THREE.Mesh( geometry, material );
+        laptopKeys.position.set(0,13.5,0);
+        laptopKeys.rotateX(Math.PI/2);
+        this.checkObject.add(laptopKeys);
+
+        geometry = new THREE.BoxGeometry( 7.5, 9, 1);
+        material = new THREE.MeshBasicMaterial( {
+            color: 0x000000,
+        });
+        const laptopTop = new THREE.Mesh( geometry, material );
+        laptopTop.position.set(0,15,3)
+        this.checkObject.add(laptopTop);
+
+        texture = new THREE.TextureLoader().load("resources/images/bear.png");
+        geometry = new THREE.PlaneGeometry(7,7)
+        material = new THREE.MeshBasicMaterial( {
+            map : texture,
+            side: THREE.DoubleSide,
+        });
+        const laptopScreen = new THREE.Mesh( geometry, material );
+        laptopScreen.position.set(0,16,2.2);
+        this.checkObject.add(laptopScreen);
+
+        this.checkObject.scale.set(3,3,3);
+        this.scene.add(this.checkObject);
+        this.meshes.push(this.checkObject);
     }
 }
+
+
 
 let _APP = null;
 
