@@ -53,7 +53,6 @@ class World {
         //used for character model and animations.
         this._mixers = [];
         this._previousRAF = null;
-
         this.Pokeballs = 60;
         this.Pause = false;
     }
@@ -132,6 +131,7 @@ class World {
         this.ambientSounds();
         this.lampPost();
         this.sign();
+        this.createChecker();
 
         //Load animated Model
         this.LoadAnimatedModel();
@@ -260,6 +260,8 @@ class World {
 
             this.camera.updateProjectionMatrix();
         }
+
+
         if(this.Pause===true){
             return
         }
@@ -1038,7 +1040,72 @@ class World {
         document.getElementById("myNav").style.width = "0%";
         this.Render()
     }
+
+    createChecker(){
+        const f = new THREE.Group();
+        let textureURLs = [  // URLs of the six faces of the cube map
+            "resources/images/skybox/rainbow_ft.png",   // Note:  The order in which
+            "resources/images/skybox/rainbow_bk.png",   //   the images are listed is
+            "resources/images/skybox/rainbow_up.png",   //   important!
+            "resources/images/skybox/rainbow_dn.png",
+            "resources/images/skybox/rainbow_rt.png",
+            "resources/images/skybox/rainbow_lf.png"
+        ];
+
+        let texture = new THREE.CubeTextureLoader().load(textureURLs);
+
+        let geometry = new THREE.BoxGeometry( 10, 25, 10);
+        let material = new THREE.MeshBasicMaterial( {
+            color: 0xA8A9AD,
+            envMap: texture
+        });
+        const Box = new THREE.Mesh( geometry, material );
+        f.add(Box);
+
+        geometry = new THREE.BoxGeometry( 7, 5, 7);
+        material = new THREE.MeshBasicMaterial( {
+            color: 0x000000,
+        });
+        const laptopBottom = new THREE.Mesh( geometry, material );
+        laptopBottom.position.set(0,11,0)
+        f.add(laptopBottom);
+
+        texture = new THREE.TextureLoader().load("resources/images/keyboard.png");
+        geometry = new THREE.PlaneGeometry(7,7)
+        material = new THREE.MeshBasicMaterial( {
+            map : texture,
+            side: THREE.DoubleSide,
+        });
+        const laptopKeys = new THREE.Mesh( geometry, material );
+        laptopKeys.position.set(0,13.5,0);
+        laptopKeys.rotateX(Math.PI/2);
+        f.add(laptopKeys);
+
+        geometry = new THREE.BoxGeometry( 7.5, 9, 1);
+        material = new THREE.MeshBasicMaterial( {
+            color: 0x000000,
+        });
+        const laptopTop = new THREE.Mesh( geometry, material );
+        laptopTop.position.set(0,15,3)
+        f.add(laptopTop);
+
+        texture = new THREE.TextureLoader().load("resources/images/bear.png");
+        geometry = new THREE.PlaneGeometry(7,7)
+        material = new THREE.MeshBasicMaterial( {
+            map : texture,
+            side: THREE.DoubleSide,
+        });
+        const laptopScreen = new THREE.Mesh( geometry, material );
+        laptopScreen.position.set(0,16,2.2);
+        f.add(laptopScreen);
+
+        f.scale.set(3,3,3);
+        f.position.set(2500,-100,-2700);
+        this.scene.add(f);
+    }
 }
+
+
 
 let _APP = null;
 
