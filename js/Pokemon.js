@@ -26,7 +26,9 @@ export class Pokemon {
         }
     }
     get Task(){
-        return this.TaskList
+        if(this.TaskList){
+            return this.TaskList
+        }
     }
     Init(params) {
         this.pMeshes = [];

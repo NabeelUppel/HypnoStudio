@@ -377,7 +377,7 @@ class World {
 
         const pokemonList = this.PokemonLoader.List;
         //Params to be passed to the character class.
-        const TaskList =  this.PokemonLoader.TaskList;
+        const TaskList =  this.PokemonLoader.Task;
         const CharParams = {
             renderer: this.renderer,
             camera: this.camera,
