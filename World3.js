@@ -7,6 +7,7 @@ import * as POKEMON from "./js/Pokemon.js"
 import * as SKYBOX from "./js/skybox.js";
 import * as HILL from "./js/hill.js";
 import * as LEVEL3 from "./js/level3.js";
+import {Body} from "./resources/cannon-es/dist/cannon-es.js";
 
 
 (function () {
@@ -115,6 +116,7 @@ class World {
         this.addGround();
         this.addSkybox();
         this.music();
+        this.createChecker();
         this.level3();
 
 
@@ -465,6 +467,79 @@ class World {
         }
         this.skybox = new SKYBOX.Skybox(CharParams);
         this.skybox.createSkybox();
+    }
+
+    createChecker(){
+        const shape = new CANNON.Box(new CANNON.Vec3(20, 60, 20));
+        this.checkerBody = new CANNON.Body();
+        this.checkerBody.type = Body.STATIC;
+        this.checkerBody.mass = 0;
+        this.checkerBody.updateMassProperties();
+        this.checkerBody.addShape(shape);
+        this.checkerBody.position.set(-3050, -100, 2600);
+        this.world.addBody(this.checkerBody);
+        this.bodies.push(this.checkerBody);
+
+        this.checkObject = new THREE.Group();
+        let textureURLs = [  // URLs of the six faces of the cube map
+            "resources/images/skybox/rainbow_ft.png",   // Note:  The order in which
+            "resources/images/skybox/rainbow_bk.png",   //   the images are listed is
+            "resources/images/skybox/rainbow_up.png",   //   important!
+            "resources/images/skybox/rainbow_dn.png",
+            "resources/images/skybox/rainbow_rt.png",
+            "resources/images/skybox/rainbow_lf.png"
+        ];
+
+        let texture = new THREE.CubeTextureLoader().load(textureURLs);
+
+        let geometry = new THREE.BoxGeometry( 10, 25, 10);
+        let material = new THREE.MeshBasicMaterial( {
+            color: 0xA8A9AD,
+            envMap: texture
+        });
+        const Box = new THREE.Mesh( geometry, material );
+        this.checkObject.add(Box);
+
+        geometry = new THREE.BoxGeometry( 7, 5, 7);
+        material = new THREE.MeshBasicMaterial( {
+            color: 0x000000,
+        });
+        const laptopBottom = new THREE.Mesh( geometry, material );
+        laptopBottom.position.set(0,11,0)
+        this.checkObject.add(laptopBottom);
+
+        texture = new THREE.TextureLoader().load("resources/images/keyboard.png");
+        geometry = new THREE.PlaneGeometry(7,7)
+        material = new THREE.MeshBasicMaterial( {
+            map : texture,
+            side: THREE.DoubleSide,
+        });
+        const laptopKeys = new THREE.Mesh( geometry, material );
+        laptopKeys.position.set(0,13.5,0);
+        laptopKeys.rotateX(Math.PI/2);
+        this.checkObject.add(laptopKeys);
+
+        geometry = new THREE.BoxGeometry( 7.5, 9, 1);
+        material = new THREE.MeshBasicMaterial( {
+            color: 0x000000,
+        });
+        const laptopTop = new THREE.Mesh( geometry, material );
+        laptopTop.position.set(0,15,3)
+        this.checkObject.add(laptopTop);
+
+        texture = new THREE.TextureLoader().load("resources/images/bear.png");
+        geometry = new THREE.PlaneGeometry(7,7)
+        material = new THREE.MeshBasicMaterial( {
+            map : texture,
+            side: THREE.DoubleSide,
+        });
+        const laptopScreen = new THREE.Mesh( geometry, material );
+        laptopScreen.position.set(0,16,2.2);
+        this.checkObject.add(laptopScreen);
+
+        this.checkObject.scale.set(3,3,3);
+        this.scene.add(this.checkObject);
+        this.meshes.push(this.checkObject);
     }
 
 

@@ -14,6 +14,7 @@ import * as FENCE from "./js/fence.js";
 import * as HOUSE from "./js/house.js";
 import * as LAMPPOST from "./js/lampPost.js";
 import * as SIGN from "./js/sign.js";
+import {Body, Vec3} from "./resources/cannon-es/dist/cannon-es.js";
 
 
 (function () {
@@ -1042,7 +1043,17 @@ class World {
     }
 
     createChecker(){
-        const f = new THREE.Group();
+        const shape = new CANNON.Box(new CANNON.Vec3(20, 60, 20));
+        this.checkerBody = new CANNON.Body();
+        this.checkerBody.type = Body.STATIC;
+        this.checkerBody.mass = 0;
+        this.checkerBody.updateMassProperties();
+        this.checkerBody.addShape(shape);
+        this.checkerBody.position.set(-2100, -100, 1975);
+        this.world.addBody(this.checkerBody);
+        this.bodies.push(this.checkerBody);
+
+        this.checkObject = new THREE.Group();
         let textureURLs = [  // URLs of the six faces of the cube map
             "resources/images/skybox/rainbow_ft.png",   // Note:  The order in which
             "resources/images/skybox/rainbow_bk.png",   //   the images are listed is
@@ -1060,7 +1071,7 @@ class World {
             envMap: texture
         });
         const Box = new THREE.Mesh( geometry, material );
-        f.add(Box);
+        this.checkObject.add(Box);
 
         geometry = new THREE.BoxGeometry( 7, 5, 7);
         material = new THREE.MeshBasicMaterial( {
@@ -1068,7 +1079,7 @@ class World {
         });
         const laptopBottom = new THREE.Mesh( geometry, material );
         laptopBottom.position.set(0,11,0)
-        f.add(laptopBottom);
+        this.checkObject.add(laptopBottom);
 
         texture = new THREE.TextureLoader().load("resources/images/keyboard.png");
         geometry = new THREE.PlaneGeometry(7,7)
@@ -1079,7 +1090,7 @@ class World {
         const laptopKeys = new THREE.Mesh( geometry, material );
         laptopKeys.position.set(0,13.5,0);
         laptopKeys.rotateX(Math.PI/2);
-        f.add(laptopKeys);
+        this.checkObject.add(laptopKeys);
 
         geometry = new THREE.BoxGeometry( 7.5, 9, 1);
         material = new THREE.MeshBasicMaterial( {
@@ -1087,7 +1098,7 @@ class World {
         });
         const laptopTop = new THREE.Mesh( geometry, material );
         laptopTop.position.set(0,15,3)
-        f.add(laptopTop);
+        this.checkObject.add(laptopTop);
 
         texture = new THREE.TextureLoader().load("resources/images/bear.png");
         geometry = new THREE.PlaneGeometry(7,7)
@@ -1097,11 +1108,11 @@ class World {
         });
         const laptopScreen = new THREE.Mesh( geometry, material );
         laptopScreen.position.set(0,16,2.2);
-        f.add(laptopScreen);
+        this.checkObject.add(laptopScreen);
 
-        f.scale.set(3,3,3);
-        f.position.set(2500,-100,-2700);
-        this.scene.add(f);
+        this.checkObject.scale.set(3,3,3);
+        this.scene.add(this.checkObject);
+        this.meshes.push(this.checkObject);
     }
 }
 
