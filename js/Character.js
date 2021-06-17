@@ -53,6 +53,14 @@ export class Character {
         return this.caught
     }
 
+    get Seen(){
+        return this.seen
+    }
+
+    get Pokeballs(){
+        return this.pokeballs
+    }
+
     //Initialise Function.
     Init(params) {
 
@@ -75,9 +83,10 @@ export class Character {
         //Dictionary of three arrays: names, bodies and meshes.
         this.pokemon = params.pokemon;
 
+        this.pokeballs = params.pokeballs;
         //Array of names of the caught pokemon.
         this.caught = []
-
+        this.seen = []
         //used to store animations that are loaded.
         this.allAnimations = {};
 
@@ -353,18 +362,24 @@ export class Character {
 
     }
     _onDoubleClick(event){
-        if(this.dir!==null){
-            //this.Character.lookAt(this.lookat);
-            this.input.CharacterMotions.throw = true;
-            if(this.ballBody && this.ballMesh){
-                let meshIndex = this.rMeshes.indexOf(this.ballMesh)
-                let bodyIndex = this.rBodies.indexOf(this.ballBody)
-                if(meshIndex===-1 && bodyIndex===-1){
-                    this.rBodies.push(this.ballBody);
-                    this.rMeshes.push(this.ballMesh);
+        if(this.dir!==null ){
+            if(this.pokeballs>0){
+                //this.Character.lookAt(this.lookat);
+                this.input.CharacterMotions.throw = true;
+                if(this.ballBody && this.ballMesh){
+                    let meshIndex = this.rMeshes.indexOf(this.ballMesh)
+                    let bodyIndex = this.rBodies.indexOf(this.ballBody)
+                    if(meshIndex===-1 && bodyIndex===-1){
+                        this.rBodies.push(this.ballBody);
+                        this.rMeshes.push(this.ballMesh);
+                    }
                 }
+
+                this.PokeBall(this.dir)
+            }else{
+                this.addText("You're Out of Pokeballs!")
             }
-            this.PokeBall(this.dir)
+
         }
 
         this.dir =null;
@@ -400,13 +415,13 @@ export class Character {
             direction.y * shootVel,
             direction.z * shootVel*2
         )
-
+        this.pokeballs = this.pokeballs-1
         this.bodies.push(this.ballBody);
         this.meshes.push(this.ballMesh);
-
         this.ballBody.addEventListener("collide", (e)=>this.collisionCheck(e))
     }
     collisionCheck (e){
+
         let pBodies = this.pokemon.Bodies;
         let pMeshes = this.pokemon.Meshes;
         let pNames = this.pokemon.Names;
@@ -429,16 +444,16 @@ export class Character {
                 let body = pBodies[index];
                 let mesh = pMeshes[index];
                 this.caught.push(name);
+                this.seen.push(name);
                 this.rBodies.push(this.ballBody);
                 this.rMeshes.push(this.ballMesh);
                 this.rBodies.push(body);
                 this.rMeshes.push(mesh);
             }else{
-                console.log("Escaped")
                 this.addText(name+" Escaped!")
             }
-
-
+        }else{
+            this.addText("You Missed!")
         }
         this.rBodies.push(this.ballBody);
         this.rMeshes.push(this.ballMesh);
@@ -448,7 +463,7 @@ export class Character {
     isCaught(PokemonName){
         let R1 = THREE.MathUtils.randInt(0, 255)
         let rate = this.pokedex.getRate(PokemonName)
-        return rate*2 >= R1/2.5;
+        return rate >= R1/1.5;
     }
     addText(Text){
 
@@ -472,7 +487,7 @@ export class Character {
         let new_canvas=document.createElement('canvas')
         let ctx = new_canvas.getContext("2d")
         ctx.font="40px Tahoma, sans-serif"
-        var width = ctx.measureText(Text).width
+        let width = ctx.measureText(Text).width
         let text2=document.createElement('div')
         text2.style.position = 'absolute';
         text2.id= 'text-label';

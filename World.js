@@ -36,7 +36,8 @@ class World {
         this._Declare();
         this.InitCANNON();
         this.InitTHREE();
-        this.debug = new cannonDebugger(this.scene, this.world.bodies);
+        this.InitUI();
+        //this.debug = new cannonDebugger(this.scene, this.world.bodies);
     }
 
 
@@ -52,7 +53,17 @@ class World {
         //used for character model and animations.
         this._mixers = [];
         this._previousRAF = null;
+
+        this.Pokeballs = 60;
+        this.Pause = false;
     }
+
+    InitUI(){
+        this.addPokeballCount()
+        this.addPauseButton()
+    }
+
+
 
     //Initialise ThreeJS, Set up canvas, camera, scene and renderer.
     //Sets up the basic world.
@@ -84,7 +95,10 @@ class World {
         this.camera.position.set(25, 30, 25);
 
 
-        this.StartPos = new CANNON.Vec3(2700, -100, -2900);
+        //this.StartPos = new CANNON.Vec3(2700, -100, -2900);
+
+        this.StartPos = new CANNON.Vec3(2700, -100, 1000);
+
         this.mapWidth = 384
         this.mapHeight = 192
         this.mapCamera = new THREE.OrthographicCamera(
@@ -235,10 +249,23 @@ class World {
         if (this.resizeRendererToDisplaySize(this.renderer)) {
             const canvas = this.renderer.domElement;
             this.camera.aspect = canvas.clientWidth / canvas.clientHeight;
+
+            if(this.pokeballCount){
+                let width =this.pokeballCount.clientWidth + 40
+                this.pokeballCount.style.left = canvas.width-width + 'px';
+            }
+            if(this.pauseIcon){
+                let width =this.pauseIcon
+                    .clientWidth + 40
+                this.pauseIcon
+                    .style.left = canvas.width-width + 'px';
+            }
+
             this.camera.updateProjectionMatrix();
         }
-
-
+        if(this.Pause===true){
+            return
+        }
         requestAnimationFrame((t) => {
             //t is the time that the scene will be animated in seconds.
             if (this._previousRAF === null) {
@@ -250,7 +277,7 @@ class World {
 
             //actually render the scene.
 
-            var w = window.innerWidth, h = window.innerHeight;
+            let w = window.innerWidth, h = window.innerHeight;
 
 
             // full display
@@ -260,8 +287,6 @@ class World {
             this.renderer.render(this.scene, this.camera);
 
             // minimap (overhead orthogonal camera)
-
-
             if (this.Character){
                 this.renderer.setViewport( 50, 50, this.mapWidth, this.mapHeight);
                 this.renderer.setScissor(50, 50, this.mapWidth,this.mapHeight);
@@ -356,7 +381,8 @@ class World {
             rBodies: this.removeBodies,
             rMeshes: this.removeMeshes,
             canvas:this.canvas,
-            mapCamera: this.mapCamera
+            mapCamera: this.mapCamera,
+            pokeballs: this.Pokeballs
         }
         this.Character = new CHARACTER.Character(CharParams);
 
@@ -372,7 +398,6 @@ class World {
     }
 
 
-
     //Physic Update Function.
     Step(timeElapsed) {
         const timeElapsedS = timeElapsed * 0.001;
@@ -385,6 +410,12 @@ class World {
         if (this.Character) {
             this.Character.Update(timeElapsedS);
             this.PokemonLoader.update()
+            this.Pokeballs = this.Character.Pokeballs
+            this.updatePokeballText()
+            if(!this.TaskList){
+                this.TaskList =  this.PokemonLoader.TaskList;
+            }
+
         }
 
 
@@ -898,8 +929,6 @@ class World {
         this.FenceHorizontal(6,1,-2800,-2050);
     }
 
-
-
     addHill() {
         const CharParams = {
             camera: this.camera,
@@ -912,6 +941,100 @@ class World {
         this.hill = new HILL.Hill(CharParams);
         this.hill.createHill();
 
+    }
+
+    addPokeballCount(){
+        let img = document.createElement("img");
+        img.src="resources/images/pokeballIcon.png";
+        img.id="pokeballIcon";
+
+        img.setAttribute("height", "90");
+        img.setAttribute("width", "90");
+
+
+        let width = 140+40
+        let text = document.createTextNode("x"+this.Pokeballs.toString())
+        this.textSpan=document.createElement("span")
+        this.textSpan.id = "pokeballCount"
+        this.textSpan.style.padding="10px"
+        this.textSpan.style.fontFamily="Tahoma, sans-serif"
+        this.textSpan.style.color='#ffffff'
+        this.textSpan.style.fontSize=45+'px'
+        this.textSpan.textContent = "x"+this.Pokeballs.toString()
+
+        this.pokeballCount = document.createElement('div')
+        this.pokeballCount.id= "PokeballDiv"
+        this.pokeballCount.style.position = 'absolute';
+        this.pokeballCount.style.display ="flex";
+        this.pokeballCount.style.alignItems="center";
+        this.pokeballCount.append(img)
+        this.pokeballCount.append(this.textSpan)
+        this.pokeballCount.style.top = 200 + 'px';
+        this.pokeballCount.style.left = this.canvas.width-width+'px';
+        this.pokeballCount.unselectable="on"
+        document.body.appendChild(this.pokeballCount)
+    }
+
+    updatePokeballText(){
+
+        let x = this.textSpan.textContent
+        let oldCount = x.replace(/\D/g,'');
+        if (this.Pokeballs.toString()!==oldCount) {
+            this.textSpan.textContent = "x"+this.Pokeballs.toString()
+        }
+
+    }
+
+    addPauseButton(){
+        let width = 120
+        this.pauseIcon
+            = document.createElement("input");
+        this.pauseIcon
+            .src = "resources/images/pauseIcon.png";
+        this.pauseIcon
+            .id="pauseIcon";
+        this.pauseIcon
+            .style.position = 'absolute';
+        this.pauseIcon
+            .type="image"
+        this.pauseIcon
+            .setAttribute("height", "100");
+        this.pauseIcon
+            .setAttribute("width", "100");
+
+        this.pauseIcon
+            .style.top = 50 + 'px';
+        this.pauseIcon
+            .style.left = this.canvas.width-width+'px';
+        let a = this.Pause
+        this.pauseIcon.onclick = ()=>{
+            this.onPause()
+        }
+        document.body.appendChild(this.pauseIcon)
+    }
+
+    onPause(){
+        this.Pause=true
+        let overlay = document.getElementById("myNav")
+        overlay.style.width = "100%";
+        let close = document.createElement('a')
+        close.className = "closebtn";
+        close.innerHTML = "X";
+        close.style.position="absolute";
+        close.style.top = 20+"px";
+        close.style.right=45+"px";
+        close.style.fontSize=60+"px";
+        close.onclick = ()=>{
+            this.onPauseExit()
+        }
+        overlay.append(close)
+    }
+    onPauseExit(){
+        this.Pause=false
+        console.log("Exit",this.Pause)
+
+        document.getElementById("myNav").style.width = "0%";
+        this.Render()
     }
 }
 

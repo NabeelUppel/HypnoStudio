@@ -25,7 +25,9 @@ export class Pokemon {
             return this.PokemonList
         }
     }
-
+    get Task(){
+        return this.TaskList
+    }
     Init(params) {
         this.pMeshes = [];
         this.pBodies = [];
@@ -190,7 +192,7 @@ export class Pokemon {
             this.PokemonList["Names"] = this.pNames;
             this.PokemonList["Bodies"] = this.pBodies;
             this.PokemonList["Meshes"] = this.pMeshes;
-            this.CreateTaskList()
+            this.TaskList = this.CreateTaskList()
             this.update();
         };
 
@@ -245,7 +247,8 @@ export class Pokemon {
                 Rarity = THREE.MathUtils.randInt(3, 4)
             }
 
-            if(R1>=85){
+
+            if(R1>=75 &&i<28){
                 Rarity =  THREE.MathUtils.randInt(5, 6)
                 R1 = THREE.MathUtils.randInt(1, 100)
             }
@@ -350,11 +353,20 @@ export class Pokemon {
     }
 
     CreateTaskList(){
-    let px = new Pokedex()
-        for (let i = 0; i <this.pNames.length ; i++) {
-            let x = px.getType(this.pNames[i])
-            console.log(this.pNames[i],x)
+        let px = new Pokedex()
+        let Spawned = this.pNames.slice(0)
+
+        for (let i = 0; i <15 ; i++) {
+            popRandom(Spawned)
         }
+        return Spawned
+
+
+        function popRandom (array) {
+            let i = (Math.random() * array.length) | 0
+            return array.splice(i, 1)
+        }
+
     }
 }
 
