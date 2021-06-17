@@ -1,0 +1,60 @@
+body {
+    background: url("resources/images/pokemonbg4.jpg") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.frame{
+    display: block;
+}
+.btn-group{
+    margin-top:250px;
+}
+
+.btn-group a{
+    -webkit-appearance: button;
+    -moz-appearance: button;
+    appearance: auto;
+
+    text-align: center;
+    background-color: #61b898; /* Green background */
+    border: 1px solid #000000; /* Green border */
+    color: #ffcc01; /* White text */
+    padding: 10px 24px 0 20px ; /* Some padding */
+    cursor: pointer; /* Pointer/hand icon */
+    width: 25%; /* Set a width if needed */
+    display: block; /* Make the buttons appear below each other */
+    margin-bottom:15px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 40px;
+    font-family: 'Luckiest Guy', cursive;
+
+    text-decoration: none;
+    text-shadow: 0 0 4px #395ba8, 0 0 4px #395ba8, 0 0 4px #395ba8, 0 0 4px #395ba8, 0 0 4px #395ba8, 0 0 4px #395ba8, 0 0 4px #395ba8, 0 0 4px #395ba8, 0 0 4px #395ba8, 0 0 4px #395ba8, 0 0 4px #395ba8, 0 0 4px #395ba8, 0 0 4px #395ba8, 0 0 4px #395ba8, 0 0 4px #395ba8, 0 0 4px #395ba8, 0 0 4px #395ba8, 0 0 4px #395ba8, 0 0 4px #395ba8, 0 0 4px #395ba8;
+
+}
+
+
+/* Add a background color on hover */
+.btn-group a:hover {
+    background-color: #a30000;
+}
+
+
+.frame img {
+    display: block;
+    max-width:690px;
+    max-height:285px;
+    width: auto;
+    height: auto;
+    margin-top: 100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
