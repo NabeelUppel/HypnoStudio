@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: "Lato", sans-serif;
+    }
+
+    .sidenav {
+      height: 100%;
+      width: 100%;
+      position: fixed;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      transition: 0.5s;
+      padding-top: 25px;
+      text-align:center;
+      background: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ), url("resources/images/pokemonbg3.jpg") no-repeat center center fixed;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+      overflow-x: hidden;
+      overflow-y: hidden;
+    }
+
+    .sidenav a {
+      padding: 8px 8px 8px 32px;
+      text-decoration: none;
+      font-size: 25px;
+      color: #818181;
+      display: block;
+      transition: 0.3s;
+
+    }
+
+    .sidenav a:hover{
+      color: #ffffff;
+    }
+
+    .sidenav .closebtn {
+      position: absolute;
+      top: 0;
+      right: 25px;
+      font-size: 72px;
+      margin-left: 50px;
+    }
+
+    .sidenav img {
+      display: block;
+      max-width:690px;
+      max-height:285px;
+      width: auto;
+      height: auto;
+      margin-top: 100px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .sidenav p{
+      color: #ffffff;
+      font-size:25px;
+    }
+    .sidenav  h2 {
+      color: #ffffff;
+      font-size: 35px;
+    }
+
+    @media screen and (max-height: 450px) {
+      .sidenav {padding-top: 15px;}
+      .sidenav a {font-size: 18px;}
+    }
+  </style>
+  <title>Tutorial</title>
+  <link rel="icon" type="image/png" sizes="96x96" href="resources/images/favicon-96x96.png">
+</head>
+<body>
+
+<div id="mySidenav" class="sidenav">
+  <a href="index.html" class="closebtn">&times;</a>
+
+  <img src="resources/images/pokemonLogo.png" alt="Pikachu" style="float:top;width:1111px;height:571px;">
+
+  <h2>How to Play</h2>
+  <p>The aim of the game is to catch the required Pokemon before running out of Pokeballs.</p>
+  <p>If you have caught the required Pokemon for a level, you may proceed to the next level.</p>
+  <p>If you have not caught the required Pokemon, you must restart the level.</p>
+  <br/>
+  <h2>Controls</h2>
+  <p>Use the "WASD" keys to move</p>
+  <p>Use "Space-bar" to jump</p>
+  <p>Use "Shift" to run</p>
+  <p>Click on the Pokemon to throw a Pokeball and catch them</p>
+</div>
+
+</body>
+</html>

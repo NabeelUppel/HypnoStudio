@@ -33,9 +33,9 @@ main {
     width: 100%;
     padding-top: 42%;
     margin: auto;
-    /*font-family: 'Luckiest Guy', cursive;*/
+    font-family: 'Luckiest Guy', cursive;
     /*font-family: 'Caveat', sans-serif;*/
-    font-family: 'Roboto', serif;
+    /*font-family: 'Roboto', serif;*/
     font-size: 60px;
     white-space: nowrap;
     color: #FFFFFF;
@@ -55,7 +55,8 @@ main {
 }
 
 /* Scroller */
-div {
+#scroll {
+    text-align: center;
     position: absolute;
     top: 0;
     left: 0;
@@ -116,12 +117,21 @@ section {
     padding-top: 42%;
 }
 
+#disclaimer{
+    text-align: center;
+    position: center;
+}
+
 section:last-child {
     position: absolute;
     right: 0;
     bottom: 0;
     left: 0;
     transform: translateY(100%);
+}
+
+h1{
+    font-size: 40px;
 }
 
 /* List */
@@ -177,7 +187,7 @@ h2 {
 
 h3 {
     font-weight: 400;
-    font-size: .8em;
+    font-size: .10em;
 }
 
 p {

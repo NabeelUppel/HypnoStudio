@@ -19,60 +19,11 @@
         <a href="level1.html" class="button">Level 1</a>
         <a href="level2.html" class="button">Level 2</a>
         <a href="level3.html" class="button">Level 3</a>
-        <a href="https://google.com" class="button">Tutorial</a>
+        <a href="tutorial.html" class="button">Tutorial</a>
         <a href="credits.html" class="button">Credits</a>
     </div>
 </div>
 
 </body>
-<script>
-    //createTable()
-    function createTable(){
-        let cellList=[]
-        let rowList= []
-        let div = document.createElement("div");
-        let table = document.createElement("table");
-        let title = document.createElement("h3")
-        title.innerHTML="TaskList"
-        title.style.alignContent="center"
-        div.style.top = 200 + 'px';
-        div.style.position="absolute"
-        div.style.display = "block";
-        div.id = "TaskList"
-        for (let i = 0; i <15 ; i++) {
-            let cell = document.createElement("td");
-                cell.style.textAlign = "center"
-                let figure = document.createElement("figure");
-                let caption = document.createElement("figcaption");
-                caption.innerHTML = "pokeball"
-                let img = document.createElement("img");
-                img.src = "resources/images/pokeballIcon.png"
-                img.setAttribute("height", "70");
-                img.setAttribute("width", "70");
-                let a = document.createElement("a");
-                a.appendChild(img)
-                figure.appendChild(a)
-                figure.appendChild(caption)
-                cell.appendChild(figure)
-                cellList.push(cell)
-        }
-
-        for (let i = 0; i <5 ; i++) {
-            rowList.push(document.createElement("tr"))
-        }
-
-        for (let i = 0; i <15 ; i++) {
-            let row= rowList[i%5]
-           row.appendChild(cellList[i])
-        }
-
-        for (let i = 0; i <5 ; i++) {
-            table.appendChild(rowList[i])
-        }
-        div.appendChild(title)
-        div.appendChild(table)
-        document.body.appendChild(div)
-    }
-</script>
 
 </html>
