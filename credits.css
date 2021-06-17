@@ -33,10 +33,10 @@ main {
     width: 100%;
     padding-top: 42%;
     margin: auto;
-    font-family: 'Luckiest Guy', cursive;
+    /*font-family: 'Luckiest Guy', cursive;*/
     /*font-family: 'Caveat', sans-serif;*/
-    /*   font-family: 'Roboto'; */
-    font-size: 44px;
+    font-family: 'Roboto';
+    font-size: 60px;
     white-space: nowrap;
     color: #FFFFFF;
     overflow: hidden;
@@ -44,7 +44,7 @@ main {
 
 @media only screen and (max-width: 980px) {
     main {
-        font-size: 22px;
+        font-size: 30px;
     }
 }
 
@@ -111,7 +111,8 @@ div {
 
 /* Sections */
 section {
-    position: relative;
+    text-align: center;
+    position: center;
     padding-top: 42%;
 }
 
@@ -136,7 +137,7 @@ dl:after {
 }
 
 dt,
-dd {
+dd{
     float: left;
     width: 50%;
     box-sizing: border-box;
@@ -151,9 +152,10 @@ dd {
     margin: 0;
     padding-left: 10px;
     text-align: left;
-    text-transform: uppercase;
     color: #FED636;
 }
+
+
 
 /* Typography */
 h3,
