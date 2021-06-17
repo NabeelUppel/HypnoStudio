@@ -35,7 +35,7 @@ main {
     margin: auto;
     /*font-family: 'Luckiest Guy', cursive;*/
     /*font-family: 'Caveat', sans-serif;*/
-    font-family: 'Roboto';
+    font-family: 'Roboto', serif;
     font-size: 60px;
     white-space: nowrap;
     color: #FFFFFF;

@@ -103,9 +103,8 @@ class World {
         this.camera.position.set(25, 30, 25);
 
 
-        //this.StartPos = new CANNON.Vec3(2700, -100, -2900);
+        this.StartPos = new CANNON.Vec3(2700, -100, -2900);
 
-        this.StartPos = new CANNON.Vec3(2700, -100, 1000);
         this.mapWidth = 384;
         this.mapHeight = 192;
 
@@ -132,7 +131,7 @@ class World {
 
         this.addGround();
         this.levelOne()
-        //this.createChecker();
+        this.createChecker();
         //Load animated Model
         this.LoadAnimatedModel();
 
