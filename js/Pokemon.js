@@ -34,6 +34,7 @@ export class Pokemon {
         this.pMeshes = [];
         this.pBodies = [];
         this.pNames = [];
+        this.TaskList =[];
         this.PokemonList = {};
 
 
@@ -194,12 +195,11 @@ export class Pokemon {
             this.PokemonList["Names"] = this.pNames;
             this.PokemonList["Bodies"] = this.pBodies;
             this.PokemonList["Meshes"] = this.pMeshes;
-            this.TaskList = this.CreateTaskList()
             this.update();
         };
 
 
-        const _OnLoad = (name, fbx, pos) => {
+        const _OnLoad = (name, fbx, pos, num) => {
             let randDegree = THREE.MathUtils.randInt(-10,10)
             fbx.scale.setScalar(0.5);
             fbx.position.copy(pos)
@@ -231,6 +231,10 @@ export class Pokemon {
             this.pBodies.push(Body);
             this.pNames.push(name);
 
+            if(num%2===0){
+               this.TaskList.push(name);
+            }
+
             this.world.addBody(Body);
             this.scene.add(fbx);
         };
@@ -241,16 +245,13 @@ export class Pokemon {
         for (let i = 0; i <this.Positions.length ; i++) {
             let Rarity = 1
 
-            if(i%2===0){
-                Rarity=2
-            }
 
-            if(i <= 25){
-                Rarity = THREE.MathUtils.randInt(3, 4)
+            if(i >= 15 && i<27){
+                Rarity = THREE.MathUtils.randInt(2, 4)
             }
 
 
-            if(R1>=75 &&i<28){
+            if(R1>=75 ){
                 Rarity =  THREE.MathUtils.randInt(5, 6)
                 R1 = THREE.MathUtils.randInt(1, 100)
             }

@@ -87,6 +87,8 @@ export class Character {
         //Array of names of the caught pokemon.
         this.caught = []
         this.seen = []
+
+        this.WorkStation = params.WorkStation
         //used to store animations that are loaded.
         this.allAnimations = {};
 
@@ -361,6 +363,7 @@ export class Character {
             this.lookat = dir;
         }
 
+
     }
     _onDoubleClick(event){
         if(this.dir!==null ){
@@ -381,7 +384,15 @@ export class Character {
                 this.addText("You're Out of Pokeballs!")
             }
 
+        }else{
+            this.checkWorkStationIntersects= this.raycaster.intersectObject(this.WorkStation, false);
+            if(this.checkWorkStationIntersects.length!==0){
+                console.log("3double")
+
+            }
         }
+
+
 
         this.dir =null;
     }

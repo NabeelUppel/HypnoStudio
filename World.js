@@ -37,7 +37,7 @@ class World {
         this.InitCANNON();
         this.InitTHREE();
         this.InitUI();
-        //this.debug = new cannonDebugger(this.scene, this.world.bodies);
+        this.debug = new cannonDebugger(this.scene, this.world.bodies);
     }
 
 
@@ -120,6 +120,21 @@ class World {
 
 
         this.addGround();
+       //this.levelOne()
+
+        this.addCheckObject()
+
+        //Load animated Model
+        this.LoadAnimatedModel();
+
+        //Render the initial scene. Will be recursively called thereafter.
+        this.Render();
+
+    }
+
+
+    levelOne(){
+
         this.addSkybox();
         this.addHill();
         this.paths();
@@ -132,15 +147,7 @@ class World {
         this.ambientSounds();
         this.lampPost();
         this.sign();
-
-        //Load animated Model
-        this.LoadAnimatedModel();
-
-        //Render the initial scene. Will be recursively called thereafter.
-        this.Render();
-
     }
-
 
     //Initialise CannonJS (Physics) including setting up the gravity and other resources.
     InitCANNON() {
@@ -368,7 +375,7 @@ class World {
         const pokemonList = this.PokemonLoader.List;
         //Params to be passed to the character class.
         const TaskList =  this.PokemonLoader.Task;
-        console.log("SOMEBODY")
+        //console.log("SOMEBODY")
         const CharParams = {
             renderer: this.renderer,
             camera: this.camera,
@@ -383,7 +390,8 @@ class World {
             canvas:this.canvas,
             mapCamera: this.mapCamera,
             pokeballs: this.Pokeballs,
-            taskList: TaskList
+            taskList: TaskList,
+            WorkStation:this.Cube
         }
         this.Character = new CHARACTER.Character(CharParams);
 
@@ -1037,6 +1045,29 @@ class World {
 
         document.getElementById("myNav").style.width = "0%";
         this.Render()
+    }
+
+
+    addCheckObject(){
+        let pos = new CANNON.Vec3(2700, 0, -2500)
+        const bodyShape = new CANNON.Box(new CANNON.Vec3(100,100,100))
+        const heavyMaterial = new CANNON.Material('heavy');
+        let body = new CANNON.Body({
+            mass: 100,
+            position: pos,
+            material: heavyMaterial
+        })
+        body.addShape(bodyShape);
+        console.log("change")
+        const cubeGeo = new THREE.BoxGeometry(200, 200, 200, 10, 10);
+        const material = new THREE.MeshBasicMaterial();
+
+        this.Cube = new THREE.Mesh(cubeGeo, material);
+        this.Cube.position.set(pos.x,pos.y,pos.z)
+        this.meshes.push(this.Cube);
+        this.bodies.push(body);
+        this.scene.add(this.Cube)
+        this.world.addBody(body)
     }
 }
 
