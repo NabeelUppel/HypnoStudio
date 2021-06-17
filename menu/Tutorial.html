@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: "Lato", sans-serif;
+    }
+
+    .sidenav {
+      height: 100%;
+      width: 0;
+      position: fixed;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      background-color: #f1f1f1;
+      overflow-x: scroll;
+      transition: 0.5s;
+      padding-top: 25px;
+      text-align:center;
+    }
+
+    .sidenav a {
+      padding: 8px 8px 8px 32px;
+      text-decoration: none;
+      font-size: 25px;
+      color: #818181;
+      display: block;
+      transition: 0.3s;
+
+    }
+
+    .sidenav a:hover{
+      color: #808080;
+    }
+
+    .sidenav .closebtn {
+      position: absolute;
+      top: 0;
+      right: 25px;
+      font-size: 36px;
+      margin-left: 50px;
+    }
+
+    @media screen and (max-height: 450px) {
+      .sidenav {padding-top: 15px;}
+      .sidenav a {font-size: 18px;}
+    }
+  </style>
+</head>
+<body>
+
+<div id="mySidenav" class="sidenav">
+  <a href="Menu.html" class="closebtn" onclick="closeNav()">&times;</a>
+
+  <img src="resources/images/Menus/Pokemon%20Catch.png" alt="Pikachu" style="float:top;width:1111px;height:571px;">
+
+  <h2>Gameplay Tutorial</h2>
+  <p>The aim of the game is to catch the required Pokemon before running out of Pokeballs.</p>
+  <p>If you have caught the required Pokemon for a level, you may proceed to the next level.</p>
+  <p>If you have not caught the required Pokemon, you must restart the level.</p>
+
+  <h2>Controls</h2>
+  <p>Use the "WASD" keys to move</p>
+  <P>Use "Space-bar" to jump</P>
+  <p>Hold "Space-bar" to double jump</p>
+  <p>Use "Left Shift" to run</p>
+  <p>Click on the Pokemon to throw a Pokeball and catch them</p>
+  <p>Use "M" for the Minimap</p>
+  <p>Use "P" for the Pause Menu</p>
+
+</div>
+
+<div id="main">
+
+  <img src="resources/images/Menus/Pokemon Catch.png" alt="Pikachu" style="width:1111px;height:571px;">
+  <p>Click on side menu to see the Tutorial</p>
+  <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; Open</span>
+</div>
+
+<script>
+  function openNav() {
+    document.getElementById("mySidenav").style.width = "100%";
+  }
+
+  function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+  }
+</script>
+
+</body>
+</html>
