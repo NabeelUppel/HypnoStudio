@@ -368,7 +368,8 @@ class World {
 
         const pokemonList = this.PokemonLoader.List;
         //Params to be passed to the character class.
-
+        const TaskList =  this.PokemonLoader.TaskList;
+        console.log("SOME")
         const CharParams = {
             renderer: this.renderer,
             camera: this.camera,
@@ -382,7 +383,8 @@ class World {
             rMeshes: this.removeMeshes,
             canvas:this.canvas,
             mapCamera: this.mapCamera,
-            pokeballs: this.Pokeballs
+            pokeballs: this.Pokeballs,
+            taskList: TaskList
         }
         this.Character = new CHARACTER.Character(CharParams);
 
@@ -412,9 +414,7 @@ class World {
             this.PokemonLoader.update()
             this.Pokeballs = this.Character.Pokeballs
             this.updatePokeballText()
-            if(!this.TaskList){
-                this.TaskList =  this.PokemonLoader.TaskList;
-            }
+
 
         }
 

@@ -82,7 +82,7 @@ export class Character {
         //List of all Pokemon Available to be caught.
         //Dictionary of three arrays: names, bodies and meshes.
         this.pokemon = params.pokemon;
-
+        this.taskList = params.taskList;
         this.pokeballs = params.pokeballs;
         //Array of names of the caught pokemon.
         this.caught = []
@@ -119,6 +119,7 @@ export class Character {
 
             // optional: remove loader from DOM via event listener
             loadingScreen.addEventListener( 'transitionend', onTransitionEnd );
+            console.log(this.taskList)
         };
 
         function onTransitionEnd( event ) {
