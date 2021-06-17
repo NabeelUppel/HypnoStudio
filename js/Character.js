@@ -15,7 +15,6 @@ import {Pokedex} from "./Pokedex.js"
 * A Finite State Machine is used to for character animations.
 * When the model is loaded the FSM is set to the idle state.
 * Each Animation has its own FSM State. This is done so that not animation is done at the same time.
-
 */
 
 //Proxy class to allow animations to be passed from one class to another.
@@ -61,6 +60,12 @@ export class Character {
         return this.pokeballs
     }
 
+    get getStop(){
+        return this.Stop;
+    }
+    setStop(){
+        this.Stop =false;
+    }
     //Initialise Function.
     Init(params) {
 
@@ -84,11 +89,14 @@ export class Character {
         this.pokemon = params.pokemon;
         this.taskList = params.taskList;
         this.pokeballs = params.pokeballs;
+
+        this.Stop=false;
         //Array of names of the caught pokemon.
         this.caught = []
         this.seen = []
 
         this.WorkStation = params.WorkStation
+
         //used to store animations that are loaded.
         this.allAnimations = {};
 
@@ -98,7 +106,6 @@ export class Character {
         let proxy = new BasicCharacterControllerProxy(this.allAnimations)
         this.stateMachine = new CharacterFSM(proxy)
         this.position = new THREE.Vector3();
-
         this.raycaster = new THREE.Raycaster();
         this.jumpHeight = 10;
 
@@ -337,6 +344,8 @@ export class Character {
     }
 
 
+    //Use Raycasting to see if mouse is in contact with a pokemon.If so,  get the direction from the player to the pokemon
+
     _onMouseMove(event){
         if(!this.pokemon || !this.CharacterBody){
             return
@@ -365,6 +374,9 @@ export class Character {
 
 
     }
+
+
+    //If a direction is set, throw a pokeball
     _onDoubleClick(event){
         if(this.dir!==null ){
             if(this.pokeballs>0){
@@ -378,17 +390,35 @@ export class Character {
                         this.rMeshes.push(this.ballMesh);
                     }
                 }
-
                 this.PokeBall(this.dir)
             }else{
                 this.addText("You're Out of Pokeballs!")
             }
 
-        }else{
-            this.checkWorkStationIntersects= this.raycaster.intersectObject(this.WorkStation, false);
-            if(this.checkWorkStationIntersects.length!==0){
-                console.log("3double")
+        }
 
+        // Use raytesting to make the work Station clickable. This is where the game ends.
+            //if clicked, check tht caught lists against the task list.
+            //if the same, win menu shows up. render is paused.
+            // if not, if the amount of pokeball is 0, lose.
+            // else, send message and continue with the game.
+        else{
+            this.checkWorkStationIntersects= this.raycaster.intersectObjects(this.WorkStation.children, false);
+            if(this.checkWorkStationIntersects.length!==0){
+                let is_same = this.checkLists()
+                if(!is_same){
+                    this.Stop=true;
+                    let WinOverlay = document.getElementById("Win")
+                    WinOverlay.style.width = "100%";
+                }else {
+                    if(this.pokeballs>0){
+                        this.addText("You're missing a few Pokemon.\nCome back when you've caught 'em all!")
+                    }else{
+                        this.Stop=true;
+                        let LoseOverlay = document.getElementById("Lose")
+                        LoseOverlay.style.width = "100%";
+                    }
+                }
             }
         }
 
@@ -397,6 +427,7 @@ export class Character {
         this.dir =null;
     }
 
+    //throw a pokeball in certain direction
     PokeBall(direction){
         const loader = new THREE.TextureLoader();
         const texture = loader.load('./resources/images/pokeball.jpg');
@@ -427,12 +458,19 @@ export class Character {
             direction.y * shootVel,
             direction.z * shootVel*2
         )
-        this.pokeballs = this.pokeballs-1
+
+        if(this.pokeballs>0){
+            this.pokeballs = this.pokeballs-1
+        }
+
         this.bodies.push(this.ballBody);
         this.meshes.push(this.ballMesh);
 
         this.ballBody.addEventListener("collide", (e)=>this.collisionCheck(e))
     }
+
+    //check if ball collided with a body.
+    // if its a pokemon attempt to catch it, else remove it.
     collisionCheck (e){
 
         let pBodies = this.pokemon.Bodies;
@@ -462,6 +500,7 @@ export class Character {
                 this.rMeshes.push(this.ballMesh);
                 this.rBodies.push(body);
                 this.rMeshes.push(mesh);
+                this.updateTable(name)
             }else{
                 const listener = new THREE.AudioListener();
                 this.camera.add(listener);
@@ -483,12 +522,33 @@ export class Character {
     }
 
 
+    // check if player won
+    checkLists(){
+        console.log(this.caught, this.taskList)
+        if(this.caught.sort().join(',')=== this.taskList.sort().join(',')){
+            console.log("yes")
+            return true
+        }
+        else{
+            console.log("nope")
+            return false
+        }
+    }
+
+
+    //check if pokemon escaped or not
     isCaught(PokemonName){
         let R1 = THREE.MathUtils.randInt(0, 255)
         let rate = this.pokedex.getRate(PokemonName)
         return rate >= R1/1.5;
     }
-    addText(Text){
+
+    //add text
+    addText(Text, color){
+        if (!color){
+            color="#ffffff"
+        }
+
 
         const elem = document.getElementById("text-label");
         if(elem != null){
@@ -500,8 +560,7 @@ export class Character {
 
         for (let i = 0; i <replaceList.length ; i++) {
             if(Text.includes(replaceList[i])){
-                console.log(Text)
-                Text.replace(replaceList[i], replace[replaceList[i]])
+                Text = Text.replace(replaceList[i], replace[replaceList[i]])
                 break
             }
         }
@@ -510,22 +569,37 @@ export class Character {
         let new_canvas=document.createElement('canvas')
         let ctx = new_canvas.getContext("2d")
         ctx.font="40px Tahoma, sans-serif"
+
+
         let width = ctx.measureText(Text).width
+        if (Text.includes("\n")){
+            let splitArr =Text.split("\n")
+            let longest = splitArr.sort(
+                function (a, b) {
+                    return b.length - a.length;
+                }
+            )[0]
+            width = ctx.measureText(longest).width
+        }
+
         let text2=document.createElement('div')
         text2.style.position = 'absolute';
         text2.id= 'text-label';
         text2.style.width = width+"px";
         text2.style.height = 200+"px";
-        text2.innerHTML = Text;
-        text2.style.top = 400 + 'px';
+        text2.innerHTML = Text.replace(/\n/g, "<br />");
+        text2.style.textAlign="center";
+        text2.style.display="block";
+        text2.style.top = 300 + 'px';
         text2.style.left = (this.canvas.width-width)/2+'px';
         text2.style.fontSize=40+'px'
-        text2.style.color='#ffffff'
+        text2.style.color=color
         text2.style.fontFamily="Tahoma, sans-serif"
         text2.unselectable="on"
         document.body.appendChild(text2)
         this.removeText()
     }
+    // remove text after a certain time
     removeText(){
         setTimeout(() => {
             const elem = document.getElementById("text-label");
@@ -534,9 +608,20 @@ export class Character {
             }
         }, 5000);
     }
+
+    updateTable(Name){
+        let TaskList = document.getElementById("TaskList")
+        let Class_Items = TaskList.getElementsByClassName(Name)
+        if(Class_Items.length!==0){
+            console.log(Class_Items)
+            Class_Items[0].parentNode.removeChild(Class_Items[0])
+        }
+    }
+
 }
 
 
+//controller for the character. Set values to true or false dependening on key press.
 class CharacterController {
     constructor() {
         this.Init();
@@ -614,6 +699,8 @@ class CharacterController {
 }
 
 
+
+//finite state machine. This is the parent class that will be used fot inheritance
 class FiniteStateMachine {
     constructor() {
         this._states = {};
@@ -647,6 +734,7 @@ class FiniteStateMachine {
     }
 }
 
+//inheritance child from above. Used to initial states by adding it to the FSM
 class CharacterFSM extends FiniteStateMachine {
     constructor(proxy) {
         super();
@@ -654,6 +742,7 @@ class CharacterFSM extends FiniteStateMachine {
         this._Init();
     }
 
+    //Add states
     _Init() {
         this.AddState('idle', IdleState);
         this.AddState('walk', WalkState);
@@ -665,6 +754,7 @@ class CharacterFSM extends FiniteStateMachine {
     }
 }
 
+//Another parent class that will be inherited from.
 class State {
     constructor(parent) {
         this._parent = parent;
@@ -680,22 +770,29 @@ class State {
     }
 }
 
+//States that inherit from State Class.
+//Most of these classes will work in the same manner.See RunState for comments.
 class RunState extends State {
     constructor(parent) {
         super(parent);
     }
 
+    //return name
     get Name() {
         return 'run';
     }
-
+    // what happens when state is entered
     Enter(prevState) {
+        //get the animation for the state
         const curAction = this._parent._proxy._animations['run'].action;
+
+        //if it came from a previous state, smoothly transition to the current stare.
         if (prevState) {
+            //get previous animation
             const prevAction = this._parent._proxy._animations[prevState.Name].action;
-
+            //enable current animation
             curAction.enabled = true;
-
+            //adjust animation based on ratios. Changes according to prevState
             if (prevState.Name === 'walk') {
                 const ratio = curAction.getClip().duration / prevAction.getClip().duration;
                 curAction.time = prevAction.time * ratio;
@@ -707,10 +804,11 @@ class RunState extends State {
                 curAction.setEffectiveTimeScale(1.0);
                 curAction.setEffectiveWeight(1.0);
             }
-
+            //Actually transition
             curAction.crossFadeFrom(prevAction, 0.5, true);
             curAction.play();
         } else {
+            //if first state. play the animation
             curAction.play();
         }
     }
@@ -718,6 +816,7 @@ class RunState extends State {
     Exit() {
     }
 
+    //check what was the button pressed while in this state and transition to the that state.
     Update(timeElapsed, input) {
         if (input.CharacterMotions.forward || input.CharacterMotions.backward) {
             if (!input.CharacterMotions.run) {
@@ -829,6 +928,7 @@ class WalkState extends State {
     }
 }
 
+//You cannot transition during a jump state animation, used a callback to wait until the animation is done before changing states.
 class JumpState extends State {
     constructor(parent) {
         super(parent);
@@ -860,11 +960,13 @@ class JumpState extends State {
         }
     }
 
+    //
     _Finished() {
         this._Cleanup();
         this._parent.SetState('idle');
     }
 
+    //remove event listener
     _Cleanup() {
         const action = this._parent._proxy._animations['jump'].action;
         action.getMixer().removeEventListener('finished', this._FinishedCallback);
@@ -978,6 +1080,7 @@ class WalkingJumpState extends State {
     }
 }
 
+//similar to a jump state.
 class ThrowState extends State {
     constructor(parent) {
         super(parent);

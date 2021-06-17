@@ -175,26 +175,24 @@ export class Pokemon {
         }
         this.RarityTiers=
             {
-                1: ['Dewgong', 'Seel', 'Machoke', 'NidoranFemale',  'Doduo',  'Magikarp', 'NidoranMale'],
-                2: ['Slowbro', 'Metapod', 'Dodrio','Cubone','Machop','Pikachu', 'Nidorino', 'Nidorina'],
-                3: ['Butterfree', 'Arcanine', 'Sandslash','MrMime','Nidoking', 'Kadabra','Pinsir', 'Scyther','Machamp',  'Rhydon','Nidoqueen','Slowpoke'],
-                4: ['Eevee','Squirtle','Marowak', 'Omastar', 'Bulbasaur','Farfetchd','Abra','Gengar','Charmander'],
-                5: ['Hitmonchan', 'Porygon', 'Ivysaur', 'Charmeleon', 'Wartortle','Flareon','Gyarados'],
-                6: [ 'Omanyte', 'Charizard','Venusaur', 'Blastoise',  'Alakazam', 'Vaporeon'],
-                7: ['Mew', 'Jolteon', 'Mewtwo','Zapdos']
+                1: ['Dewgong', 'Seel', 'Machoke', 'NidoranFemale',  'Doduo',  'Magikarp', 'NidoranMale','Slowbro', 'Metapod', 'Dodrio','Cubone','Machop','Pikachu', 'Nidorino', 'Nidorina'],
+                2: ['Butterfree', 'Arcanine', 'Sandslash','MrMime','Nidoking', 'Kadabra','Pinsir', 'Scyther','Machamp',  'Rhydon','Nidoqueen','Slowpoke'],
+                3: ['Eevee','Squirtle','Marowak', 'Omastar', 'Bulbasaur','Farfetchd','Abra','Gengar','Charmander'],
+                4: ['Hitmonchan', 'Porygon', 'Ivysaur', 'Charmeleon', 'Wartortle','Flareon','Gyarados'],
+                5: [ 'Omanyte', 'Charizard','Venusaur', 'Blastoise',  'Alakazam', 'Vaporeon'],
+                6: ['Mew', 'Jolteon', 'Mewtwo','Zapdos']
             }
     }
 
 
     LoadModels() {
 
-
-
         this.manager = new THREE.LoadingManager();
         this.manager.onLoad = () => {
             this.PokemonList["Names"] = this.pNames;
             this.PokemonList["Bodies"] = this.pBodies;
             this.PokemonList["Meshes"] = this.pMeshes;
+            this.createTable()
             this.update();
         };
 
@@ -245,19 +243,16 @@ export class Pokemon {
         for (let i = 0; i <this.Positions.length ; i++) {
             let Rarity = 1
 
-
-            if(i >= 15 && i<27){
-                Rarity = THREE.MathUtils.randInt(2, 4)
+            if(i%2===0){
+                Rarity = 2
             }
 
-
-            if(R1>=75 ){
-                Rarity =  THREE.MathUtils.randInt(5, 6)
-                R1 = THREE.MathUtils.randInt(1, 100)
+            if(i%4===0){
+                Rarity =  THREE.MathUtils.randInt(3, 6)
             }
 
             if(R1>=95){
-                Rarity = 7
+                Rarity = 6
                 R1 = 1
             }
             let Models = this.RarityTiers[Rarity]
@@ -355,27 +350,79 @@ export class Pokemon {
         }
     }
 
-    CreateTaskList(){
-        let px = new Pokedex()
-        let Spawned = this.pNames.slice(0)
+    createTable(){
+        let replace = {"NidoranMale":"Nidoran♂" ,  "NidoranFemale":"Nidoran♀", "Farfetchd":"Farfetch'd", "MrMime":"Mr. Mime"};
+        let replaceList=["NidoranMale","NidoranFemale","Farfetchd","MrMime"]
+
+        let pdx= new Pokedex()
+        let cellList=[]
+        let rowList= []
+        let div = document.createElement("div");
+        let table = document.createElement("table");
+        let title = document.createElement("h3")
+        title.innerHTML="Task List"
+        title.style.textAlign="center"
+        title.style.fontSize="40px"
+        title.style.color="white"
+        table.style.marginBottom="10px"
+        title.style.fontFamily="Tahoma, sans-serif"
+        div.style.top = 200 + 'px';
+        div.style.left = 25 + 'px';
+        div.style.position="absolute"
+        div.style.display = "block";
+        div.id = "TaskList"
+        div.style.borderRadius="25px"
+        div.style.backgroundColor="rgba(0,0,0, 0.5)"
+        for (let i = 0; i <15 ; i++) {
+            let name = this.TaskList[i]
+            let cell = document.createElement("td");
+            cell.style.textAlign = "center"
+            cell.style.padding="0px"
+            cell.className = this.TaskList[i]
+            let figure = document.createElement("figure");
+
+            let caption = document.createElement("figcaption");
+            caption.style.fontFamily="Tahoma, sans-serif"
+            for (let i = 0; i <replaceList.length ; i++) {
+                if(name.includes(replaceList[i])){
+                    name = name.replace(replaceList[i], replace[replaceList[i]])
+                    break
+                }
+            }
+            caption.innerHTML = name
+            caption.style.fontSize="20px"
+            caption.style.color="white"
+
+            let img = document.createElement("img");
+
+            img.src = "resources/images/pokemonIcons/"+pdx.getID(this.TaskList[i]).toString()+".png"
+            img.setAttribute("height", "70");
+            img.setAttribute("width", "70");
+
+            let a = document.createElement("a");
+            a.appendChild(img)
+            figure.appendChild(a)
+            figure.appendChild(caption)
+            cell.appendChild(figure)
+            cellList.push(cell)
+        }
+
+        for (let i = 0; i <5 ; i++) {
+            rowList.push(document.createElement("tr"))
+        }
 
         for (let i = 0; i <15 ; i++) {
-            popRandom(Spawned)
-        }
-        return Spawned
-
-
-        function popRandom (array) {
-            let i = (Math.random() * array.length) | 0
-            return array.splice(i, 1)
+            let row= rowList[i%5]
+            row.appendChild(cellList[i])
         }
 
+        for (let i = 0; i <5 ; i++) {
+            table.appendChild(rowList[i])
+        }
+        table.style.borderSpacing="0"
+        table.style.borderCollapse="collapse"
+        div.appendChild(title)
+        div.appendChild(table)
+        document.body.appendChild(div)
     }
 }
-
-
-/*
-Adjustments
-
-
-*/

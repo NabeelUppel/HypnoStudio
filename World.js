@@ -56,13 +56,22 @@ class World {
         this._previousRAF = null;
         this.Pokeballs = 60;
         this.Pause = false;
+
+        document.getElementById("explore").onclick = () => {
+
+            if (this.Character) {
+                this.Character.setStop();
+                document.getElementById("Win").style.width = "0%"
+                this.Pause = false;
+                this.Render()
+            }
+        }
     }
 
-    InitUI(){
+    InitUI() {
         this.addPokeballCount()
         this.addPauseButton()
     }
-
 
 
     //Initialise ThreeJS, Set up canvas, camera, scene and renderer.
@@ -77,13 +86,12 @@ class World {
         });
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.BasicShadowMap;
-        this.renderer.autoClear=false;
+        this.renderer.autoClear = false;
 
         //Scene Setup
         this.scene = new THREE.Scene();
         const loader = new THREE.TextureLoader();
         this.scene.background = loader.load('./resources/images/skybox/rainbow_rt.png');
-
 
 
         //Camera Setup
@@ -95,19 +103,22 @@ class World {
         this.camera.position.set(25, 30, 25);
 
 
-        this.StartPos = new CANNON.Vec3(2700, -100, -2900);
-        this.mapWidth = 384
-        this.mapHeight = 192
+        //this.StartPos = new CANNON.Vec3(2700, -100, -2900);
+
+        this.StartPos = new CANNON.Vec3(2700, -100, 1000);
+        this.mapWidth = 384;
+        this.mapHeight = 192;
+
         this.mapCamera = new THREE.OrthographicCamera(
-            this.mapWidth*2,		// Left
-            -this.mapWidth*2,		// Right
-            -this.mapHeight*2,		// Top
-            this.mapHeight*2,	// Bottom
+            this.mapWidth * 2,		// Left
+            -this.mapWidth * 2,		// Right
+            -this.mapHeight * 2,		// Top
+            this.mapHeight * 2,	// Bottom
             1,         // Near
             1000);
 
-        this.mapCamera.up = new THREE.Vector3(0,0,-1);
-        this.mapCamera.lookAt( new THREE.Vector3(0,-1,0) );
+        this.mapCamera.up = new THREE.Vector3(0, 0, -1);
+        this.mapCamera.lookAt(new THREE.Vector3(0, -1, 0));
 
 
         //adds directional light to scene.
@@ -120,6 +131,17 @@ class World {
 
 
         this.addGround();
+        this.levelOne()
+        //this.createChecker();
+        //Load animated Model
+        this.LoadAnimatedModel();
+
+        //Render the initial scene. Will be recursively called thereafter.
+        this.Render();
+
+    }
+
+    levelOne() {
         this.addSkybox();
         this.addHill();
         this.paths();
@@ -132,16 +154,8 @@ class World {
         this.ambientSounds();
         this.lampPost();
         this.sign();
-        this.createChecker();
-
-        //Load animated Model
-        this.LoadAnimatedModel();
-
-        //Render the initial scene. Will be recursively called thereafter.
-        this.Render();
 
     }
-
 
     //Initialise CannonJS (Physics) including setting up the gravity and other resources.
     InitCANNON() {
@@ -158,7 +172,7 @@ class World {
 
     //Enable different properties for the light.
     LightEnable(light) {
-        light.position.set(0, 1000,0);
+        light.position.set(0, 1000, 0);
         light.target.position.set(0, 0, 0);
         light.castShadow = true;
         light.shadow.bias = -0.001;
@@ -248,22 +262,24 @@ class World {
             const canvas = this.renderer.domElement;
             this.camera.aspect = canvas.clientWidth / canvas.clientHeight;
 
-            if(this.pokeballCount){
-                let width =this.pokeballCount.clientWidth + 40
-                this.pokeballCount.style.left = canvas.width-width + 'px';
+            //Adjust icons
+            if (this.pokeballCount) {
+                let width = this.pokeballCount.clientWidth + 40
+                this.pokeballCount.style.left = canvas.width - width + 'px';
             }
-            if(this.pauseIcon){
-                let width =this.pauseIcon
+
+            if (this.pauseIcon) {
+                let width = this.pauseIcon
                     .clientWidth + 40
                 this.pauseIcon
-                    .style.left = canvas.width-width + 'px';
+                    .style.left = canvas.width - width + 'px';
             }
 
             this.camera.updateProjectionMatrix();
         }
 
-
-        if(this.Pause===true){
+        //if game is pause break loop.
+        if (this.Pause === true) {
             return
         }
         requestAnimationFrame((t) => {
@@ -281,7 +297,7 @@ class World {
 
 
             // full display
-            this.renderer.setViewport( 0, 0, w, h );
+            this.renderer.setViewport(0, 0, w, h);
             this.renderer.setScissor(0, 0, w, h);
             this.renderer.setScissorTest(true);
             this.renderer.render(this.scene, this.camera);
@@ -289,11 +305,11 @@ class World {
             // minimap (overhead orthogonal camera)
 
 
-            if (this.Character){
-                this.renderer.setViewport( 50, 50, this.mapWidth, this.mapHeight);
-                this.renderer.setScissor(50, 50, this.mapWidth,this.mapHeight);
+            if (this.Character && this.mapCamera) {
+                this.renderer.setViewport(50, 50, this.mapWidth, this.mapHeight);
+                this.renderer.setScissor(50, 50, this.mapWidth, this.mapHeight);
                 this.renderer.setScissorTest(true);
-                this.mapCamera.position.y =800;
+                this.mapCamera.position.y = 800;
                 this.renderer.render(this.scene, this.mapCamera);
             }
 
@@ -369,8 +385,9 @@ class World {
         this.addPokemon();
 
         const pokemonList = this.PokemonLoader.List;
-        //Params to be passed to the character class.
+        const taskList = this.PokemonLoader.Task
 
+        //Params to be passed to the character class.
         const CharParams = {
             renderer: this.renderer,
             camera: this.camera,
@@ -382,9 +399,11 @@ class World {
             startPos: this.StartPos,
             rBodies: this.removeBodies,
             rMeshes: this.removeMeshes,
-            canvas:this.canvas,
+            canvas: this.canvas,
             mapCamera: this.mapCamera,
-            pokeballs: this.Pokeballs
+            pokeballs: this.Pokeballs,
+            taskList: taskList,
+            WorkStation: this.checkObject
         }
         this.Character = new CHARACTER.Character(CharParams);
 
@@ -400,7 +419,6 @@ class World {
     }
 
 
-
     //Physic Update Function.
     Step(timeElapsed) {
         const timeElapsedS = timeElapsed * 0.001;
@@ -409,16 +427,18 @@ class World {
             this._mixers.map(m => m.update(timeElapsedS));
         }
 
-        //Update Character Controls.
+        //Updates
         if (this.Character) {
             this.Character.Update(timeElapsedS);
-            this.PokemonLoader.update()
+            this.PokemonLoader.update();
             this.Pokeballs = this.Character.Pokeballs
-            this.updatePokeballText()
-            if(!this.TaskList){
-                this.TaskList =  this.PokemonLoader.TaskList;
-            }
 
+            this.updatePokeballText();
+
+            //If Game is over
+            if (this.Character.getStop === true) {
+                this.Pause = true;
+            }
         }
 
 
@@ -437,17 +457,17 @@ class World {
     }
 
     //Ambient sounds near villages.
-    ambientSounds(){
+    ambientSounds() {
         const listener = new THREE.AudioListener();
-        this.camera.add( listener );
+        this.camera.add(listener);
 
         //Creates a positional audio which only plays music in certain locations.
-        const sound = new THREE.PositionalAudio( listener );
+        const sound = new THREE.PositionalAudio(listener);
 
 
         const audioLoader = new THREE.AudioLoader();
-        audioLoader.load( 'resources/sounds/townAmbience.mp3', function( buffer ) {
-            sound.setBuffer( buffer );
+        audioLoader.load('resources/sounds/townAmbience.mp3', function (buffer) {
+            sound.setBuffer(buffer);
             sound.setRefDistance(200);
             sound.setLoop(true);
             sound.setVolume(0.5);
@@ -456,22 +476,22 @@ class World {
 
         //Create box that covers area where the sound should be. Make the box opaque so that you can't see it
         //Add sound to object so that when you in close to the object sound will play.
-        const sphere = new THREE.BoxGeometry( 2000, 0.1,2000);
-        const material = new THREE.MeshPhongMaterial( { color: 0xff2200,transparent: true, opacity : 0  } );
-        const mesh = new THREE.Mesh( sphere, material );
+        const sphere = new THREE.BoxGeometry(2000, 0.1, 2000);
+        const material = new THREE.MeshPhongMaterial({color: 0xff2200, transparent: true, opacity: 0});
+        const mesh = new THREE.Mesh(sphere, material);
         mesh.position.set(3000, -99, -2700);
-        this.scene.add( mesh );
+        this.scene.add(mesh);
         mesh.add(sound);
 
         const listener2 = new THREE.AudioListener();
-        this.camera.add( listener2 );
+        this.camera.add(listener2);
 
-        const sound2 = new THREE.PositionalAudio( listener2 );
+        const sound2 = new THREE.PositionalAudio(listener2);
 
 
         const audioLoader2 = new THREE.AudioLoader();
-        audioLoader2.load( 'resources/sounds/townAmbience.mp3', function( buffer ) {
-            sound2.setBuffer( buffer );
+        audioLoader2.load('resources/sounds/townAmbience.mp3', function (buffer) {
+            sound2.setBuffer(buffer);
             sound2.setRefDistance(200);
             sound2.setLoop(true);
             sound2.setVolume(0.5);
@@ -480,22 +500,22 @@ class World {
 
         //Create box that covers area where the sound should be. Make the box opaque so that you can't see it
         //Add sound to object so that when you in close to the object sound will play.
-        const sphere2 = new THREE.BoxGeometry( 2000, 0.1,2000);
-        const material2 = new THREE.MeshPhongMaterial( { color: 0xff2200,transparent: true, opacity : 0  } );
-        const mesh2 = new THREE.Mesh( sphere2, material2 );
+        const sphere2 = new THREE.BoxGeometry(2000, 0.1, 2000);
+        const material2 = new THREE.MeshPhongMaterial({color: 0xff2200, transparent: true, opacity: 0});
+        const mesh2 = new THREE.Mesh(sphere2, material2);
         mesh2.position.set(-3000, -99, 2700);
-        this.scene.add( mesh2 );
+        this.scene.add(mesh2);
         mesh2.add(sound2);
 
     }
 
     //Function to place several signs into the scene.
-    sign(){
-        this.makeSign(2200,-100,-2100,1,"pallet");
-        this.makeSign(-2250,-100,1975,2,"lavender");
+    sign() {
+        this.makeSign(2200, -100, -2100, 1, "pallet");
+        this.makeSign(-2250, -100, 1975, 2, "lavender");
     }
 
-    makeSign(x,y,z,r,town){
+    makeSign(x, y, z, r, town) {
         const CharParams = {
             camera: this.camera,
             scene: this.scene,
@@ -514,16 +534,16 @@ class World {
 
 
     //Function to place several lampposts into the scene.
-    lampPost(){
-        this.makeLampPost(2100,-100,-2100,2);
-        this.makeLampPost(1900,-100,-2100,2);
-        this.makeLampPost(1050,-100,80,1);
-        this.makeLampPost(1050,-100,400,1);
-        this.makeLampPost(-1050,-100,80,0);
-        this.makeLampPost(-1050,-100,400,0);
+    lampPost() {
+        this.makeLampPost(2100, -100, -2100, 2);
+        this.makeLampPost(1900, -100, -2100, 2);
+        this.makeLampPost(1050, -100, 80, 1);
+        this.makeLampPost(1050, -100, 400, 1);
+        this.makeLampPost(-1050, -100, 80, 0);
+        this.makeLampPost(-1050, -100, 400, 0);
     }
 
-    makeLampPost(x,y,z,r){
+    makeLampPost(x, y, z, r) {
         const CharParams = {
             camera: this.camera,
             scene: this.scene,
@@ -555,6 +575,7 @@ class World {
 
         }
     }
+
     //Function to access paths class and add the paths to the scene in certain locations.
     paths() {
         this.addPath(100, 2000, 1975, this.yPosGround, -1000, 0, 0);
@@ -588,21 +609,21 @@ class World {
     //Functions to access Shrubs class and add shrubs to the scene.
     Shrub() {
         //Code repeated 4 times to make 4 walls around the map so that player is unable to escape.
-        let charParams = this.makeShrubs(3100, this.yPosGround+92 , 100, 0);
+        let charParams = this.makeShrubs(3100, this.yPosGround + 92, 100, 0);
         this.shrub = new SHRUB.Shrub(charParams);
         let shrub = this.shrub.createShrub();
         shrub.scale.set(10, 10, 2200);
         this.scene.add(shrub);
         this.meshes.push(shrub);
 
-        charParams = this.makeShrubs(-3050, this.yPosGround +92, 100, 0);
+        charParams = this.makeShrubs(-3050, this.yPosGround + 92, 100, 0);
         this.shrub = new SHRUB.Shrub(charParams);
         shrub = this.shrub.createShrub();
         shrub.scale.set(10, 10, 2200);
         this.scene.add(shrub);
         this.meshes.push(shrub);
 
-        charParams = this.makeShrubs(0, this.yPosGround+92 , 2950, 1);
+        charParams = this.makeShrubs(0, this.yPosGround + 92, 2950, 1);
         this.shrub = new SHRUB.Shrub(charParams);
         shrub = this.shrub.createShrub();
         shrub.scale.set(10, 10, 2200);
@@ -610,7 +631,7 @@ class World {
         this.meshes.push(shrub);
 
 
-        charParams = this.makeShrubs(0, this.yPosGround+92 , -3000, 1);
+        charParams = this.makeShrubs(0, this.yPosGround + 92, -3000, 1);
         this.shrub = new SHRUB.Shrub(charParams);
         shrub = this.shrub.createShrub();
         shrub.scale.set(10, 10, 2200);
@@ -706,7 +727,7 @@ class World {
     }
 
     //Function to access House class and add the houses to the scene in certain locations.
-    House(){
+    House() {
         let charParams = this.makeHouse(3020, this.yPosGround + 50, -2770, 0);
         this.house = new HOUSE.House(charParams);
         let house = this.house.smallBlueHouse();
@@ -741,8 +762,6 @@ class World {
         house.scale.set(10, 10, 10);
         this.scene.add(house);
         this.meshes.push(house);
-
-
 
 
         charParams = this.makeHouse(-2800, this.yPosGround + 50, 2770, 0);
@@ -885,7 +904,7 @@ class World {
     }
 
     //Create fences of a certain length in the horizontal direction.
-    FenceHorizontal(amountFences,FenceRotation,xPos,zPos){
+    FenceHorizontal(amountFences, FenceRotation, xPos, zPos) {
         let xAdd = 0;
         for (let i = 0; i < amountFences; ++i) {
             let charParams = this.makeFence(xPos + xAdd, this.yPosGround, zPos, FenceRotation);
@@ -898,7 +917,7 @@ class World {
     }
 
     //Create fences of a certain length in the vertical direction.
-    FenceVertical(amountFences,FenceRotation,xPos,zPos){
+    FenceVertical(amountFences, FenceRotation, xPos, zPos) {
         let zAdd = 0;
         for (let i = 0; i < amountFences; ++i) {
             let charParams = this.makeFence(xPos, this.yPosGround, zPos + zAdd, FenceRotation);
@@ -913,136 +932,26 @@ class World {
     //Function to access Fence class and add the fences to the scene in certain locations.
     //Calls many functions as fences are used to block the player off from restricted areas.
     Fence() {
-        this.FenceHorizontal(6,1,2300,-2050);
-        this.FenceVertical(13,2,2070,-2000);
-        this.FenceHorizontal(6,0,2130,10);
-        this.FenceHorizontal(18,1,-700,-2050);
-        this.FenceVertical(13,3,1900,-1800);
-        this.FenceHorizontal(6,0,900,0);
-        this.FenceVertical(13,2,-900,-2050);
-        this.FenceHorizontal(6,1,2276,1300);
-        this.FenceVertical(5,2,2050,1350);
-        this.FenceHorizontal(23,1,-1300,2100);
-        this.FenceVertical(5,2,-1550,2080);
-        this.FenceHorizontal(13,1,-800,1400);
-        this.FenceVertical(6,2,1000,450);
-        this.FenceVertical(6,2,-1000,450);
-        this.FenceVertical(22,2,-2000,-2000);
-        this.FenceHorizontal(6,1,-2800,1300);
-        this.FenceHorizontal(6,1,-2800,-2050);
+        this.FenceHorizontal(6, 1, 2300, -2050);
+        this.FenceVertical(13, 2, 2070, -2000);
+        this.FenceHorizontal(6, 0, 2130, 10);
+        this.FenceHorizontal(18, 1, -700, -2050);
+        this.FenceVertical(13, 3, 1900, -1800);
+        this.FenceHorizontal(6, 0, 900, 0);
+        this.FenceVertical(13, 2, -900, -2050);
+        this.FenceHorizontal(6, 1, 2276, 1300);
+        this.FenceVertical(5, 2, 2050, 1350);
+        this.FenceHorizontal(23, 1, -1300, 2100);
+        this.FenceVertical(5, 2, -1550, 2080);
+        this.FenceHorizontal(13, 1, -800, 1400);
+        this.FenceVertical(6, 2, 1000, 450);
+        this.FenceVertical(6, 2, -1000, 450);
+        this.FenceVertical(22, 2, -2000, -2000);
+        this.FenceHorizontal(6, 1, -2800, 1300);
+        this.FenceHorizontal(6, 1, -2800, -2050);
     }
 
-
-
-    addHill() {
-        const CharParams = {
-            camera: this.camera,
-            scene: this.scene,
-            world: this.world,
-            bodies: this.bodies,
-            meshes: this.meshes,
-            yPosGround: this.yPosGround
-        }
-        this.hill = new HILL.Hill(CharParams);
-        this.hill.createHill();
-
-    }
-
-    addPokeballCount(){
-        let img = document.createElement("img");
-        img.src="resources/images/pokeballIcon.png";
-        img.id="pokeballIcon";
-
-        img.setAttribute("height", "90");
-        img.setAttribute("width", "90");
-
-
-        let width = 140+40
-        let text = document.createTextNode("x"+this.Pokeballs.toString())
-        this.textSpan=document.createElement("span")
-        this.textSpan.id = "pokeballCount"
-        this.textSpan.style.padding="10px"
-        this.textSpan.style.fontFamily="Tahoma, sans-serif"
-        this.textSpan.style.color='#ffffff'
-        this.textSpan.style.fontSize=45+'px'
-        this.textSpan.textContent = "x"+this.Pokeballs.toString()
-
-        this.pokeballCount = document.createElement('div')
-        this.pokeballCount.id= "PokeballDiv"
-        this.pokeballCount.style.position = 'absolute';
-        this.pokeballCount.style.display ="flex";
-        this.pokeballCount.style.alignItems="center";
-        this.pokeballCount.append(img)
-        this.pokeballCount.append(this.textSpan)
-        this.pokeballCount.style.top = 200 + 'px';
-        this.pokeballCount.style.left = this.canvas.width-width+'px';
-        this.pokeballCount.unselectable="on"
-        document.body.appendChild(this.pokeballCount)
-    }
-
-    updatePokeballText(){
-
-        let x = this.textSpan.textContent
-        let oldCount = x.replace(/\D/g,'');
-        if (this.Pokeballs.toString()!==oldCount) {
-            this.textSpan.textContent = "x"+this.Pokeballs.toString()
-        }
-
-    }
-
-    addPauseButton(){
-        let width = 120
-        this.pauseIcon
-            = document.createElement("input");
-        this.pauseIcon
-            .src = "resources/images/pauseIcon.png";
-        this.pauseIcon
-            .id="pauseIcon";
-        this.pauseIcon
-            .style.position = 'absolute';
-        this.pauseIcon
-            .type="image"
-        this.pauseIcon
-            .setAttribute("height", "100");
-        this.pauseIcon
-            .setAttribute("width", "100");
-
-        this.pauseIcon
-            .style.top = 50 + 'px';
-        this.pauseIcon
-            .style.left = this.canvas.width-width+'px';
-        let a = this.Pause
-        this.pauseIcon.onclick = ()=>{
-            this.onPause()
-        }
-        document.body.appendChild(this.pauseIcon)
-    }
-
-    onPause(){
-        this.Pause=true
-        let overlay = document.getElementById("myNav")
-        overlay.style.width = "100%";
-        let close = document.createElement('a')
-        close.className = "closebtn";
-        close.innerHTML = "X";
-        close.style.position="absolute";
-        close.style.top = 20+"px";
-        close.style.right=45+"px";
-        close.style.fontSize=60+"px";
-        close.onclick = ()=>{
-            this.onPauseExit()
-        }
-        overlay.append(close)
-    }
-    onPauseExit(){
-        this.Pause=false
-        console.log("Exit",this.Pause)
-
-        document.getElementById("myNav").style.width = "0%";
-        this.Render()
-    }
-
-    createChecker(){
+    createChecker() {
         const shape = new CANNON.Box(new CANNON.Vec3(20, 60, 20));
         this.checkerBody = new CANNON.Body();
         this.checkerBody.type = Body.STATIC;
@@ -1065,62 +974,177 @@ class World {
 
         let texture = new THREE.CubeTextureLoader().load(textureURLs);
 
-        let geometry = new THREE.BoxGeometry( 10, 25, 10);
-        let material = new THREE.MeshBasicMaterial( {
+        let geometry = new THREE.BoxGeometry(10, 25, 10);
+        let material = new THREE.MeshBasicMaterial({
             color: 0xA8A9AD,
             envMap: texture
         });
-        const Box = new THREE.Mesh( geometry, material );
+        const Box = new THREE.Mesh(geometry, material);
         this.checkObject.add(Box);
 
-        geometry = new THREE.BoxGeometry( 7, 5, 7);
-        material = new THREE.MeshBasicMaterial( {
+        geometry = new THREE.BoxGeometry(7, 5, 7);
+        material = new THREE.MeshBasicMaterial({
             color: 0x000000,
         });
-        const laptopBottom = new THREE.Mesh( geometry, material );
-        laptopBottom.position.set(0,11,0)
+        const laptopBottom = new THREE.Mesh(geometry, material);
+        laptopBottom.position.set(0, 11, 0)
         this.checkObject.add(laptopBottom);
 
         texture = new THREE.TextureLoader().load("resources/images/keyboard.png");
-        geometry = new THREE.PlaneGeometry(7,7)
-        material = new THREE.MeshBasicMaterial( {
-            map : texture,
+        geometry = new THREE.PlaneGeometry(7, 7)
+        material = new THREE.MeshBasicMaterial({
+            map: texture,
             side: THREE.DoubleSide,
         });
-        const laptopKeys = new THREE.Mesh( geometry, material );
-        laptopKeys.position.set(0,13.5,0);
-        laptopKeys.rotateX(Math.PI/2);
+        const laptopKeys = new THREE.Mesh(geometry, material);
+        laptopKeys.position.set(0, 13.5, 0);
+        laptopKeys.rotateX(Math.PI / 2);
         this.checkObject.add(laptopKeys);
 
-        geometry = new THREE.BoxGeometry( 7.5, 9, 1);
-        material = new THREE.MeshBasicMaterial( {
+        geometry = new THREE.BoxGeometry(7.5, 9, 1);
+        material = new THREE.MeshBasicMaterial({
             color: 0x000000,
         });
-        const laptopTop = new THREE.Mesh( geometry, material );
-        laptopTop.position.set(0,15,3)
+        const laptopTop = new THREE.Mesh(geometry, material);
+        laptopTop.position.set(0, 15, 3)
         this.checkObject.add(laptopTop);
 
         texture = new THREE.TextureLoader().load("resources/images/bear.png");
-        geometry = new THREE.PlaneGeometry(7,7)
-        material = new THREE.MeshBasicMaterial( {
-            map : texture,
+        geometry = new THREE.PlaneGeometry(7, 7)
+        material = new THREE.MeshBasicMaterial({
+            map: texture,
             side: THREE.DoubleSide,
         });
-        const laptopScreen = new THREE.Mesh( geometry, material );
-        laptopScreen.position.set(0,16,2.2);
+        const laptopScreen = new THREE.Mesh(geometry, material);
+        laptopScreen.position.set(0, 16, 2.2);
         this.checkObject.add(laptopScreen);
 
-        this.checkObject.scale.set(3,3,3);
+        this.checkObject.scale.set(3, 3, 3);
         this.scene.add(this.checkObject);
         this.meshes.push(this.checkObject);
     }
-}
 
+    addHill() {
+        const CharParams = {
+            camera: this.camera,
+            scene: this.scene,
+            world: this.world,
+            bodies: this.bodies,
+            meshes: this.meshes,
+            yPosGround: this.yPosGround
+        }
+        this.hill = new HILL.Hill(CharParams);
+        this.hill.createHill();
+
+    }
+
+
+    //UI Elements
+    addPokeballCount() {
+        let img = document.createElement("img");
+        img.src = "resources/images/pokeballIcon.png";
+        img.id = "pokeballIcon";
+
+        img.setAttribute("height", "90");
+        img.setAttribute("width", "90");
+
+
+        let width = 140 + 40
+        this.textSpan = document.createElement("span")
+        this.textSpan.id = "pokeballCount"
+        this.textSpan.style.padding = "10px"
+        this.textSpan.style.fontFamily = "Tahoma, sans-serif"
+        this.textSpan.style.color = '#ffffff'
+        this.textSpan.style.fontSize = 45 + 'px'
+        this.textSpan.textContent = "x" + this.Pokeballs.toString()
+
+        this.pokeballCount = document.createElement('div')
+        this.pokeballCount.id = "PokeballDiv"
+        this.pokeballCount.style.position = 'absolute';
+        this.pokeballCount.style.display = "flex";
+        this.pokeballCount.style.alignItems = "center";
+        this.pokeballCount.append(img)
+        this.pokeballCount.append(this.textSpan)
+        this.pokeballCount.style.top = 200 + 'px';
+        this.pokeballCount.style.left = this.canvas.width - width + 'px';
+        this.pokeballCount.unselectable = "on"
+        document.body.appendChild(this.pokeballCount)
+    }
+
+    addPauseButton() {
+        let width = 120
+        this.pauseIcon
+            = document.createElement("input");
+        this.pauseIcon
+            .src = "resources/images/pauseIcon.png";
+        this.pauseIcon
+            .id = "pauseIcon";
+        this.pauseIcon
+            .style.position = 'absolute';
+        this.pauseIcon
+            .type = "image"
+        this.pauseIcon
+            .setAttribute("height", "100");
+        this.pauseIcon
+            .setAttribute("width", "100");
+
+        this.pauseIcon
+            .style.top = 50 + 'px';
+        this.pauseIcon
+            .style.left = this.canvas.width - width + 'px';
+        this.pauseIcon.onclick = () => {
+            this.onPause()
+        }
+        document.body.appendChild(this.pauseIcon)
+    }
+
+    //Change Text of Pokeball Counter
+    updatePokeballText() {
+
+        let x = this.textSpan.textContent
+        let oldCount = x.replace(/\D/g, '');
+        if (this.Pokeballs.toString() !== oldCount) {
+            this.textSpan.textContent = "x" + this.Pokeballs.toString()
+        }
+
+    }
+
+
+    //What Happens when the pause icon is clicked
+    onPause() {
+        this.Pause = true
+        let overlay = document.getElementById("myNav")
+        overlay.style.width = "100%";
+        let close = document.createElement('a')
+        close.className = "closebtn";
+        close.innerHTML = "X";
+        close.style.position = "absolute";
+        close.style.top = 20 + "px";
+        close.style.right = 45 + "px";
+        close.style.fontSize = 60 + "px";
+        close.onclick = () => {
+            this.onPauseExit()
+        }
+        overlay.append(close)
+    }
+
+    //What Happens when the pause menu is closed
+    //Continue rendering game.
+    onPauseExit() {
+        this.Pause = false
+        console.log("Exit", this.Pause)
+
+        document.getElementById("myNav").style.width = "0%";
+        this.Render()
+    }
+
+
+}
 
 
 let _APP = null;
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('load', () => {
     _APP = new World();
 });
 
