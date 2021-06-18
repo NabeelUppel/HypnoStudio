@@ -248,13 +248,14 @@ export class Pokemon {
             }
 
             if(i%4===0){
-                Rarity =  THREE.MathUtils.randInt(3, 6)
+                Rarity =  THREE.MathUtils.randInt(3, 5)
             }
 
             if(R1>=95){
                 Rarity = 6
                 R1 = 1
             }
+
             let Models = this.RarityTiers[Rarity]
             let randPokemon = Models[Math.floor(Math.random() * Models.length)];
             let position = this.Positions[i];
@@ -366,8 +367,6 @@ export class Pokemon {
         title.style.color="white"
         table.style.marginBottom="10px"
         title.style.fontFamily="Tahoma, sans-serif"
-        div.style.top = 50 + 'px';
-        div.style.left = 25 + 'px';
         div.style.position="absolute"
         div.style.display = "block";
         div.id = "TaskList"
@@ -421,8 +420,18 @@ export class Pokemon {
         }
         table.style.borderSpacing="0"
         table.style.borderCollapse="collapse"
+        table.style.tableLayout="fixed";
         div.appendChild(title)
         div.appendChild(table)
+
+        div.style.bottom="-5%"
+        div.style.right="100%"
+        div.style.transform="scale(0.5)";
         document.body.appendChild(div)
+        let width =  document.getElementById("TaskList").clientWidth-105
+        let height =  document.getElementById("TaskList").clientHeight
+        document.getElementById("TaskList").style.marginRight= "-"+width+"px"
+        document.getElementById("TaskList").style.minWidth=width+105+"px";
+        document.getElementById("TaskList").style.minHeight=height+"px";
     }
 }

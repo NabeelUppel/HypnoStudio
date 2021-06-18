@@ -105,9 +105,8 @@ class World {
 
         this.StartPos = new CANNON.Vec3(2700, -100, -2900);
 
-        this.mapWidth = 384;
-        this.mapHeight = 192;
-
+        this.mapWidth = 384/2;
+        this.mapHeight = 192/2;
         this.mapCamera = new THREE.OrthographicCamera(
             this.mapWidth * 2,		// Left
             -this.mapWidth * 2,		// Right
@@ -118,7 +117,6 @@ class World {
 
         this.mapCamera.up = new THREE.Vector3(0, 0, -1);
         this.mapCamera.lookAt(new THREE.Vector3(0, -1, 0));
-
 
         //adds directional light to scene.
         let light = new THREE.DirectionalLight(0xFFFFFF, 1.0);
@@ -260,19 +258,6 @@ class World {
         if (this.resizeRendererToDisplaySize(this.renderer)) {
             const canvas = this.renderer.domElement;
             this.camera.aspect = canvas.clientWidth / canvas.clientHeight;
-
-            //Adjust icons
-            if (this.pokeballCount) {
-                let width = this.pokeballCount.clientWidth + 40
-                this.pokeballCount.style.left = canvas.width - width + 'px';
-            }
-
-            if (this.pauseIcon) {
-                let width = this.pauseIcon
-                    .clientWidth + 40
-                this.pauseIcon
-                    .style.left = canvas.width - width + 'px';
-            }
 
             this.camera.updateProjectionMatrix();
         }
@@ -1048,7 +1033,7 @@ class World {
         img.setAttribute("width", "90");
 
 
-        let width = 140 + 40
+        let width = 140
         this.textSpan = document.createElement("span")
         this.textSpan.id = "pokeballCount"
         this.textSpan.style.padding = "10px"
@@ -1064,14 +1049,16 @@ class World {
         this.pokeballCount.style.alignItems = "center";
         this.pokeballCount.append(img)
         this.pokeballCount.append(this.textSpan)
-        this.pokeballCount.style.top = 200 + 'px';
-        this.pokeballCount.style.left = this.canvas.width - width + 'px';
+        this.pokeballCount.style.top = "10%";
+        this.pokeballCount.style.left= "100%";
+        this.pokeballCount.style.marginLeft= "-"+width+"px"
         this.pokeballCount.unselectable = "on"
+        this.pokeballCount.style.transform="scale(0.5)";
         document.body.appendChild(this.pokeballCount)
     }
 
     addPauseButton() {
-        let width = 120
+        let width = 100
         this.pauseIcon
             = document.createElement("input");
         this.pauseIcon
@@ -1088,12 +1075,14 @@ class World {
             .setAttribute("width", "100");
 
         this.pauseIcon
-            .style.top = 50 + 'px';
+            .style.top = "0";
         this.pauseIcon
-            .style.left = this.canvas.width - width + 'px';
+            .style.left = "100%";
+        this.pauseIcon.style.marginLeft= "-"+width+"px"
         this.pauseIcon.onclick = () => {
             this.onPause()
         }
+        this.pauseIcon.style.transform="scale(0.5)";
         document.body.appendChild(this.pauseIcon)
     }
 

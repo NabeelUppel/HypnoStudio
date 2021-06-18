@@ -585,17 +585,19 @@ export class Character {
         let text2=document.createElement('div')
         text2.style.position = 'absolute';
         text2.id= 'text-label';
-        text2.style.width = width+"px";
-        text2.style.height = 200+"px";
+        //text2.style.width = width+"px";
+        //text2.style.height = 200+"px";
         text2.innerHTML = Text.replace(/\n/g, "<br />");
         text2.style.textAlign="center";
         text2.style.display="block";
-        text2.style.top = 300 + 'px';
-        text2.style.left = (this.canvas.width-width)/2+'px';
+        text2.style.top = "20%";
+        text2.style.left = "50%";
+        text2.style.marginLeft = "-"+width/2+"px";
         text2.style.fontSize=40+'px'
         text2.style.color=color
         text2.style.fontFamily="Tahoma, sans-serif"
         text2.unselectable="on"
+        text2.style.transform="scale(0.5)"
         document.body.appendChild(text2)
         this.removeText()
     }
