@@ -406,7 +406,7 @@ export class Character {
             this.checkWorkStationIntersects= this.raycaster.intersectObjects(this.WorkStation.children, false);
             if(this.checkWorkStationIntersects.length!==0){
                 let is_same = this.checkLists()
-                if(!is_same){
+                if(is_same){
                     this.Stop=true;
                     let WinOverlay = document.getElementById("Win")
                     WinOverlay.style.width = "100%";
@@ -525,7 +525,7 @@ export class Character {
     // check if player won
     checkLists(){
         console.log(this.caught, this.taskList)
-        if(this.caught.sort().join(',')=== this.taskList.sort().join(',')){
+        if(this.taskList.every(elem =>this.caught.includes(elem))){
             console.log("yes")
             return true
         }
@@ -540,7 +540,7 @@ export class Character {
     isCaught(PokemonName){
         let R1 = THREE.MathUtils.randInt(0, 255)
         let rate = this.pokedex.getRate(PokemonName)
-        return rate >= R1/1.5;
+        return rate >= R1/2.5;
     }
 
     //add text

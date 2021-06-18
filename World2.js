@@ -334,7 +334,7 @@ class World {
         let positions = []
 
         //Top left
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 10; i++) {
             let x = THREE.MathUtils.randFloat(2500, 3700)
             let z = THREE.MathUtils.randFloat(2500, 3500)
             positions.push(new THREE.Vector3(x, this.yPosGround, z))
@@ -355,7 +355,7 @@ class World {
         }
 
         //Bottom left
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 10; i++) {
             let x = THREE.MathUtils.randFloat(2500, 3700)
             let z = THREE.MathUtils.randFloat(-2500, -3500)
             positions.push(new THREE.Vector3(x, this.yPosGround, z))
@@ -429,12 +429,15 @@ class World {
             this._mixers.map(m => m.update(timeElapsedS));
         }
 
-        //Update Character Controls.
+        //Updates
         if (this.Character) {
             this.Character.Update(timeElapsedS);
-            this.PokemonLoader.update()
+            this.PokemonLoader.update();
             this.Pokeballs = this.Character.Pokeballs
-            this.updatePokeballText()
+
+            this.updatePokeballText();
+
+            //If Game is over
             if (this.Character.getStop === true) {
                 this.Pause = true;
             }

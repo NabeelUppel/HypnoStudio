@@ -366,7 +366,7 @@ export class Pokemon {
         title.style.color="white"
         table.style.marginBottom="10px"
         title.style.fontFamily="Tahoma, sans-serif"
-        div.style.top = 200 + 'px';
+        div.style.top = 50 + 'px';
         div.style.left = 25 + 'px';
         div.style.position="absolute"
         div.style.display = "block";
